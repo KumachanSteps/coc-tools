@@ -186,7 +186,9 @@ function showMessageBox(message, isError = false) {
     }, 2000); // 2秒後に消える
 }
 
-
+/**
+ * CoC7版のチャットパレットを整形する関数
+ */
 function formatPalette() {
   const lines = document.getElementById("input").value.split("\n");
   const categories = {
@@ -207,15 +209,14 @@ function formatPalette() {
     if (!trimmedLine) return;
 
     // ダメージ判定を最優先で処理
-    if (trimmedLine.match(/1d\d+\+\d+\s+【ダメージ判定】/i)) {
+    if (trimmedLine.match(/1d\d+\+\d+?\s+【ダメージ判定】/i)) {
       categories.damage.push(trimmedLine);
       return;
     }
 
     // 能力値を次に処理
-    const statusMatch = trimmedLine.match(/^(STR|CON|POW|DEX|APP|SIZ|INT|EDU|HP|MP)\s*[:：]?\s*(\d+)/i);
-    if (statusMatch && !trimmedLine.includes("× 5")) {
-      categories.status.push(`CC<=${statusMatch[2]} 【${statusMatch[1].toUpperCase()}】`);
+    if (trimmedLine.match(/CC<=\d+\s+【(STR|CON|POW|DEX|APP|SIZ|INT|EDU|HP|MP)】/i)) {
+      categories.status.push(trimmedLine);
       return;
     }
     
