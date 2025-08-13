@@ -186,9 +186,20 @@ function showMessageBox(message, isError = false) {
     }, 2000); // 2秒後に消える
 }
 
-/**
- * CoC7版のチャットパレットを整形する関数
- */
+// 無視する行を正規表現で定義
+const ignoredLinePatterns = [
+    /^1d100<=\{SAN\}\s+【正気度ロール】$/,
+    /^CC<=\s*([0-9]+|\{STR\})\s+【STR】$/,
+    /^CC<=\s*([0-9]+|\{CON\})\s+【CON】$/,
+    /^CC<=\s*([0-9]+|\{POW\})\s+【POW】$/,
+    /^CC<=\s*([0-9]+|\{DEX\})\s+【DEX】$/,
+    /^CC<=\s*([0-9]+|\{APP\})\s+【APP】$/,
+    /^CC<=\s*([0-9]+|\{SIZ\})\s+【SIZ】$/,
+    /^CC<=\s*([0-9]+|\{INT\})\s+【INT】$/,
+    /^CC<=\s*([0-9]+|\{EDU\})\s+【EDU】$/
+];
+
+
 function formatPalette() {
   const lines = document.getElementById("input").value.split("\n");
   const categories = {
@@ -208,15 +219,20 @@ function formatPalette() {
     const trimmedLine = line.trim();
     if (!trimmedLine) return;
 
+    // 無視する行の正規表現と照合
+    const shouldIgnore = ignoredLinePatterns.some(pattern => pattern.test(trimmedLine));
+    if (shouldIgnore) return;
+
     // ダメージ判定を最優先で処理
-    if (trimmedLine.match(/1d\d+\+\d+?\s+【ダメージ判定】/i)) {
+    if (trimmedLine.match(/1d\d+\+\d+\s+【ダメージ判定】/i)) {
       categories.damage.push(trimmedLine);
       return;
     }
 
     // 能力値を次に処理
-    if (trimmedLine.match(/CC<=\d+\s+【(STR|CON|POW|DEX|APP|SIZ|INT|EDU|HP|MP)】/i)) {
-      categories.status.push(trimmedLine);
+    const statusMatch = trimmedLine.match(/^(STR|CON|POW|DEX|APP|SIZ|INT|EDU|HP|MP)\s*[:：]?\s*(\d+)/i);
+    if (statusMatch && !trimmedLine.includes("× 5")) {
+      categories.status.push(`CC<=${statusMatch[2]} 【${statusMatch[1].toUpperCase()}】`);
       return;
     }
     
@@ -231,17 +247,17 @@ function formatPalette() {
             categories.dice.push(trimmedLine);
         } else if (["回避", "近接戦闘", "砲"].includes(skill)) {
             categories.combat.push(trimmedLine);
-        } else if (["医学", "オカルト", "芸術", "経理", "考古学", "コンピューター", "科学", "心理学", "人類学", "電子工学", "自然", "法律", "歴史", "サバイバル", "伝承", "言語"].includes(skill) ||
+        } else if (["医学", "オカルト", "芸術", "経理", "考古学", "コンピューター", "科学", "心理学", "人類学", "電子工学", "自然", "法律", "歴史", "サバイバル", "伝承"].includes(skill) ||
                    /^芸術/.test(skillFull)) {
             categories.knowledge.push(trimmedLine);
-        } else if (["言いくるめ", "説得", "威圧", "魅惑", "信用", "言語"].includes(skill) || /^言語/.test(skillFull)) {
+        } else if (["言いくるめ", "説得", "威圧", "魅惑", "信用"].includes(skill) || /^言語/.test(skillFull)) {
             categories.interpersonal.push(trimmedLine);
-        } else if (["目星", "聞き耳", "図書館", "鍵開け", "手さばき", "隠密", "追跡", "登攀", "ナビゲート", "鑑定", "ダイビング"].includes(skill)) {
+        } else if (["目星", "聞き耳", "図書館"].includes(skill)) {
             categories.explore.push(trimmedLine);
         } else if (["投擲", "射撃：拳銃", "射撃：サブマシンガン", "射撃：重火器", "射撃：マシンガン", "射撃：ライフル", "射撃：ショットガン", "射撃：弓"].includes(skill) ||
                    /^射撃/.test(skillFull)) {
             categories.combat.push(trimmedLine);
-        } else if (["応急手当", "運転", "機械修理", "重機械操作", "乗馬", "水泳", "製作", "操縦", "跳躍", "電気修理", "変装", "精神分析"].includes(skill) ||
+        } else if (["鍵開け", "手さばき", "隠密", "追跡", "登攀", "ナビゲート", "鑑定", "ダイビング","応急手当", "運転", "機械修理", "重機械操作", "乗馬", "水泳", "製作", "操縦", "跳躍", "電気修理", "変装", "精神分析"].includes(skill) ||
                    /^(運転|製作|操縦|工芸)/.test(skillFull)) {
             categories.action.push(trimmedLine);
         } else {
@@ -260,19 +276,15 @@ function formatPalette() {
 
   // ◼️ダイス の順序を調整
   const sortedDice = [];
-  const sanRollLine = categories.dice.find(line => line.includes("正気度ロール"));
+  const sanRollLine = `1d100<={SAN} 【正気度ロール】`;
   const ideaLine = categories.dice.find(line => line.includes("アイデア"));
   const knowledgeLine = categories.dice.find(line => line.includes("知識"));
-  const luckLine = categories.dice.find(line => line.includes("幸運"));
-
-  if (sanRollLine) sortedDice.push(sanRollLine);
+  const luckLine = `CC<={幸運} 【幸運】`;
+  
+  sortedDice.push(sanRollLine);
   if (ideaLine) sortedDice.push(ideaLine);
   if (knowledgeLine) sortedDice.push(knowledgeLine);
-  if (luckLine) {
-    sortedDice.push(luckLine);
-  } else {
-    sortedDice.push(`CC<=${presentSkills.get('幸運') || initialValues7e['幸運'] || 0} 【幸運】`);
-  }
+  sortedDice.push(luckLine);
 
   const otherDice = categories.dice.filter(line => !sortedDice.some(sortedLine => sortedLine === line));
   sortedDice.push(...otherDice);
@@ -280,7 +292,7 @@ function formatPalette() {
 
   // 🟥戦闘技能 の順序を調整
   const sortedCombat = [];
-  const evadeLine = categories.combat.find(line => line.includes("回避"));
+  const evadeLine = `CC<=42 【回避】`;
   let meleeLine = categories.combat.find(line => line.includes("近接戦闘"));
   const cannonLine = categories.combat.find(line => line.includes("砲"));
   
@@ -289,8 +301,8 @@ function formatPalette() {
     meleeLine = `CC<=${meleeValue} 【近接戦闘】`;
     presentSkills.set('近接戦闘', meleeValue);
   }
-
-  if (evadeLine) sortedCombat.push(evadeLine);
+  
+  sortedCombat.push(evadeLine);
   if (meleeLine) sortedCombat.push(meleeLine);
   if (cannonLine) sortedCombat.push(cannonLine);
 
@@ -298,10 +310,51 @@ function formatPalette() {
   sortedCombat.push(...otherCombat);
   categories.combat = sortedCombat;
 
+  // 🟦探索技能 の順序を調整
+  const sortedExplore = [];
+  const meboshiLine = `CC<=${presentSkills.get('目星') || initialValues7e['目星'] || 0} 【目星】`;
+  const kikimimiLine = `CC<=${presentSkills.get('聞き耳') || initialValues7e['聞き耳'] || 0} 【聞き耳】`;
+  const toshokanLine = `CC<=${presentSkills.get('図書館') || initialValues7e['図書館'] || 0} 【図書館】`;
+
+  if (meboshiLine) sortedExplore.push(meboshiLine);
+  if (kikimimiLine) sortedExplore.push(kikimimiLine);
+  if (toshokanLine) sortedExplore.push(toshokanLine);
+  
+  const otherExplore = categories.explore.filter(line => !sortedExplore.some(sortedLine => sortedLine === line));
+  sortedExplore.push(...otherExplore);
+  categories.explore = sortedExplore;
+
   // 初期値技能の追加
   const missingInitials = Object.entries(initialValues7e)
-    .filter(([skill, _]) => !presentSkills.has(skill) && skill !== '幸運' && skill !== '近接戦闘')
+    .filter(([skill, _]) => !presentSkills.has(skill) && skill !== '幸運' && skill !== '近接戦闘' && skill !== '目星' && skill !== '聞き耳' && skill !== '図書館')
     .map(([skill, value]) => `CC<=${value} 【${skill}】`);
+
+  // 固定の能力値リスト
+  const fixedStatus = [
+    `CC<={STR} 【STR】`,
+    `CC<={CON} 【CON】`,
+    `CC<={POW} 【POW】`,
+    `CC<={DEX} 【DEX】`,
+    `CC<={APP} 【APP】`,
+    `CC<={SIZ} 【SIZ】`,
+    `CC<={INT} 【INT】`,
+    `CC<={EDU} 【EDU}`
+  ];
+
+  // ダメージ判定リストを動的に生成
+  const formattedDamage = categories.damage.map(line => {
+      const match = line.match(/1d(\d+)\+(\d+)/);
+      if (match) {
+          const die = match[1];
+          const modifier = parseInt(match[2], 10);
+          if (modifier === 0) {
+              return `1d${die}+0 【ダメージ判定】`;
+          } else {
+              return `1d${die}+${modifier} 【ダメージ判定】`;
+          }
+      }
+      return line;
+  });
 
   // 出力順序と見出しをCoC7版に合わせて調整
   const output = [
@@ -312,8 +365,7 @@ function formatPalette() {
     "\n🟪対人技能", ...categories.interpersonal,
     "\n⬜️知識技能", ...categories.knowledge,
     "\n========初期値========", ...missingInitials,
-    "\n========能力値========", ...categories.damage,
-    ...categories.status,
+    "\n========能力値========", ...fixedStatus, ...formattedDamage,
     "\n=====パラメータ化=====",
     ...["アイデア", "知識", "目星", "聞き耳", "図書館"].map(skill => {
         const value = presentSkills.get(skill) || initialValues7e[skill] || 0;
