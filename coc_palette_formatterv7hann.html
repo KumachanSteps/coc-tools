@@ -11,74 +11,132 @@
   gtag('config', 'G-NJD5JZML31');
 </script>
 <meta charset="UTF-8">
-<title>CoCキャラシート整形ツール V2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoC7版チャットパレット整形ツール</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
 body {
-  font-family: Arial, sans-serif;
-  margin: 40px;
-  background-color: #f9f9f9;
+  font-family: 'Inter', sans-serif; /* Interフォントを使用 */
+  margin: 0;
+  background-color: #f0f4f8; /* ライトブルー系の背景色 */
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh; /* 画面いっぱいに広がるように */
+  padding: 20px;
 }
 header {
   margin-bottom: 30px;
   text-align: center;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1000px;
 }
 header h1 {
-  font-size: 28px;
-  color: #333;
+  font-size: 2.5rem; /* 大きめのフォントサイズ */
+  color: #2c3e50; /* ダークブルー */
+  margin-bottom: 10px;
 }
 header p {
-  font-size: 14px;
+  font-size: 1rem;
   color: #555;
+  line-height: 1.6;
 }
 .main {
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* スマートフォンでは縦並び */
   gap: 30px;
-  max-width: 1200px;
+  max-width: 1000px;
   width: 100%;
+}
+@media (min-width: 768px) { /* デスクトップでは横並び */
+  .main {
+    flex-direction: row;
+  }
 }
 .container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  max-width: 550px;
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 textarea {
   width: 100%;
-  height: 600px;
-  resize: none;
-  padding: 10px;
-  font-family: monospace;
-  font-size: 14px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  height: 450px; /* 高さを調整 */
+  resize: vertical; /* 縦方向のみリサイズ可能 */
+  padding: 15px;
+  font-family: 'Inter', monospace;
+  font-size: 0.95rem;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   box-sizing: border-box;
+  color: #333;
+  line-height: 1.5;
+  transition: border-color 0.3s ease-in-out;
+}
+textarea:focus {
+  outline: none;
+  border-color: #4a90e2; /* フォーカス時のボーダー色 */
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
 }
 button {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 14px;
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
   cursor: pointer;
   border: none;
-  border-radius: 4px;
-  background-color: #007acc;
+  border-radius: 8px;
+  background-color: #4a90e2; /* ブルー系のボタン色 */
   color: #fff;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
 }
 button:hover {
-  background-color: #005f99;
+  background-color: #357ABD;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+}
+button:active {
+  transform: translateY(0);
+  box-shadow: 2px 5px rgba(74, 144, 226, 0.3);
+}
+
+/* メッセージボックスのスタイル */
+.message-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+.message-box.show {
+    opacity: 1;
+    visibility: visible;
 }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>CoCキャラシート整形ツール V2</h1>
-  <p>『キャラクター保管所』の「データ出力▶︎テキスト」をチャットパレットに整形します。</p>
+  <h1>CoC7版チャットパレット整形ツール</h1>
+  <p>このツールは、CoC7版探索者のチャットパレットを自動分類し、初期値技能も加えた形でスッキリと整理します。<br>入力欄にチャットパレットを貼り付け、「分類して出力」ボタンで整形結果を表示します。</p>
 </header>
 
 <div class="main">
@@ -93,313 +151,214 @@ button:hover {
   </div>
 </div>
 
+<div id="messageBox" class="message-box"></div>
+
 <script>
-const initialValues = {
-  '目星': 25, '図書館': 25, '聞き耳': 25, 'キック': 25, '組み付き': 25, '頭突き': 10, '投擲': 25, 'マーシャルアーツ': 1,
-  '拳銃': 20, 'サブマシンガン': 15, 'ショットガン': 30, 'マシンガン': 15, 'ライフル': 25,
-  '応急手当': 30, '鍵開け': 1, '隠す': 15, '隠れる': 10, '忍び歩き': 10, '写真術': 10, '精神分析': 1,
-  '追跡': 10, '登攀': 40, '運転': 20, '機械修理': 20, '重機械操作': 1, '乗馬': 5, '水泳': 25,
-  '製作': 5, '操縦': 1, '跳躍': 25, '電気修理': 10, 'ナビゲート': 10, '変装': 1,
-  '言いくるめ': 5, '信用': 15, '説得': 15, '値切り': 5,
-  '医学': 5, 'オカルト': 5, '化学': 1, '芸術': 5, '経理': 10, '考古学': 1, 'コンピューター': 1,
-  '心理学': 5, '人類学': 1, '生物学': 1, '地質学': 1, '電子工学': 1, '天文学': 1, '博物学': 10, '物理学': 1, '法律': 5, '薬学': 1, '歴史': 20,
-  'クトゥルフ神話': 0, // クトゥルフ神話の初期値を明示的に定義
-  'こぶし': 50, // こぶし（パンチ）の初期値を定義
-  '回避': 0 // 回避の初期値を定義（DEX*2で計算されるため0を設定）
-  // '母国語' はEDU*5で派生するため、initialValuesには含めない
+// CoC7版の技能初期値
+const initialValues7e = {
+  '目星': 25, '聞き耳': 20, '図書館': 20, '近接戦闘': 25, '投擲': 20,
+  '射撃：拳銃': 20, '射撃：サブマシンガン': 15, '射撃：重火器': 10, '射撃：マシンガン': 10, '射撃：ライフル': 25,
+  '射撃：ショットガン': 25, '射撃：弓': 15, '応急手当': 30, '鍵開け': 1, '手さばき': 10,
+  '隠密': 20, '精神分析': 1, '追跡': 10, '登攀': 20, '鑑定': 5,
+  '運転': 20, '機械修理': 10, '重機械操作': 1, '乗馬': 5, '水泳': 20,
+  '製作': 5, '操縦': 1, '跳躍': 20, '電気修理': 10, 'ナビゲート': 10,
+  '変装': 5, 'ダイビング': 1, '言いくるめ': 5, '説得': 10, '威圧': 15,
+  '魅惑': 15, '言語': 1, '医学': 1, 'オカルト': 5, '芸術': 5,
+  '経理': 5, '考古学': 1, 'コンピューター': 5, '科学': 1, '心理学': 10,
+  '人類学': 1, '電子工学': 1, '自然': 10, '法律': 5, '歴史': 5,
+  'サバイバル': 10, '伝承': 1,
+  '幸運': 0
 };
 
+// メッセージボックスを表示する関数
+function showMessageBox(message, isError = false) {
+    const messageBox = document.getElementById('messageBox');
+    messageBox.textContent = message;
+    messageBox.className = 'message-box show'; // showクラスを追加
+    if (isError) {
+        messageBox.style.backgroundColor = '#dc3545'; // エラー時は赤
+    } else {
+        messageBox.style.backgroundColor = '#28a745'; // 成功時は緑
+    }
+
+    setTimeout(() => {
+        messageBox.classList.remove('show'); // showクラスを削除して非表示
+    }, 2000); // 2秒後に消える
+}
+
+
 function formatPalette() {
-  const inputContent = document.getElementById("input").value;
-  const lines = inputContent.split("\n");
-  
-  const outputLines = []; // 最終的な出力行を格納する配列
-  // presentSkills map: skillNameNormalized -> { value: number, hasBullet: boolean, rawName: string, originalLineIndex: number }
-  const presentSkills = new Map(); // 入力から抽出した技能とその値を格納
+  const lines = document.getElementById("input").value.split("\n");
+  const categories = {
+    dice: [],
+    explore: [],
+    combat: [],
+    action: [],
+    interpersonal: [],
+    knowledge: [],
+    initial: [],
+    status: [],
+    damage: []
+  };
+  const presentSkills = new Map();
 
-  let str = 0, con = 0, pow = 0, dex = 0, app = 0, siz = 0, int = 0, edu = 0;
-  let damageBonus = "0"; 
-  let sanValue = 70; 
+  lines.forEach(line => {
+    const trimmedLine = line.trim();
+    if (!trimmedLine) return;
 
-  // Define skills that always appear in main sections, even if their value matches initial values and they have no bullet.
-  // '母国語' をここに追加
-  const specialSkillsAlwaysInMainCategory = new Set(["こぶし", "回避", "母国語"]); 
-
-  // Define skills that appear at the very top of the output, outside the main categorized sections.
-  // These are handled separately and should not appear in initial section.
-  const topLevelFixedSkills = new Set(["アイデア", "幸運", "知識", "目星", "聞き耳", "図書館"]);
-  // クトゥルフ神話は知識系技能の最後に出力されるため、ここで除外しない
-
-  // This set tracks all skills that have been placed into the final output, regardless of section.
-  const processedSkillsInFinalOutput = new Set(); 
-
-  // --- 最初のパス: 全てのコアデータ（能力値、SAN、ダメージボーナス、全ての技能）を抽出 ---
-  lines.forEach((line, i) => { // Added 'i' for originalLineIndex
-    // 能力値を抽出
-    const statsMatch = line.match(/^=合計=\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
-    if (statsMatch) {
-      str = parseInt(statsMatch[1], 10);
-      con = parseInt(statsMatch[2], 10);
-      pow = parseInt(statsMatch[3], 10);
-      dex = parseInt(statsMatch[4], 10);
-      app = parseInt(statsMatch[5], 10);
-      siz = parseInt(statsMatch[6], 10);
-      int = parseInt(statsMatch[7], 10);
-      edu = parseInt(statsMatch[8], 10);
+    // ダメージ判定を最優先で処理
+    if (trimmedLine.match(/1d\d+\+\d+\s+【ダメージ判定】/i)) {
+      categories.damage.push(trimmedLine);
+      return;
     }
 
-    // ダメージボーナスを抽出
-    const damageBonusMatch = line.match(/ダメージボーナス：(.+)/);
-    if (damageBonusMatch) { damageBonus = damageBonusMatch[1].trim(); }
+    // 能力値を次に処理
+    const statusMatch = trimmedLine.match(/^(STR|CON|POW|DEX|APP|SIZ|INT|EDU|HP|MP)\s*[:：]?\s*(\d+)/i);
+    if (statusMatch && !trimmedLine.includes("× 5")) {
+      categories.status.push(`CC<=${statusMatch[2]} 【${statusMatch[1].toUpperCase()}】`);
+      return;
+    }
     
-    // SAN値を抽出 (例: SAN: 70/99)
-    const sanMatch = line.match(/SAN：(\d+)\/\d+/);
-    if (sanMatch) { sanValue = parseInt(sanMatch[1], 10); }
+    // 技能判定のパターンを検出してスキル名と値を抽出
+    const skillMatch = trimmedLine.match(/(CCB|CC)<=([0-9]+)\s+【(.+?)】/);
+    if (skillMatch) {
+        const [, , value, skillFull] = skillMatch;
+        const skill = skillFull.replace(/（.*?）|\(.*?\)/g, '').trim();
+        presentSkills.set(skill, value);
 
-    // 技能をパース: (●)?《技能名》値%?
-    // グローバル正規語句を使用して、1行内の全ての技能を検索
-    const skillMatches = line.matchAll(/(●)?《([^》]+)》\s*(\d+)%?/g);
-    for (const match of skillMatches) {
-      const hasBullet = !!match[1];
-      const rawSkillName = match[2].trim();
-      let skillNameNormalized = rawSkillName
-        .replace(/[\s\uFEFF\xA0　\u2000-\u200A\u202F\u205F\u3000]+/g, '') // 幅広い空白文字
-        .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // 制御文字
-        .replace(/（[^）]*）/g, '') // 全角括弧内の内容を削除
-        .replace(/\([^)]*\)/g, '') // 半角括弧内の内容を削除
-        .replace(/[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Number}\p{Alphabetic}]/gu, '') // 日本語、数字、英字以外を削除 (uフラグが必要)
-        .trim(); // 念のため前後の空白を削除
-
-      // Store all found skills with their original line index
-      presentSkills.set(skillNameNormalized, { value: parseInt(match[3], 10), hasBullet: hasBullet, rawName: rawSkillName, originalLineIndex: i });
+        if (["幸運", "アイデア", "知識", "正気度ロール"].includes(skill)) {
+            categories.dice.push(trimmedLine);
+        } else if (["回避", "近接戦闘", "砲"].includes(skill)) {
+            categories.combat.push(trimmedLine);
+        } else if (["医学", "オカルト", "芸術", "経理", "考古学", "コンピューター", "科学", "心理学", "人類学", "電子工学", "自然", "法律", "歴史", "サバイバル", "伝承", "言語"].includes(skill) ||
+                   /^芸術/.test(skillFull)) {
+            categories.knowledge.push(trimmedLine);
+        } else if (["言いくるめ", "説得", "威圧", "魅惑", "信用", "言語"].includes(skill) || /^言語/.test(skillFull)) {
+            categories.interpersonal.push(trimmedLine);
+        } else if (["目星", "聞き耳", "図書館", "鍵開け", "手さばき", "隠密", "追跡", "登攀", "ナビゲート", "鑑定", "ダイビング"].includes(skill)) {
+            categories.explore.push(trimmedLine);
+        } else if (["投擲", "射撃：拳銃", "射撃：サブマシンガン", "射撃：重火器", "射撃：マシンガン", "射撃：ライフル", "射撃：ショットガン", "射撃：弓"].includes(skill) ||
+                   /^射撃/.test(skillFull)) {
+            categories.combat.push(trimmedLine);
+        } else if (["応急手当", "運転", "機械修理", "重機械操作", "乗馬", "水泳", "製作", "操縦", "跳躍", "電気修理", "変装", "精神分析"].includes(skill) ||
+                   /^(運転|製作|操縦|工芸)/.test(skillFull)) {
+            categories.action.push(trimmedLine);
+        } else {
+            categories.knowledge.push(trimmedLine);
+        }
+    } else {
+        // SAN、正気度ロールなど、技能判定の形式ではないがダイスとして扱いたい行
+        if (trimmedLine.includes("SAN") || trimmedLine.includes("正気度ロール") || trimmedLine.includes("幸運") || trimmedLine.includes("アイデア") || trimmedLine.includes("知識")) {
+            categories.dice.push(trimmedLine);
+        } else {
+            // どのパターンにも合致しない場合は知識技能へ
+            categories.knowledge.push(trimmedLine);
+        }
     }
   });
 
-  // 技能値を取得するヘルパー関数
-  // 優先順位: 1. presentSkills (入力データ) -> 2. 派生値 (アイデア、幸運、知識、回避、母国語のみ) -> 3. initialValues (その他技能のフォールバック) -> 4. 0
-  const getSkillValue = (skillName) => {
-      if (presentSkills.has(skillName)) {
-          return presentSkills.get(skillName).value;
-      }
-      // アイデア、幸運、知識、回避、母国語 のみここで派生値を計算
-      if (skillName === "アイデア") return int * 5;
-      if (skillName === "幸運") return pow * 5;
-      if (skillName === "知識") return edu * 5;
-      if (skillName === "回避") return dex * 2; // 回避の計算を追加
-      if (skillName === "母国語") return edu * 5; // 母国語の計算を追加
-      
-      // それ以外の技能でpresentSkillsにない場合、initialValuesから取得
-      if (initialValues.hasOwnProperty(skillName)) {
-          return initialValues[skillName];
-      }
-      return 0; // どこにもない場合、0を返す
-  };
+  // ◼️ダイス の順序を調整
+  const sortedDice = [];
+  const sanRollLine = categories.dice.find(line => line.includes("正気度ロール"));
+  const ideaLine = categories.dice.find(line => line.includes("アイデア"));
+  const knowledgeLine = categories.dice.find(line => line.includes("知識"));
+  const luckLine = categories.dice.find(line => line.includes("幸運"));
 
-  // --- 出力構築: ◼️ダイス セクション ---
-  outputLines.push(`◼️ダイス`);
-  outputLines.push(`1d100<={SAN} 【正気度ロール】`); 
-  outputLines.push(`CCB<=${getSkillValue("アイデア")} 【アイデア】`);
-  outputLines.push(`CCB<=${getSkillValue("幸運")} 【幸運】`);
-  outputLines.push(`CCB<=${getSkillValue("知識")} 【知識】`);
-  processedSkillsInFinalOutput.add("アイデア");
-  processedSkillsInFinalOutput.add("幸運");
-  processedSkillsInFinalOutput.add("知識");
-
-  outputLines.push(``); 
-  outputLines.push(`🟦探索技能`);
-  outputLines.push(`CCB<=${getSkillValue("目星")} 【目星】`);
-  outputLines.push(`CCB<=${getSkillValue("聞き耳")} 【聞き耳】`);
-  outputLines.push(`CCB<=${getSkillValue("図書館")} 【図書館】`);
-  processedSkillsInFinalOutput.add("目星");
-  processedSkillsInFinalOutput.add("聞き耳");
-  processedSkillsInFinalOutput.add("図書館");
-
-  // 出力用のヘッダー定義
-  const outputSectionHeadersMap = {
-    "戦闘系技能": "🟥戦闘技能",
-    "行動系技能": "🟧行動技能・他", 
-    "交渉系技能": "🟪交渉技能",
-    "知識系技能": "⬜️知識技能"
-  };
-
-  // 入力ファイルからのセクションヘッダーと、それに対応する内部的なカテゴリキーのマッピング
-  const inputHeaderToCategoryMap = {
-    "------------------------ 戦闘系技能 ------------------------": "戦闘系技能",
-    "------------------------ 探索系技能 ------------------------": "行動系技能", // 探索系技能の出力先を行動系技能にマッピング
-    "------------------------ 行動系技能 ------------------------": "行動系技能",
-    "------------------------ 交渉系技能 ------------------------": "交渉系技能",
-    "------------------------ 知識系技能 ------------------------": "知識系技能"
-  };
-
-  // 各技能カテゴリのリストを一時的に保持するマップ
-  const categorizedMainSkills = {
-      "戦闘系技能": [],
-      "行動系技能": [], 
-      "交渉系技能": [],
-      "知識系技能": []
-  };
-
-  const initialSectionCandidates = []; // For ========初期値======== section, preserving input order
-
-  let currentInputSectionKey = null;
-
-  // Iterate through the original lines to categorize skills based on their section and rules
-  const skillBlockStartIndex = lines.findIndex(line => line.trim() === "■技能■");
-  const combatSectionStartIndex = lines.findIndex(line => line.trim() === "■戦闘■");
-
-  if (skillBlockStartIndex !== -1) {
-      for (let i = skillBlockStartIndex; i < combatSectionStartIndex; i++) { 
-          const line = lines[i];
-          const trimmedLine = line.trim();
-
-          const inputHeader = Object.keys(inputHeaderToCategoryMap).find(header => trimmedLine === header);
-          if (inputHeader) {
-              currentInputSectionKey = inputHeaderToCategoryMap[inputHeader];
-              continue; 
-          }
-
-          if (trimmedLine.startsWith("習得/名前")) {
-              continue;
-          }
-
-          const skillMatches = line.matchAll(/(●)?《([^》]+)》\s*(\d+)%?/g);
-          for (const match of skillMatches) {
-              const hasBullet = !!match[1]; 
-              const rawSkillName = match[2].trim(); 
-              const skillValue = parseInt(match[3], 10);
-              let skillNameNormalized = rawSkillName
-                .replace(/[\s\uFEFF\xA0　\u2000-\u200A\u202F\u205F\u3000]+/g, '') 
-                .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') 
-                .replace(/（[^）]*）/g, '').replace(/\([^)]*\)/g, '') 
-                .replace(/[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Number}\p{Alphabetic}]/gu, '') 
-                .trim();
-              
-              if (processedSkillsInFinalOutput.has(skillNameNormalized)) {
-                  continue; // Already placed in top-level sections
-              }
-
-              const formattedSkillLine = `CCB<=${skillValue} 【${rawSkillName}】`;
-              
-              const isSpecialException = specialSkillsAlwaysInMainCategory.has(skillNameNormalized);
-              const hasInitialValueDefined = initialValues.hasOwnProperty(skillNameNormalized);
-              const isValueMatchingInitial = hasInitialValueDefined && skillValue === initialValues[skillNameNormalized];
-
-              // Rule: Initial value skills go to initial section UNLESS they are special exceptions or have a bullet.
-              if (isSpecialException || hasBullet || (hasInitialValueDefined && !isValueMatchingInitial)) {
-                  let targetCategory = currentInputSectionKey;
-                  // 母国語は交渉技能に強制的に分類
-                  if (skillNameNormalized === "母国語") {
-                      targetCategory = "交渉系技能";
-                  } else if (targetCategory === "探索系技能") { 
-                      targetCategory = "行動系技能";
-                  }
-                  if (categorizedMainSkills[targetCategory]) {
-                      categorizedMainSkills[targetCategory].push({ name: skillNameNormalized, line: formattedSkillLine, originalLineIndex: i });
-                      processedSkillsInFinalOutput.add(skillNameNormalized); // Mark as processed for main section
-                  }
-              } else {
-                  // This skill is an initial value skill (no bullet, value matches initial, not a special exception)
-                  initialSectionCandidates.push({ name: skillNameNormalized, line: formattedSkillLine, originalLineIndex: i });
-                  processedSkillsInFinalOutput.add(skillNameNormalized); // Mark as processed for initial section
-              }
-          }
-      }
+  if (sanRollLine) sortedDice.push(sanRollLine);
+  if (ideaLine) sortedDice.push(ideaLine);
+  if (knowledgeLine) sortedDice.push(knowledgeLine);
+  if (luckLine) {
+    sortedDice.push(luckLine);
+  } else {
+    sortedDice.push(`CC<=${presentSkills.get('幸運') || initialValues7e['幸運'] || 0} 【幸運】`);
   }
 
-  // Add skills from initialValues that were not found in the input at all
-  // These should also appear in the initial section, at the end of the input-found initial skills.
-  Object.entries(initialValues).forEach(([skillName, initialVal]) => {
-      const skillNameNormalized = skillName; // Keys of initialValues are already normalized
-      
-      // Check if this skill has already been processed and placed in any output section
-      if (!processedSkillsInFinalOutput.has(skillNameNormalized)) {
-          // Check if it's a top-level fixed skill (e.g., アイデア, 目星) that are handled separately
-          if (!topLevelFixedSkills.has(skillNameNormalized) && !specialSkillsAlwaysInMainCategory.has(skillNameNormalized)) {
-              initialSectionCandidates.push({ name: skillNameNormalized, line: `CCB<=${initialVal} 【${skillName}】`, originalLineIndex: Infinity }); // Use Infinity to sort them last
-              processedSkillsInFinalOutput.add(skillNameNormalized); // Mark as processed
-          }
-      }
-  });
+  const otherDice = categories.dice.filter(line => !sortedDice.some(sortedLine => sortedLine === line));
+  sortedDice.push(...otherDice);
+  categories.dice = sortedDice;
 
-  // Sort initialSectionCandidates: クトゥルフ神話を最後に、それ以外はoriginalLineIndex順
-  initialSectionCandidates.sort((a, b) => {
-      const nameA = a.name;
-      const nameB = b.name;
-
-      if (nameA === "クトゥルフ神話" && nameB !== "クトゥルフ神話") {
-          return 1; // A (クトゥルフ神話) comes after B
-      }
-      if (nameA !== "クトゥルフ神話" && nameB === "クトゥルフ神話") {
-          return -1; // A comes before B (クトゥルフ神話)
-      }
-      // If both are クトゥルフ神話 or neither are, sort by originalLineIndex
-      return a.originalLineIndex - b.originalLineIndex;
-  });
-
-
-  // --- Add main categorized skills to outputLines ---
-  Object.keys(outputSectionHeadersMap).forEach(internalCategoryName => {
-      const headerText = outputSectionHeadersMap[internalCategoryName];
-      const skillsInThisSection = categorizedMainSkills[internalCategoryName];
-
-      if (skillsInThisSection && skillsInThisSection.length > 0) {
-          outputLines.push(""); // セクション間の空行
-          outputLines.push(headerText); // 新しいヘッダーを追加
-
-          let cthulhuMythosLine = null;
-          let otherSkills = [];
-
-          if (internalCategoryName === "知識系技能") {
-              cthulhuMythosLine = skillsInThisSection.find(s => s.name === "クトゥルフ神話");
-              otherSkills = skillsInThisSection.filter(s => s.name !== "クトゥルフ神話");
-          } else {
-              otherSkills = skillsInThisSection;
-          }
-          
-          otherSkills.sort((a, b) => a.name.localeCompare(b.name, 'ja', { sensitivity: 'base' }));
-          otherSkills.forEach(skill => outputLines.push(skill.line));
-          if (cthulhuMythosLine) {
-              outputLines.push(cthulhuMythosLine.line); // クトゥルフ神話を最後に追加 (メインセクション内)
-          }
-      }
-  });
-
-  // --- ========初期値======== セクションの生成 ---
-  if (initialSectionCandidates.length > 0) {
-      outputLines.push("\n========初期値========");
-      initialSectionCandidates.forEach(skill => outputLines.push(skill.line));
+  // 🟥戦闘技能 の順序を調整
+  const sortedCombat = [];
+  const evadeLine = categories.combat.find(line => line.includes("回避"));
+  let meleeLine = categories.combat.find(line => line.includes("近接戦闘"));
+  const cannonLine = categories.combat.find(line => line.includes("砲"));
+  
+  if (!meleeLine) {
+    const meleeValue = presentSkills.get('近接戦闘') || initialValues7e['近接戦闘'] || 25;
+    meleeLine = `CC<=${meleeValue} 【近接戦闘】`;
+    presentSkills.set('近接戦闘', meleeValue);
   }
 
+  if (evadeLine) sortedCombat.push(evadeLine);
+  if (meleeLine) sortedCombat.push(meleeLine);
+  if (cannonLine) sortedCombat.push(cannonLine);
 
-  // --- 出力構築: ========能力値======== セクション ---
-  outputLines.push("\n========能力値========"); 
-  outputLines.push(`1d3+${damageBonus} 【ダメージ判定】`); 
-  outputLines.push(`1d4+${damageBonus} 【ダメージ判定】`); 
-  outputLines.push(`1d6+${damageBonus} 【ダメージ判定】`); 
-  outputLines.push(`CCB<=${str * 5} 【STR × 5】`);
-  outputLines.push(`CCB<=${con * 5} 【CON × 5】`);
-  outputLines.push(`CCB<=${pow * 5} 【POW × 5】`);
-  outputLines.push(`CCB<=${dex * 5} 【DEX × 5】`);
-  outputLines.push(`CCB<=${app * 5} 【APP × 5】`);
-  outputLines.push(`CCB<=${siz * 5} 【SIZ × 5】`);
-  outputLines.push(`CCB<=${int * 5} 【INT × 5】`);
-  outputLines.push(`CCB<=${edu * 5} 【EDU × 5}`);
+  const otherCombat = categories.combat.filter(line => !sortedCombat.includes(line));
+  sortedCombat.push(...otherCombat);
+  categories.combat = sortedCombat;
 
-  document.getElementById("output").value = outputLines.join("\n");
+  // 初期値技能の追加
+  const missingInitials = Object.entries(initialValues7e)
+    .filter(([skill, _]) => !presentSkills.has(skill) && skill !== '幸運' && skill !== '近接戦闘')
+    .map(([skill, value]) => `CC<=${value} 【${skill}】`);
+
+  // 出力順序と見出しをCoC7版に合わせて調整
+  const output = [
+    "◼️ダイス", ...categories.dice,
+    "\n🟦探索技能", ...categories.explore,
+    "\n🟥戦闘技能", ...categories.combat,
+    "\n🟧行動技能", ...categories.action,
+    "\n🟪対人技能", ...categories.interpersonal,
+    "\n⬜️知識技能", ...categories.knowledge,
+    "\n========初期値========", ...missingInitials,
+    "\n========能力値========", ...categories.damage,
+    ...categories.status,
+    "\n=====パラメータ化=====",
+    ...["アイデア", "知識", "目星", "聞き耳", "図書館"].map(skill => {
+        const value = presentSkills.get(skill) || initialValues7e[skill] || 0;
+        return `//${skill} = ${value}`;
+    })
+  ].join("\n");
+
+  document.getElementById("output").value = output;
 }
 
 function copyOutput() {
   const output = document.getElementById("output");
-  navigator.clipboard.writeText(output.value).then(() => {
-    alert("コピーしました");
-    gtag('event', 'copy_output', {
-      'event_category': 'button',
-      'event_label': 'コピー',
-      'value': 1
+  if (!output.value) {
+    showMessageBox("コピーする内容がありません。", true);
+    return;
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(output.value).then(() => {
+      showMessageBox("コピーしました！");
+    }).catch(err => {
+      console.error('コピーに失敗しました (navigator.clipboard): ', err);
+      tryCopyToClipboardFallback(output.value);
     });
-  }).catch(err => {
-    alert("コピーに失敗しました: " + err);
-  });
+  } else {
+    tryCopyToClipboardFallback(output.value);
+  }
+}
+
+function tryCopyToClipboardFallback(text) {
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = text;
+    tempTextArea.style.position = 'fixed';
+    tempTextArea.style.left = '-9999px';
+    tempTextArea.style.top = '-9999px';
+    document.body.appendChild(tempTextArea);
+    tempTextArea.focus();
+    tempTextArea.select();
+    try {
+        document.execCommand('copy');
+        showMessageBox("コピーしました！");
+    } catch (err) {
+        console.error('コピーに失敗しました (document.execCommand): ', err);
+        showMessageBox("コピーに失敗しました。", true);
+    } finally {
+        document.body.removeChild(tempTextArea);
+    }
 }
 </script>
 
