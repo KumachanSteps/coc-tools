@@ -166,7 +166,7 @@ const initialValues7e = {
   '魅惑': 15, '言語': 1, '医学': 1, 'オカルト': 5, '芸術': 5,
   '経理': 5, '考古学': 1, 'コンピューター': 5, '科学': 1, '心理学': 10,
   '人類学': 1, '電子工学': 1, '自然': 10, '法律': 5, '歴史': 5,
-  'サバイバル': 10, '伝承': 1,
+  'サバイバル': 10, '伝承': 1, '回避': 42,
   '幸運': 0
 };
 
@@ -224,7 +224,8 @@ function formatPalette() {
     if (shouldIgnore) return;
 
     // ダメージ判定を最優先で処理
-    if (trimmedLine.match(/1d\d+\+\d+\s+【ダメージ判定】/i)) {
+    // 1d6+1D4のような形式も認識できるように正規表現を修正
+    if (trimmedLine.match(/1d\d+\+\S+\s+【ダメージ判定】/i)) {
       categories.damage.push(trimmedLine);
       return;
     }
@@ -292,7 +293,8 @@ function formatPalette() {
 
   // 🟥戦闘技能 の順序を調整
   const sortedCombat = [];
-  const evadeLine = `CC<=42 【回避】`;
+  const evadeValue = presentSkills.get('回避') || initialValues7e['回避'];
+  const evadeLine = `CC<=${evadeValue} 【回避】`;
   let meleeLine = categories.combat.find(line => line.includes("近接戦闘"));
   const cannonLine = categories.combat.find(line => line.includes("砲"));
   
@@ -326,7 +328,7 @@ function formatPalette() {
 
   // 初期値技能の追加
   const missingInitials = Object.entries(initialValues7e)
-    .filter(([skill, _]) => !presentSkills.has(skill) && skill !== '幸運' && skill !== '近接戦闘' && skill !== '目星' && skill !== '聞き耳' && skill !== '図書館')
+    .filter(([skill, _]) => !presentSkills.has(skill) && skill !== '幸運' && skill !== '近接戦闘' && skill !== '目星' && skill !== '聞き耳' && skill !== '図書館' && skill !== '回避')
     .map(([skill, value]) => `CC<=${value} 【${skill}】`);
 
   // 固定の能力値リスト
@@ -341,21 +343,6 @@ function formatPalette() {
     `CC<={EDU} 【EDU}`
   ];
 
-  // ダメージ判定リストを動的に生成
-  const formattedDamage = categories.damage.map(line => {
-      const match = line.match(/1d(\d+)\+(\d+)/);
-      if (match) {
-          const die = match[1];
-          const modifier = parseInt(match[2], 10);
-          if (modifier === 0) {
-              return `1d${die}+0 【ダメージ判定】`;
-          } else {
-              return `1d${die}+${modifier} 【ダメージ判定】`;
-          }
-      }
-      return line;
-  });
-
   // 出力順序と見出しをCoC7版に合わせて調整
   const output = [
     "◼️ダイス", ...categories.dice,
@@ -365,7 +352,7 @@ function formatPalette() {
     "\n🟪対人技能", ...categories.interpersonal,
     "\n⬜️知識技能", ...categories.knowledge,
     "\n========初期値========", ...missingInitials,
-    "\n========能力値========", ...fixedStatus, ...formattedDamage,
+    "\n========能力値========", ...fixedStatus, ...categories.damage,
     "\n=====パラメータ化=====",
     ...["アイデア", "知識", "目星", "聞き耳", "図書館"].map(skill => {
         const value = presentSkills.get(skill) || initialValues7e[skill] || 0;
