@@ -159,8 +159,8 @@
 
 <div class="container">
     <h2>解析結果 (成功判定リスト)</h2>
-    <!-- IDをoutputに変更し、readonlyなtextareaにする -->
-    <textarea id="output" readonly placeholder="ログを解析すると、ここに結果が表示されます。"></textarea>
+    <!-- readonly属性を削除し、編集可能にしました -->
+    <textarea id="output" placeholder="ログを解析すると、ここに結果が表示されます。"></textarea>
     <!-- 結果コピーボタン (緑/白のカスタムスタイルを維持) -->
     <button onclick="copyOutput()" 
             class="px-4 py-3 text-lg font-bold 
