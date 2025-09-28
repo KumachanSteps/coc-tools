@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NJD5JZML31"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NJD5JZML31');
+</script>
+<meta charset="UTF-8">
+<title>CoC（6版）成長技能出力ツール</title>
+<style>
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 20px; display: flex; flex-direction: column; background-color: #f9f9f9; color: #333;  max-width: 1200px; margin: 20px auto; 
+.header { margin-bottom: 20px; text-align: center; }
+.header h1 { font-size: 28px; margin-bottom: 10px; }
+.header ul { list-style: disc; margin: 0 auto; padding-left: 20px; text-align: left; display: inline-block; }
+.main-content { display: flex; justify-content: center; gap: 4%;  padding: 0 20px; 
+.container { width: 48%; display: flex; flex-direction: column; }
+textarea {
+  width: 100%;
+  height: 600px;
+  resize: none;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+button, select {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  width: 100%;
+}
+button {
+  background-color: #007acc;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #0056b3;
+}
+select { background-color: #f0f0f0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>CoC（6版）成長技能出力ツール</h1>
+  <p>このツールは、ココフォリアから出力したセッションログをコピー＆ペーストすることで、お好みの形で成長判定に該当する技能を表示します。</p>
+  <ul>
+    <li><strong>ルルブ準拠：</strong> 基本ルールブック（p.59）を参考に、成功した技能を一度づつ出力しています。</li>
+    <li><strong>クリティカル/ファンブル/初期値：</strong> 決定的成功、致命的失敗、初期値成功した技能を制限なく出力しています。</li>
+    <li><strong>合算：</strong> 成功、または決定的成功した判定は技能に限らず重複して出力しています。</li>
+  </ul>
+</div>
+
+<div class="main-content">
+<div class="container">
+  <textarea id="input" placeholder="ここにセッションログを貼り付けてください"></textarea>
+  <select id="mode">
+    <option value="basic">基本ルルブ準拠</option>
+    <option value="crit">クリティカル/ファンブル/初期値</option>
+    <option value="all">合算</option>
+  </select>
+  <button onclick="extractGrowthCheck()">分類して出力</button>
+</div>
+
+<div class="container">
+  <textarea id="output" readonly></textarea>
+  <button onclick="copyOutput()">コピー</button>
+</div>
+</div>
+
+<script>
+const initialSkillValues = {
+  '目星': 25,'聞き耳': 25,'図書館': 25,'キック': 25, '組み付き': 25, '頭突き': 10, '投擲': 25, 'マーシャルアーツ': 1,
+  '拳銃': 20, 'サブマシンガン': 15, 'ショットガン': 30, 'マシンガン': 15, 'ライフル': 25,
+  '応急手当': 30, '鍵開け': 1, '隠す': 15, '隠れる': 10, '忍び歩き': 10, '写真術': 10, '精神分析': 1,
+  '追跡': 10, '登攀': 40, '運転': 20, '機械修理': 20, '重機械操作': 1, '乗馬': 5, '水泳': 25,
+  '製作': 5, '操縦': 1, '跳躍': 25, '電気修理': 10, 'ナビゲート': 10, '変装': 1,
+  '言いくるめ': 5, '信用': 15, '説得': 15, '値切り': 5,
+  '医学': 5, 'オカルト': 5, '化学': 1, '芸術': 5, '経理': 10, '考古学': 1, 'コンピューター': 1,
+  '心理学': 5, '人類学': 1, '生物学': 1, '地質学': 1, '電子工学': 1, '天文学': 1, '博物学': 10, '物理学': 1, '法律': 5, '薬学': 1, '歴史': 20
+};
+
+function extractGrowthCheck() {
+  const lines = document.getElementById("input").value.split("\n");
+  const mode = document.getElementById("mode").value;
+  const skillsPerCharacter = {};
+
+  lines.forEach(line => {
+    const multiShotParts = line.split(/(#\d+\s+\(1D100<=\d+\)\s+故障ナンバー\[\d+\]\s+＞\s+\d+\s+＞\s+.+)/g).filter(Boolean);
+
+    if (multiShotParts.length > 1) {
+      let commonPart = multiShotParts.shift();
+      multiShotParts.forEach(subPart => {
+        const reconstructedLine = commonPart.replace(/X\d+\s+/, "") + " " + subPart.trim();
+        processLine(reconstructedLine, mode, skillsPerCharacter);
+      });
+    } else {
+      processLine(line, mode, skillsPerCharacter);
+    }
+  });
+
+  const outputLines = [];
+  for (const character in skillsPerCharacter) {
+    outputLines.push(`[${character} が成長する技能]`);
+    for (const entry of skillsPerCharacter[character].values()) outputLines.push(entry);
+    outputLines.push("");
+  }
+
+  document.getElementById("output").value = outputLines.join("\n");
+}
+
+function processLine(line, mode, skillsPerCharacter) {
+  const characterMatch = line.match(/^\[.*?\]\s*(.+?)\s*:/);
+  const skillMatch = line.match(/【(.+?)】/);
+  const valueMatch = line.match(/CCB\d*<=([0-9]+)/);
+  const resultMatch = line.match(/＞\s*(.+)$/);
+  if (!characterMatch || !skillMatch || !valueMatch || !resultMatch) return;
+
+  const character = characterMatch[1].trim();
+  const skill = skillMatch[1];
+  const value = parseInt(valueMatch[1], 10);
+  const result = resultMatch[1];
+
+  const normalizedResult =
+    result.includes("決定的成功/スペシャル") ? "決定的成功/スペシャル" :
+    result.includes("決定的成功") ? "決定的成功" :
+    result.includes("スペシャル") ? "スペシャル" :
+    result.includes("成功") ? "成功" :
+    result.includes("致命的失敗") ? "致命的失敗" : null;
+  if (!normalizedResult) return;
+
+  if (!skillsPerCharacter[character]) skillsPerCharacter[character] = new Map();
+
+  const isCriticalOnlySkill = ["幸運", "アイデア", "知識"].includes(skill) || /^(STR|CON|POW|DEX|APP|SIZ|INT|EDU)\s*[×x]\s*\d+/.test(skill);
+　
+  if (mode === "all") {
+  const isStatSkill = ["幸運", "アイデア", "知識"].includes(skill) || /^(STR|CON|POW|DEX|APP|SIZ|INT|EDU)\s*[×x]\s*\d+/.test(skill);
+
+  // 致命的失敗は除外
+  if (normalizedResult === "致命的失敗") return;
+
+  // 能力値・幸運・アイデア・知識 は決定的成功のみ
+  if (isStatSkill && !["決定的成功/スペシャル", "決定的成功"].includes(normalizedResult)) return;
+
+  let resultLabel = normalizedResult;
+  if (skill === "幸運" && result.includes("1") && ["決定的成功/スペシャル", "決定的成功"].includes(normalizedResult)) {
+    resultLabel = "決定的成功 ※1";
+  }
+
+  const successKey = skill + "_success";
+  const criticalKey = skill + "_" + normalizedResult + "_" + Math.random();
+
+  if (["成功", "スペシャル"].includes(normalizedResult)) {
+    // 成功・スペシャルは1回だけ
+    if (!skillsPerCharacter[character].has(successKey)) {
+      const entry = `CCB<=${value} 【${skill}】 ：${resultLabel}`;
+      skillsPerCharacter[character].set(successKey, entry);
+    }
+  } else {
+    // 決定的成功などは何回でも
+    const entry = `CCB<=${value} 【${skill}】 ：${resultLabel}`;
+    skillsPerCharacter[character].set(criticalKey, entry);
+  }
+}
+  
+  if (mode === "crit") {
+    const isCritical = ["決定的成功/スペシャル", "決定的成功"].includes(normalizedResult);
+    const isFumble = normalizedResult === "致命的失敗";
+
+    const initialValue = initialSkillValues[skill] || 0;
+    const isInitialSuccess = normalizedResult === "成功" && value <= initialValue;
+
+    if (!(isCritical || isFumble || isInitialSuccess)) return;
+
+    let resultLabel = normalizedResult;
+    if (isInitialSuccess) {
+      resultLabel = "初期値成功";
+    }
+    if (skill === "幸運" && result.includes("1") && isCritical) {
+      resultLabel = "決定的成功 ※1";
+    }
+
+    const entry = `CCB<=${value} 【${skill}】 ：${resultLabel}`;
+    const key = skill + "_" + normalizedResult + "_" + Math.random();
+    skillsPerCharacter[character].set(key, entry);
+  }
+  if (mode === "basic") {
+  if (["成功", "スペシャル", "決定的成功/スペシャル", "決定的成功"].includes(normalizedResult)) {
+    const isLimitedSkill = ["幸運", "アイデア", "知識"].includes(skill) || /^(STR|CON|POW|DEX|APP|SIZ|INT|EDU)\s*[×x]\s*\d+/.test(skill);
+    if (isLimitedSkill) return;
+
+    let resultLabel = "";
+    if (skill === "幸運" && result.includes("1") && ["決定的成功/スペシャル", "決定的成功"].includes(normalizedResult)) {
+      resultLabel = " ：決定的成功 ※1";
+    }
+
+    const key = skill + "_basic";
+    if (!skillsPerCharacter[character].has(key)) {
+      const entry = `CCB<=${value} 【${skill}】${resultLabel}`;
+      skillsPerCharacter[character].set(key, entry);
+    }
+  }
+  return;
+}
+
+}
+
+function copyOutput() {
+  const output = document.getElementById("output");
+  output.select();
+  document.execCommand("copy");
+  alert("コピーしました");
+}
+</script>
+
+</body>
+</html>
