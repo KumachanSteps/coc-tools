@@ -137,8 +137,8 @@ button:active {
 <body>
 
 <header>
-  <h1>CoCキャラシート整形ツール V2</h1>
-  <p>『キャラクター保管所』の「データ出力▶︎テキスト」をチャットパレットに整形します。</p>
+  <h1>CoCチャットパレット整形ツール v2</h1>
+  <p>このツールは、CoC6版探索者のチャットパレットを自動分類し、初期値技能も加えた形でスッキリと整理します。<br>入力欄にチャットパレットを貼り付け、「分類して出力」ボタンで整形結果を表示します。</p>
 </header>
 
 <div class="main">
@@ -152,6 +152,8 @@ button:active {
     <button onclick="copyOutput()">コピー</button>
   </div>
 </div>
+
+<div id="messageBox" class="message-box"></div>
 
 <script>
 const initialValues = {
