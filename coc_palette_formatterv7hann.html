@@ -387,7 +387,7 @@ function formatPalette() {
     "\n========初期値========", ...missingInitials,
     "\n========能力値========", ...fixedStatus, ...categories.damage,
     "\n=====パラメータ化=====",
-    ...["アイデア", "知識", "目星", "聞き耳", "図書館"].map(skill => {
+    ...["アイデア", "知識", "目星", "聞き耳", "図書館","回避"].map(skill => {
         const value = presentSkills.get(skill) || initialValues7e[skill] || 0;
         return `//${skill} = ${value}`;
     })
