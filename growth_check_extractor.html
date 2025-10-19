@@ -126,7 +126,9 @@ select {
 
 /* フッターのスタイル */
 footer {
-  margin-top: 40px;
+  /* ここを調整しました: margin-top: 40px; width: 100%; max-width: 1000px; */
+  /* margin: auto を使うことで、max-widthで制限されたコンテナが中央に配置されます。 */
+  margin: 40px auto 0;
   width: 100%;
   max-width: 1000px;
   text-align: center;
