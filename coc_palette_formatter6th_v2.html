@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NJD5JZML31"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NJD5JZML31');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoC6版チャットパレット整形ツール v2.1 (Modern UI)</title>
+  <!-- アイコンファイル（このファイルと同じディレクトリに配置してください） -->
+<link rel="icon" href="kuma_icon.ico" type="image/x-icon">
+  <!-- Tailwind CSS CDNを追加 -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body {
+  font-family: 'Inter', sans-serif; /* Interフォントを使用 */
+  margin: 0;
+  background-color: #f0f4f8; /* ライトブルー系の背景色 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh; /* 画面いっぱいに広がるように */
+  padding: 20px;
+}
+header {
+  margin-bottom: 30px;
+  text-align: center;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1000px;
+}
+header h1 {
+  font-size: 2.5rem; /* 大きめのフォントサイズ */
+  color: #2c3e50; /* ダークブルー */
+  margin-bottom: 10px;
+}
+header p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+.main {
+  display: flex;
+  flex-direction: column; /* スマートフォンでは縦並び */
+  gap: 30px;
+  max-width: 1000px;
+  width: 100%;
+}
+@media (min-width: 768px) { /* デスクトップでは横並び */
+  .main {
+    flex-direction: row;
+  }
+}
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+textarea {
+  width: 100%;
+  height: 450px; /* 高さを調整 */
+  resize: vertical; /* 縦方向のみリサイズ可能 */
+  padding: 15px;
+  font-family: 'Inter', monospace;
+  font-size: 0.95rem;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #333;
+  line-height: 1.5;
+  transition: border-color 0.3s ease-in-out;
+}
+textarea:focus {
+  outline: none;
+  border-color: #4a90e2; /* フォーカス時のボーダー色 */
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background-color: #4a90e2; /* ブルー系のボタン色 */
+  color: #fff;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+}
+button:hover {
+  background-color: #357ABD;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+}
+button:active {
+  transform: translateY(0);
+  box-shadow: 2px 5px rgba(74, 144, 226, 0.3);
+}
+
+/* メッセージボックスのスタイル */
+.message-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+.message-box.show {
+    opacity: 1;
+    visibility: visible;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CoC6版チャットパレット整形ツール 🛠️</h1>
+  <p>このツールは、CoC6版探索者のチャットパレットを自動分類し、初期値技能も加えた形でスッキリと整理します。<br>入力欄にチャットパレットを貼り付け、「分類して出力」ボタンで整形結果を表示します。能力値やダメージ判定も自動で分離・表示されます。</p>
+</header>
+
+<div class="main">
+  <div class="container">
+    <textarea id="input" placeholder="ここにチャットパレットを貼り付けてください（例: CCB<=70 【目星】）"></textarea>
+    <button onclick="formatPalette()">分類して出力 ▶️</button>
+  </div>
+
+  <div class="container">
+    <textarea id="output" readonly placeholder="整形されたチャットパレットがここに出力されます"></textarea>
+    <button onclick="copyOutput()">コピー 📋</button>
+  </div>
+</div>
+
+<script>
+// CoC6版の初期値技能リスト
+const initialValues = {
+  '回避': 'EDU * 2', 
+  '応急手当': 30, '鍵開け': 1, '隠す': 15, '隠れる': 10, '忍び歩き': 10, '写真術': 10, '精神分析': 1,
+  '追跡': 10, '登攀': 40, '運転': 20, '機械修理': 20, '重機械操作': 1, '乗馬': 5, '水泳': 25,
+  '製作': 5, '操縦': 1, '跳躍': 25, '電気修理': 10, 'ナビゲート': 10, '変装': 1,
+  'キック': 25, '組み付き': 25, '頭突き': 10, '投擲': 25, 'マーシャルアーツ': 1, 'こぶし': 50, 
+  '拳銃': 20, 'サブマシンガン': 15, 'ショットガン': 30, 'マシンガン': 15, 'ライフル': 25,
+  '言いくるめ': 5, '信用': 15, '説得': 15, '値切り': 5,
+  '医学': 5, 'オカルト': 5, '化学': 1, '芸術': 5, '経理': 10, '考古学': 1, 'コンピューター': 1,
+  '心理学': 5, '人類学': 1, '生物学': 1, '地質学': 1, '電子工学': 1, '天文学': 1, '博物学': 10, '物理学': 1, '法律': 5, '薬学': 1, '歴史': 20,
+  '母国語': 'EDU * 5', 
+  '聞き耳': 25, '目星': 25, '図書館': 25,
+  'クトゥルフ神話': 0
+};
+
+// 技能カテゴリの定義
+const skillCategories = {
+  dice: ["アイデア", "幸運", "知識", "SAN"],
+  explore: ["目星", "聞き耳", "図書館", "追跡"],
+  battle: ["回避", "こぶし", "キック", "組み付き", "頭突き", "投擲", "マーシャルアーツ", "拳銃", "サブマシンガン", "ショットガン", "マシンガン", "ライフル", "ソード", "日本刀", "ナイフ", "フレイル", "ムチ", "斧", "槍", "弓", "火炎放射器", "大砲", "ミサイル"],
+  action: ["応急手当", "鍵開け", "隠す", "隠れる", "忍び歩き", "写真術", "精神分析", "登攀", "運転", "機械修理", "重機械操作", "乗馬", "水泳", "製作", "操縦", "跳躍", "電気修理", "ナビゲート", "変装", "クトゥルフ神話"],
+  talk: ["言いくるめ", "信用", "説得", "値切り", "母国語", "他の言語"],
+  knowledge: ["医学", "オカルト", "化学", "芸術", "経理", "考古学", "コンピューター", "心理学", "人類学", "生物学", "地質学", "電子工学", "天文学", "博物学", "物理学", "法律", "薬学", "歴史"]
+};
+
+/**
+ * 技能名を基にカテゴリを判別する
+ * @param {string} skillFull - 括弧などを含む完全な技能名（例: 製作（料理））
+ * @param {string} skillName - 基本技能名（例: 製作）
+ * @returns {string} カテゴリキー
+ */
+function getCategory(skillFull, skillName) {
+  if (skillName === "クトゥルフ神話") return "action";
+  if (skillCategories.dice.includes(skillName) || skillFull.includes("SAN")) return "dice";
+ 
+  // 探索
+  if (skillCategories.explore.includes(skillName)) return "explore";
+
+  // 戦闘 (武器名や戦闘系技能が含まれるか)
+  if (skillCategories.battle.some(s => skillName.includes(s)) || /(こぶし|キック|組み付き|頭突き|投擲|マーシャルアーツ|ソード|日本刀|ナイフ|フレイル|ムチ|斧|槍|弓|火炎放射器|大砲|ミサイル)/.test(skillName) || /^(小さな棍棒|大きな棍棒|小さい棍棒|大きい棍棒)/.test(skillFull)) return "battle";
+
+  // 行動 (括弧付きの技能：運転（バイク）、製作（料理）、操縦（船）に対応)
+  if (skillCategories.action.some(s => skillName.includes(s)) || /^(運転|製作|操縦)\s*\(/.test(skillFull)) return "action";
+ 
+  // 交渉 (括弧付きの言語：母国語（日本語）、他の言語（英語）に対応)
+  if (skillCategories.talk.includes(skillName) || /^(母国語|他の言語)\s*(（.*?）|\(.*?\))?/.test(skillFull)) return "talk";
+ 
+  // 知識 (括弧付きの芸術：芸術（絵画）に対応)
+  if (skillCategories.knowledge.includes(skillName) || /^芸術\s*\(/.test(skillFull)) return "knowledge";
+ 
+  // デフォルトは知識技能（自作技能など）
+  return "knowledge";
+}
+
+
+function formatPalette() {
+  const input = document.getElementById("input").value;
+  // 行を整形し、空行を削除
+  const lines = input.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+  const categories = { dice: [], explore: [], battle: [], action: [], talk: [], knowledge: [], initial: [], status: [], damage: [] };
+  const presentSkills = new Map();
+
+  lines.forEach(line => {
+    // SANは特殊な判定としてダイスに分類
+    if (line.toUpperCase().includes("SAN") || line.toUpperCase().includes("Cthulhu!")) {
+      categories.dice.push(line);
+      return;
+    }
+  
+    // ダメージ判定
+    if (line.match(/ダメージ判定/)) {
+      categories.damage.push(line);
+      return;
+    }
+    // ステータス( x 5 や x 4 など)
+    if (line.includes("× 5") || line.includes("× 4") || line.includes("× 3")) {
+      categories.status.push(line);
+      return;
+    }
+  
+    // 技能判定 (CCB<=XX 【スキル名】 または CCB<=XX スキル名 の形式に対応)
+    const match = line.match(/CCB<=([0-9]+)\s+(?:【(.+?)】|(.+?))(?:\s|$)/);
+    if (!match) return;
+  
+    const [, value, skillFullBrace, skillFullNoBrace] = match;
+    const skillFull = (skillFullBrace || skillFullNoBrace || '').trim();
+    if (!skillFull) return;
+
+    // 括弧（全角・半角）を削除した技能名
+    const skill = skillFull.replace(/\s*（.*?）\s*|\s*\(.*?\)s*/g, '');
+  
+    // presentSkills に登録
+    presentSkills.set(skill, value);
+
+    // カテゴリ分類
+    const category = getCategory(skillFull, skill);
+    if (categories[category]) {
+      categories[category].push(line);
+    }
+  });
+
+
+  // 未記載の初期値技能を生成
+  const missingInitials = Object.entries(initialValues)
+    .filter(([skill, value]) => {
+      // 回避、母国語、クトゥルフ神話は手動で設定 or 計算式なので除外
+      if (['回避', '母国語', 'クトゥルフ神話'].includes(skill)) return false;
+      // 初期値1の技能で、presentSkillsに値があり、かつ値が1の場合は、未記載とは見なさない
+      if (value === 1 && presentSkills.get(skill) === '1') return false; 
+      
+      // 既にパレットにある技能は除外
+      return !presentSkills.has(skill);
+    })
+    .map(([skill, value]) => `CCB<=${value} 【${skill}】`);
+
+
+  // 出力パレットの組み立て
+  const output = [
+    "🎲ダイス", ...categories.dice,
+    "\n🔎探索技能", ...categories.explore,
+    "\n⚔️戦闘技能", ...categories.battle,
+    "\n🤸行動技能・他", ...categories.action,
+    "\n🤝交渉技能", ...categories.talk,
+    "\n🧠知識技能", ...categories.knowledge,
+    "\n==================================",
+    "📜初期値技能（パレットにないもの）", ...missingInitials,
+    "\n==================================",
+    "📊能力値・ダメージ", ...categories.status, ...categories.damage,
+    "\n==================================",
+    "🔧技能値パラメータ化（ココフォリア等での設定用）",
+    // 主要な技能値をパラメータとして抽出
+    ...["アイデア", "幸運", "知識", "目星", "聞き耳", "図書館", "回避", "クトゥルフ神話"].map(skill => {
+      const val = presentSkills.get(skill) || initialValues[skill] || 0;
+      return `//${skill} = ${val}`;
+    }),
+    "\n// 任意の技能を追加して使用してください：//戦闘技能 = 70"
+  ].join("\n");
+
+  document.getElementById("output").value = output;
+}
+
+/**
+ * カスタムメッセージボックスを表示する
+ * @param {string} text - 表示するテキスト
+ * @param {boolean} isError - エラーメッセージかどうか
+ * @param {number} duration - 表示時間 (ms)
+ */
+function showMessage(text, isError, duration) {
+    let messageBox = document.querySelector('.message-box');
+    if (!messageBox) {
+        messageBox = document.createElement('div');
+        messageBox.className = 'message-box';
+        document.body.appendChild(messageBox);
+    }
+
+    messageBox.textContent = text;
+    
+    // エラー時のスタイルを適用
+    if (isError) {
+        messageBox.style.backgroundColor = '#d9534f'; 
+        messageBox.style.boxShadow = '0 5px 15px rgba(217, 83, 79, 0.4)';
+    } else {
+        messageBox.style.backgroundColor = '#2c3e50'; 
+        messageBox.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+    }
+
+    // 表示
+    messageBox.classList.add('show');
+    
+    // 非表示
+    setTimeout(() => {
+        messageBox.classList.remove('show');
+    }, duration);
+}
+
+
+function copyOutput() {
+  const output = document.getElementById("output");
+  
+  // Clipboard APIを使用してコピー
+  navigator.clipboard.writeText(output.value).then(() => {
+    // カスタムメッセージボックスを表示
+    showMessage("コピーしました！", false, 1500);
+
+    // Google Analyticsイベントはそのまま残します
+    gtag('event', 'copy_output', {
+      'event_category': 'button',
+      'event_label': 'コピー',
+      'value': 1
+    });
+  }).catch(err => {
+    // コピー失敗時もカスタムメッセージボックスで通知
+    showMessage("コピーに失敗しました: " + err.message, true, 3000);
+  });
+}
+</script>
+
+</body>
+</html>
