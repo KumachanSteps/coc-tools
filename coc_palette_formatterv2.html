@@ -282,7 +282,7 @@ function formatPalette() {
     ...categories.damage, // 入力からのダメージ計算式
     ...coreAbilityChecks, // 固定の8コア能力値
     "\n=====パラメータ化=====",
-    ...["アイデア", "幸運", "知識", "目星", "聞き耳", "図書館"].map(skill => `//${skill} = ${presentSkills.get(skill) || initialValues[skill] || 0}`)
+    ...["アイデア", "幸運", "知識", "目星", "聞き耳", "図書館","回避"].map(skill => `//${skill} = ${presentSkills.get(skill) || initialValues[skill] || 0}`)
   ].join("\n");
 
   document.getElementById("output").value = output;
