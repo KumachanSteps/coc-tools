@@ -54,9 +54,29 @@ button:hover {
   background-color: #0056b3;
 }
 select { background-color: #f0f0f0; }
+
+/* フッターのスタイル */
+footer {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1000px;
+    text-align: center;
+    font-size: 0.75rem; /* 小さなフォントサイズ */
+    color: #777;
+    line-height: 1.4;
+    padding: 10px 0;
+}
+
+/* モバイル向けにボタンの幅を調整 */
+@media (max-width: 767px) {
+  button {
+    width: 100%;
+  }
+}
 </style>
 </head>
 <body>
+
 
 <div class="header">
   <h1>CoC6版：成長チェックツール</h1>
@@ -84,6 +104,14 @@ select { background-color: #f0f0f0; }
   <button onclick="copyOutput()">コピー</button>
 </div>
 </div>
+
+<footer>
+  Last Update: 19Oct2025<br>
+  当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
+  権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
+  ©Chaosium Inc.／アークライト／KADOKAWA
+</footer>
+
 
 <script>
 const initialSkillValues = {
