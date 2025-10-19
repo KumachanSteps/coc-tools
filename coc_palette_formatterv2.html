@@ -11,7 +11,12 @@
   gtag('config', 'G-NJD5JZML31');
 </script>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- レスポンシブ対応を追加 -->
 <title>CoCキャラシート整形ツール V2</title>
+<!-- Interフォントの読み込み -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 <!-- アップロードされたアイコンファイルを指定しました。 -->
 <!-- このHTMLファイルと同じディレクトリに「kuma_icon.ico」を配置してください -->
 <link rel="icon" href="kuma_icon.ico" type="image/x-icon">
@@ -127,28 +132,37 @@ button:active {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    font-weight: bold;
 }
 .message-box.show {
     opacity: 1;
     visibility: visible;
+}
+
+/* モバイル向けにボタンの幅を調整 */
+@media (max-width: 767px) {
+  button {
+    width: 100%;
+  }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>CoCチャットパレット整形ツール v2</h1>
+  <h1>CoC6版 チャットパレット整形ツール</h1>
   <p>このツールは、CoC6版探索者のチャットパレットを自動分類し、初期値技能も加えた形でスッキリと整理します。<br>入力欄にチャットパレットを貼り付け、「分類して出力」ボタンで整形結果を表示します。</p>
 </header>
 
 <div class="main">
   <div class="container">
-    <textarea id="input" placeholder="ここにチャットパレットを貼り付けてください"></textarea>
+    <textarea id="input" placeholder="ここにチャットパレットを貼り付けてください（例：CCB<=70 【目星】）"></textarea>
     <button onclick="formatPalette()">分類して出力</button>
   </div>
 
   <div class="container">
-    <textarea id="output" readonly></textarea>
+    <!-- 手動編集可能 -->
+    <textarea id="output" placeholder="整形結果がここに表示されます"></textarea>
     <button onclick="copyOutput()">コピー</button>
   </div>
 </div>
@@ -167,9 +181,23 @@ const initialValues = {
   '心理学': 5, '人類学': 1, '生物学': 1, '地質学': 1, '電子工学': 1, '天文学': 1, '博物学': 10, '物理学': 1, '法律': 5, '薬学': 1, '歴史': 20
 };
 
+// カスタムメッセージボックスを表示する関数 (alertの代替)
+function showMessage(message, isError = false) {
+  const box = document.getElementById("messageBox");
+  box.textContent = message;
+  // エラーの場合は赤系の背景色を設定
+  box.style.backgroundColor = isError ? '#cc0000' : '#333';
+  box.classList.add('show');
+  setTimeout(() => {
+    box.classList.remove('show');
+  }, 2000); // 2秒後に非表示にする
+}
+
+
 function formatPalette() {
   const lines = document.getElementById("input").value.split("\n");
-  const categories = { dice: [], explore: [], battle: [], action: [], talk: [], knowledge: [], initial: [], status: [], damage: [] };
+  // categories.status は使用せず、固定の8行で置き換えるため、空のままにする
+  const categories = { dice: [], explore: [], battle: [], action: [], talk: [], knowledge: [], initial: [], damage: [] };
   const presentSkills = new Map();
 
   lines.forEach(line => {
@@ -179,22 +207,18 @@ function formatPalette() {
       return;
     }
   
-    // ダメージやステータスは先に分類して終了
+    // ダメージ判定は先に分類して終了
     if (line.match(/ダメージ判定/)) {
       categories.damage.push(line);
       return;
     }
-    if (line.includes("× 5")) {
-      categories.status.push(line);
-      return;
-    }
-  
+    
     // その他の技能判定
     const match = line.match(/CCB<=([0-9]+)\s+【(.+?)】/);
     if (!match) return;
   
     const [, value, skillFull] = match;
-    const skill = skillFull.replace(/（.*?）/, '');
+    const skill = skillFull.replace(/（.*?）/, '').replace(/\(.*?\) /, ''); // 括弧内の情報も除去
   
     // presentSkills に登録
     presentSkills.set(skill, value);
@@ -208,24 +232,43 @@ function formatPalette() {
     // それ以外を分類
     if (["目星", "聞き耳", "図書館"].includes(skill)) {
       categories.explore.push(line);
-    } else if (["回避", "こぶし", "キック", "組み付き", "頭突き", "投擲", "マーシャルアーツ", "拳銃", "サブマシンガン", "ショットガン", "マシンガン", "ライフル", "ソード", "日本刀", "ナイフ"].some(s => skill.includes(s)) || /^(小さな棍棒|大きな棍棒|小さい棍棒|大きい棍棒)/.test(skillFull)) {
+    } 
+    // 交渉技能の分類ルールを更新: 外国語/他の言語/母国語をtalkに分類
+    else if (["言いくるめ", "信用", "説得", "値切り"].includes(skill) || /^(母国語|外国語|他の言語)(（.*?）|\(.*?\))?/.test(skillFull)) {
+      categories.talk.push(line);
+    } 
+    // ★戦闘技能の分類リストを更新
+    else if (["回避", "こぶし", "キック", "組み付き", "頭突き", "投擲", "マーシャルアーツ", "拳銃", "サブマシンガン", "ショットガン", "マシンガン", "ライフル", "ソード", "日本刀", "ナイフ", "肉切り包丁", "チェーンソー", "槍", "三節棍", "ムチ", "サーベル", "木斧", "手斧", "レイピア", "フェンシング・フォイル", "タクティカル・バトン", "警棒", "仕込み杖", "太刀", "薙刀", "弓", "クロスボウ", "競技用アーチェリー"].some(s => skill.includes(s)) || /^(小さな棍棒|大きな棍棒|小さい棍棒|大きい棍棒)/.test(skillFull)) {
       categories.battle.push(line);
     } else if (["応急手当", "鍵開け", "隠す", "隠れる", "忍び歩き", "写真術", "精神分析", "追跡", "登攀", "運転", "機械修理", "重機械操作", "乗馬", "水泳", "製作", "操縦", "跳躍", "電気修理", "ナビゲート", "変装"].some(s => skill.includes(s)) || /^(運転|製作|操縦)/.test(skillFull)) {
       categories.action.push(line);
-    } else if (["言いくるめ", "信用", "説得", "値切り"].includes(skill) || /^(母国語|他の言語)(（.*?）|\(.*?\))?/.test(skillFull)) {
-      categories.talk.push(line);
-    } else if (["芸術"].includes(skill) || /^芸術/.test(skillFull)) {
-      categories.knowledge.push(line);
     } else {
       categories.knowledge.push(line);
     }
 
   });
 
+  // 母国語（EDUx2）を初期値として交渉技能セクションに追加 (チャットパレットに存在しない場合のみ)
+  if (!presentSkills.has('母国語')) {
+      categories.talk.push('CCB<={EDU}*2 【母国語（*自由記入）】 ');
+  }
 
+  // 初期値技能の生成
   const missingInitials = Object.entries(initialValues)
     .filter(([skill, _]) => !presentSkills.has(skill))
     .map(([skill, value]) => `CCB<=${value} 【${skill}】`);
+
+  // 8コア能力値の代数リストを生成 (固定リスト)
+  const coreAbilityChecks = [
+    `CCB<={STR}*5 【STR × 5】`,
+    `CCB<={CON}*5 【CON × 5】`,
+    `CCB<={POW}*5 【POW × 5】`,
+    `CCB<={DEX}*5 【DEX × 5】`,
+    `CCB<={APP}*5 【APP × 5】`,
+    `CCB<={SIZ}*5 【SIZ × 5】`,
+    `CCB<={INT}*5 【INT × 5】`,
+    `CCB<={EDU}*5 【EDU × 5】`,
+  ];
 
   const output = [
     "◼️ダイス", ...categories.dice,
@@ -235,7 +278,9 @@ function formatPalette() {
     "\n🟪交渉技能", ...categories.talk,
     "\n⬜️知識技能", ...categories.knowledge,
     "\n========初期値========", ...missingInitials,
-    "\n========能力値========", ...categories.damage, ...categories.status,
+    "\n========能力値========", 
+    ...categories.damage, // 入力からのダメージ計算式
+    ...coreAbilityChecks, // 固定の8コア能力値
     "\n=====パラメータ化=====",
     ...["アイデア", "幸運", "知識", "目星", "聞き耳", "図書館"].map(skill => `//${skill} = ${presentSkills.get(skill) || initialValues[skill] || 0}`)
   ].join("\n");
@@ -245,15 +290,17 @@ function formatPalette() {
 
 function copyOutput() {
   const output = document.getElementById("output");
+  // alert() の代わりに showMessage() を使用します
   navigator.clipboard.writeText(output.value).then(() => {
-    alert("コピーしました");
+    showMessage("📋 コピーしました！"); 
     gtag('event', 'copy_output', {
       'event_category': 'button',
       'event_label': 'コピー',
       'value': 1
     });
   }).catch(err => {
-    alert("コピーに失敗しました: " + err);
+    // エラー時も showMessage() を使用し、エラーフラグを渡します
+    showMessage("❌ コピーに失敗しました: ブラウザの制限を確認してください", true);
   });
 }
 </script>
