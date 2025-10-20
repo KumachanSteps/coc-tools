@@ -168,7 +168,7 @@ footer {
 
 <div class="main">
   <div class="container">
-    <textarea id="input" placeholder="ここにチャットパレットを貼り付けてください（例：CCB<=70 【目星】）"></textarea>
+    <textarea id="input" placeholder="ここにチャットパレットを貼り付けてください（例：CCB<=70 【目星】 または CC<=70 【目星】）"></textarea>
     <button onclick="formatPalette()">分類して出力</button>
   </div>
 
@@ -215,9 +215,21 @@ function showMessage(message, isError = false) {
 
 function formatPalette() {
   const lines = document.getElementById("input").value.split("\n");
-  // categories.status は使用せず、固定の8行で置き換えるため、空のままにする
   const categories = { dice: [], explore: [], battle: [], action: [], talk: [], knowledge: [], initial: [], damage: [] };
   const presentSkills = new Map();
+  
+  // 1. ロールプレフィックス(CCB<= または CC<=)を決定する
+  let rollPrefix = 'CCB<='; // デフォルトはCCB<=
+  for (const line of lines) {
+    if (line.includes("CCB<=")) {
+      rollPrefix = 'CCB<=';
+      break; 
+    }
+    if (line.includes("CC<=")) {
+      // CCBが検出されず、CCが検出された場合
+      rollPrefix = 'CC<=';
+    }
+  }
 
   lines.forEach(line => {
     // SANは dice に分類して終了
@@ -232,11 +244,12 @@ function formatPalette() {
       return;
     }
     
-    // その他の技能判定
-    const match = line.match(/CCB<=([0-9]+)\s+【(.+?)】/);
+    // 2. その他の技能判定 - CCBまたはCCに対応する正規表現を使用
+    // match[1] = プレフィックス (CCB|CC), match[2] = 値, match[3] = 技能名
+    const match = line.match(/(CCB|CC)<=([0-9]+)\s+【(.+?)】/);
     if (!match) return;
   
-    const [, value, skillFull] = match;
+    const [, prefix, value, skillFull] = match; // prefixをキャプチャ
     const skill = skillFull.replace(/（.*?）/, '').replace(/\(.*?\) /, ''); // 括弧内の情報も除去
   
     // presentSkills に登録
@@ -248,7 +261,7 @@ function formatPalette() {
       return;
     }
     
-    // それ以外を分類
+    // 3. それ以外を分類（分類ロジックは変更なし）
     if (["目星", "聞き耳", "図書館"].includes(skill)) {
       categories.explore.push(line);
     } 
@@ -267,26 +280,28 @@ function formatPalette() {
 
   });
 
+  // 4. 新規生成するパレットに rollPrefix を使用する
+  
   // 母国語（EDUx2）を初期値として交渉技能セクションに追加 (チャットパレットに存在しない場合のみ)
   if (!presentSkills.has('母国語')) {
-      categories.talk.push('CCB<={EDU}*2 【母国語（*自由記入）】 ');
+      categories.talk.push(`${rollPrefix}{EDU}*2 【母国語（*自由記入）】 `);
   }
 
   // 初期値技能の生成
   const missingInitials = Object.entries(initialValues)
     .filter(([skill, _]) => !presentSkills.has(skill))
-    .map(([skill, value]) => `CCB<=${value} 【${skill}】`);
+    .map(([skill, value]) => `${rollPrefix}${value} 【${skill}】`);
 
   // 8コア能力値の代数リストを生成 (固定リスト)
   const coreAbilityChecks = [
-    `CCB<={STR}*5 【STR × 5】`,
-    `CCB<={CON}*5 【CON × 5】`,
-    `CCB<={POW}*5 【POW × 5】`,
-    `CCB<={DEX}*5 【DEX × 5】`,
-    `CCB<={APP}*5 【APP × 5】`,
-    `CCB<={SIZ}*5 【SIZ × 5】`,
-    `CCB<={INT}*5 【INT × 5】`,
-    `CCB<={EDU}*5 【EDU × 5】`,
+    `${rollPrefix}{STR}*5 【STR × 5】`,
+    `${rollPrefix}{CON}*5 【CON × 5】`,
+    `${rollPrefix}{POW}*5 【POW × 5】`,
+    `${rollPrefix}{DEX}*5 【DEX × 5】`,
+    `${rollPrefix}{APP}*5 【APP × 5】`,
+    `${rollPrefix}{SIZ}*5 【SIZ × 5】`,
+    `${rollPrefix}{INT}*5 【INT × 5】`,
+    `${rollPrefix}{EDU}*5 【EDU × 5】`,
   ];
 
   const output = [
