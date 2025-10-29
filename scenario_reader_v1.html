@@ -1,30 +1,346 @@
-<div style="font-family: Arial, sans-serif; display: flex; height: 400px; max-width: 800px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRPGシナリオスニペット抽出</title>
     
-    <div style="flex: 1; padding: 15px; background-color: #fff; border-right: 1px solid #ccc; display: flex; flex-direction: column;">
-        <h3 style="margin-top: 0; font-size: 1.1em;">📥 PDFファイル読み込み</h3>
-        <div style="border: 2px dashed #007bff; border-radius: 5px; padding: 30px 10px; text-align: center; margin-bottom: 10px; background-color: #e6f7ff;">
-            ファイルをドラッグ&ドロップ<br>または
-            <button style="padding: 8px 12px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: default; margin-top: 5px;">ファイルを開く</button>
-        </div>
-        <div style="font-weight: bold; color: #28a745; font-size: 0.9em;">✅ ステータス: 処理完了</div>
-    </div>
+    <style>
+        :root {
+            /* ダークテーマのカラースキーム */
+            --bg-dark: #1e1e1e;
+            --bg-light: #2c2c2c;
+            --text-primary: #f0f0f0;
+            --text-secondary: #aaaaaa;
+            --accent-color: #4a90e2; /* 青系統 */
+            --danger-color: #dc3545; /* 赤系統 */
+            --border-color: #444444;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* メインコンテンツでスクロールを管理 */
+        }
+        
+        /* ヘッダー */
+        .bar {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .bar h1 {
+            font-size: 1.5em;
+            margin: 0;
+            color: var(--accent-color);
+            font-weight: 300;
+        }
+        .spacer {
+            flex-grow: 1;
+        }
+        
+        /* メインコンテナ */
+        .main-content {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .col {
+            padding: 20px;
+            overflow-y: auto; /* 各カラム内でスクロール */
+            display: flex;
+            flex-direction: column;
+        }
+        .col-left {
+            flex: 1;
+            border-right: 1px solid var(--border-color);
+            min-width: 300px;
+        }
+        .col-right {
+            flex: 2;
+            background-color: #242424; /* 右側は少し暗くして区別 */
+            min-width: 500px;
+        }
+        
+        /* ヘッダーとボタン */
+        h2 {
+            font-size: 1.3em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            background-color: var(--accent-color);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            margin-left: 10px;
+        }
+        .btn:hover {
+            background-color: #5d9cec;
+        }
+        .btn.ghost {
+            background-color: transparent;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+        .btn.ghost:hover {
+            background-color: rgba(74, 144, 226, 0.1);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        /* ドロップゾーン */
+        .drop {
+            border: 2px dashed var(--accent-color);
+            border-radius: 6px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: background-color 0.3s;
+            background-color: #333333;
+        }
+        .drop.highlight {
+            background-color: rgba(74, 144, 226, 0.2);
+        }
+        .drop p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        /* 抽出テキストエリア（右側） */
+        #output-area {
+            flex-grow: 1;
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            overflow-y: auto;
+            border-radius: 4px;
+            line-height: 1.6;
+        }
+
+        /* ページブレークの視覚的な区切り */
+        .page-break {
+            border-top: 3px dashed var(--danger-color);
+            margin: 25px 0;
+            padding-top: 15px;
+        }
+        .page-info {
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+
+        /* ステータスメッセージ */
+        #status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            background-color: #383838;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+</script>
+
+<header class="bar">
+    <h1>TRPG シナリオ抽出ツール</h1>
+    <div class="spacer"></div>
+    <input type="file" id="fileElem" accept=".pdf" hidden />
+    <button class="btn" onclick="document.getElementById('fileElem').click();">
+        ファイルを開く
+    </button>
+</header>
+
+<main class="main-content">
     
-    <div style="flex: 2; padding: 15px; background-color: #f9f9f9;">
-        <h3 style="margin-top: 0; font-size: 1.1em;">📝 抽出テキスト (編集/コピペ可能)</h3>
-        <div style="width: 100%; height: 85%; padding: 8px; border: 1px solid #aaa; box-sizing: border-box; background-color: #fff; white-space: pre-wrap; overflow-y: scroll;" contenteditable="true">
-            PDFから抽出されたテキストが出力されます。
-
-            これは1ページ目の左カラムのテキストです。
-            ここから右カラムのテキストに続きます。
-            ------------------------------------------
-
-            <div style="border-top: 3px dashed #dc3545; margin: 10px 0; padding-top: 10px; color: #dc3545; text-align: center; font-weight: bold; font-size: 0.8em;">
-                ページの区切り（次のページへ）
-            </div>
-
-            これは2ページ目の左カラムのテキストです。
-            続いて右カラムのテキストが来ます。
-            ...
+    <section class="col col-left">
+        <h2>📥 PDF読み込み (テキストベース)</h2>
+        
+        <div class="drop" id="drop-area">
+            <p>PDFファイルをここにドラッグ＆ドロップ</p>
+            <p style="font-size: 0.75em; margin-top: 5px;">または「ファイルを開く」ボタンを使用</p>
         </div>
-    </div>
-</div>
+        
+        <div id="status-message">準備完了...</div>
+        
+        <div style="margin-top: auto; padding-top: 20px;">
+             <p style="color: var(--text-secondary); font-size: 0.8em;">
+                ※ 本ツールはテキストベースPDFの座標解析による2段組(50%境界)抽出を行います。
+            </p>
+        </div>
+
+    </section>
+
+    <section class="col col-right">
+        <h2>📝 抽出テキスト (左 $\rightarrow$ 右カラム順)</h2>
+        
+        <div id="output-area" contenteditable="true">
+            PDFが読み込まれると、カスタムレイアウト抽出されたテキストがこのエリアに出力されます。このエリアは直接編集・コピー＆ペーストが可能です。
+        </div>
+
+    </section>
+</main>
+
+<script>
+    // --- JavaScriptの処理 (前回提示したロジック) ---
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('fileElem');
+    const outputArea = document.getElementById('output-area');
+    const statusMessage = document.getElementById('status-message');
+
+    // 1. ドラッグ＆ドロップイベントの処理
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
+    });
+
+    dropArea.addEventListener('drop', handleDrop, false);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+            handleFile(files[0]);
+        }
+    }
+
+    // 2. ファイル選択ボタンの処理
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    // 3. メイン処理: ファイルを読み込み、PDFを処理
+    function handleFile(file) {
+        if (file.type !== 'application/pdf') {
+            statusMessage.textContent = '❌ エラー: PDFファイルを選択してください。';
+            statusMessage.style.color = var(--danger-color);
+            return;
+        }
+
+        statusMessage.textContent = `⏳ ${file.name} を処理中...`;
+        statusMessage.style.color = '#ffc107'; // 処理中は黄色
+        outputArea.innerHTML = ''; // 出力エリアをクリア
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const arrayBuffer = e.target.result;
+            extractTextFromPDF(arrayBuffer);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 4. PDFテキスト抽出とカスタムレイアウト処理
+    async function extractTextFromPDF(arrayBuffer) {
+        try {
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let finalOutputHTML = '';
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                
+                const viewport = page.getViewport({ scale: 1 });
+                const page_width = viewport.width;
+                const boundary_x = page_width / 2; // 50% 境界線
+
+                const leftColumn = [];
+                const rightColumn = [];
+
+                // テキストブロックの分類
+                textContent.items.forEach(item => {
+                    const x_coord = item.transform[4];
+                    const block = {
+                        text: item.str,
+                        x: x_coord,
+                        y: item.transform[5] // Y座標
+                    };
+
+                    if (x_coord < boundary_x) {
+                        leftColumn.push(block);
+                    } else {
+                        rightColumn.push(block);
+                    }
+                });
+
+                // Y座標でソート (上から下に)
+                // Y座標は下向きに増加する前提 (異なる場合は 'a.y - b.y' に変更)
+                leftColumn.sort((a, b) => b.y - a.y); 
+                rightColumn.sort((a, b) => b.y - a.y);
+
+                // テキストを結合: 左カラム -> (改行3つ) -> 右カラム
+                const leftText = leftColumn.map(b => b.text).join('');
+                const rightText = rightColumn.map(b => b.text).join('');
+                
+                // カラム間の区切りを改行3つに変更 (調整例)
+                const pageText = leftText + '\n\n\n' + rightText;
+                
+                // HTML構造でページ区切りとテキストを追加
+                finalOutputHTML += `<div class="page-info">--- ページ ${i} ---</div>`;
+                finalOutputHTML += `<div class="page-content">${pageText.replace(/\n/g, '<br>')}</div>`;
+                
+                // 視覚的なページ区切り線の追加 (最終ページ以外)
+                if (i < pdf.numPages) {
+                    finalOutputHTML += `<div class="page-break"></div>`;
+                }
+            }
+
+            outputArea.innerHTML = finalOutputHTML;
+            statusMessage.textContent = '✅ 抽出完了。編集・コピペ可能です。';
+            statusMessage.style.color = '#28a745';
+            
+        } catch (error) {
+            console.error('PDF処理エラー:', error);
+            statusMessage.textContent = `❌ PDF処理エラー: ${error.name || '不明'}。テキストベースPDFか確認してください。`;
+            statusMessage.style.color = var(--danger-color);
+        }
+    }
+</script>
+
+</body>
+</html>
