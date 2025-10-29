@@ -1,0 +1,30 @@
+<div style="font-family: Arial, sans-serif; display: flex; height: 400px; max-width: 800px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    
+    <div style="flex: 1; padding: 15px; background-color: #fff; border-right: 1px solid #ccc; display: flex; flex-direction: column;">
+        <h3 style="margin-top: 0; font-size: 1.1em;">📥 PDFファイル読み込み</h3>
+        <div style="border: 2px dashed #007bff; border-radius: 5px; padding: 30px 10px; text-align: center; margin-bottom: 10px; background-color: #e6f7ff;">
+            ファイルをドラッグ&ドロップ<br>または
+            <button style="padding: 8px 12px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: default; margin-top: 5px;">ファイルを開く</button>
+        </div>
+        <div style="font-weight: bold; color: #28a745; font-size: 0.9em;">✅ ステータス: 処理完了</div>
+    </div>
+    
+    <div style="flex: 2; padding: 15px; background-color: #f9f9f9;">
+        <h3 style="margin-top: 0; font-size: 1.1em;">📝 抽出テキスト (編集/コピペ可能)</h3>
+        <div style="width: 100%; height: 85%; padding: 8px; border: 1px solid #aaa; box-sizing: border-box; background-color: #fff; white-space: pre-wrap; overflow-y: scroll;" contenteditable="true">
+            PDFから抽出されたテキストが出力されます。
+
+            これは1ページ目の左カラムのテキストです。
+            ここから右カラムのテキストに続きます。
+            ------------------------------------------
+
+            <div style="border-top: 3px dashed #dc3545; margin: 10px 0; padding-top: 10px; color: #dc3545; text-align: center; font-weight: bold; font-size: 0.8em;">
+                ページの区切り（次のページへ）
+            </div>
+
+            これは2ページ目の左カラムのテキストです。
+            続いて右カラムのテキストが来ます。
+            ...
+        </div>
+    </div>
+</div>
