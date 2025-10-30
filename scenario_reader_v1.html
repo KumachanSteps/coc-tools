@@ -452,8 +452,9 @@
                             // テキストアイテムを結合してテキスト行を構築
                             const pageText = textContent.items.map(item => item.str).join(' ');
                             
-                            // ページ区切りとテキストを追加
-                            fullText += `\n\n--- ページ ${i}/${numPages} ---\n\n${pageText}`;
+                            // ページ番号を示す文字列を削除し、改行のみを追加
+                            // これにより、純粋なテキスト内容のみがエディタに表示されます。
+                            fullText += `\n\n${pageText}`; 
                             editor.value = `PDFを解析中... (${i}/${numPages} ページ処理済み)`;
                         }
 
@@ -467,6 +468,7 @@
                         showMessage('PDF解析中にエラーが発生しました。');
                     } finally {
                         pdfProcessBtn.disabled = false;
+                        pdfProcessBtn.textContent = 'PDFを処理'; // 処理完了後にリセット
                     }
                 };
 
@@ -474,6 +476,7 @@
                     editor.value = `ファイルの読み込み中にエラーが発生しました: ${error.target.error.name}`;
                     console.error('FileReaderエラー:', error);
                     pdfProcessBtn.disabled = false;
+                    pdfProcessBtn.textContent = 'PDFを処理'; // 処理完了後にリセット
                 };
 
                 reader.readAsArrayBuffer(file);
@@ -491,6 +494,7 @@
                     showMessage('PDFファイルを選択してください。');
                     selectedFile = null;
                     pdfProcessBtn.disabled = true;
+                    pdfProcessBtn.textContent = 'PDFを処理';
                     return;
                 }
                 
