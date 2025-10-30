@@ -2,9 +2,10 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8" />
-    <title>シナリオPDFテキスト抽出＆編集ツール</title>
+    <title>v2シナリオPDFテキスト抽出＆編集ツール</title>
     <!-- PDF.js ライブラリをCDN経由で読み込みます -->
     <!-- PDF処理は非同期であるため、ライブラリのロードが必要です -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.worker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.min.js"></script>
     
     <style>
@@ -13,7 +14,7 @@
             --main-bg: #1e1e1e;          /* メイン背景 (黒に近い) */
             --panel-bg: #252526;         /* パネル背景 */
             --section-bg: #2d2d30;       /* セクション背景 */
-            --console-bg: #1a1a1f;       /* コンソール/エディタ背景 (画像の色をベースに) */
+            --console-bg: #1a1a1f;       /* コンソール/エディタ背景 */
             --accent-color: #00bcd4;     /* アクセントカラー (シアン) */
             --text-color: #f0f0f0;       /* 基本テキスト色 (白) */
             --subtle-text: #aaa;         /* 薄いテキスト色 (灰色) */
@@ -72,7 +73,7 @@
             width: 75%;
             background-color: var(--main-bg);
             height: 100%;
-            padding-bottom: 0; /* コピーエリアとの結合のために下パディングを削除 */
+            padding-bottom: 0; 
         }
 
         /* 各セクションのスタイル */
@@ -82,22 +83,20 @@
             border-radius: 8px;
             background-color: var(--section-bg);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            flex-shrink: 0; /* セクションが小さくならないように */
+            flex-shrink: 0; 
         }
         
-        /* 1. PDFファイルを読み込むセクションにパディングを維持 */
         .pdf-upload-section {
             padding: 15px;
         }
 
-        /* 2. シンボル装飾セクションにflex-growを適用して残りの高さを占める */
         .symbol-decoration-section {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             flex-shrink: 1;
             margin-bottom: 0; 
-            padding: 0; /* セクション自体のパディングを0にし、内部要素で制御 */
+            padding: 0; 
         }
         
         /* 右パネル内のセクションの調整 */
@@ -106,7 +105,7 @@
             border: none;
             background: none;
             box-shadow: none;
-            margin-bottom: 0; /* 右パネル内のセクション間の余白を削除 */
+            margin-bottom: 0; 
         }
 
         h2 {
@@ -116,13 +115,12 @@
             font-size: 1.2em;
             color: #ffffff;
             font-weight: 400;
-            padding-left: 15px; /* 左右パディングを維持 */
+            padding-left: 15px; 
             padding-right: 15px;
-            padding-top: 15px; /* 上パディングを追加 */
+            padding-top: 15px; 
             flex-shrink: 0; 
         }
 
-        /* シンボル装飾セクションのタイトルと説明文の境界線 */
         .symbol-decoration-section h2 {
             margin-bottom: 0;
         }
@@ -144,17 +142,14 @@
             margin-bottom: 15px;
             cursor: pointer;
             border-radius: 4px;
-            transition: border-color 0.2s, background-color 0.2s; /* トランジション追加 */
+            transition: border-color 0.2s, background-color 0.2s; 
         }
         
-        /* ドロップゾーンのハイライトスタイル */
         .drop-zone.highlight {
             border-color: var(--drop-highlight);
-            background-color: #38383a; /* ドロップ時の背景色を少し明るく */
+            background-color: #38383a; 
         }
 
-
-        /* ... (その他のボタンなどのスタイルは省略、大きな変更なし) ... */
         .pdf-process-btn {
             display: block;
             width: 100%;
@@ -169,31 +164,28 @@
             transition: background-color 0.2s;
         }
 
-        /* 無効化されたボタンのスタイル */
         .pdf-process-btn:disabled {
-            background-color: #008c9e; /* 少し暗く */
+            background-color: #008c9e; 
             cursor: not-allowed;
         }
 
-        /* 2. シンボル装飾 - グリッドレイアウトの変更点 */
+        /* 2. シンボル装飾 */
         .symbol-grid {
             flex-grow: 1; 
             overflow-y: auto; 
             display: grid;
             gap: 10px;
             padding: 10px 15px 15px; 
-            /* デフォルト: 4列 (4x3配列) */
+            /* デフォルト: 4列 */
             grid-template-columns: repeat(4, 1fr);
         }
         
-        /* 幅が900px以下の場合 (中程度の幅): 3列 (3x4配列) */
         @media (max-width: 900px) {
             .symbol-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
 
-        /* 幅が600px以下の場合 (狭い幅): 2列 (2x6配列) */
         @media (max-width: 600px) {
             .symbol-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -218,16 +210,16 @@
         
         /* 3. 編集エリア (高さ90%) */
         .edit-area-section {
-            height: 90%; /* 9割に変更 */
+            height: 90%; 
             display: flex;
             flex-direction: column;
-            padding-bottom: 15px; /* 下のセクションとのわずかな区切り */
+            padding-bottom: 15px; 
         }
 
         #editor {
             flex-grow: 1;
-            width: calc(100% - 30px); /* 左右のパディングを考慮 */
-            margin: 0 15px; /* 左右にパディングに合わせた余白 */
+            width: calc(100% - 30px); 
+            margin: 0 15px; 
             background-color: var(--console-bg); 
             color: var(--text-color);
             border: 1px solid var(--accent-color);
@@ -240,74 +232,58 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 4. 最終テキストをコピー (下からの10%) - 幅を編集エリアに合わせるために修正 */
+        /* 4. 最終テキストをコピー (下からの10%) */
         .copy-text-section {
-            height: 10%; /* 1割に変更 */
+            height: 10%; 
             display: flex;
             align-items: center;
             justify-content: center;
-            /* 目立たない色 #2d2d30 を背景に設定 */
             background-color: var(--section-bg); 
             cursor: pointer;
             transition: background-color 0.2s;
             
-            /* #editorと同じ幅とマージンを適用し、編集エリアと幅を揃える */
             width: calc(100% - 30px); 
-            /* 下部に2pxのマージンを追加 (上/右/下/左 -> 0/15px/2px/15px) */
             margin: 0 15px 2px; 
         }
         
-        /* クリック可能なエリアであることを示すホバーエフェクト */
         .copy-text-section:hover {
-            background-color: #3e3e42; /* 少し明るくしてホバーを表現 */
+            background-color: #3e3e42; 
         }
 
-        .copy-btn {
-            /* ボタンのスタイルをリセットし、テキストを目立たせる */
-            background: none;
-            border: none;
-            color: var(--accent-color); /* 目立たない背景に目立つテキスト */
-            padding: 0;
-            font-size: 1em;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            /* ボタンテキストが中央に来るように調整 */
-            width: auto;
-            max-width: none;
-        }
-
-        /* 最終コピーボタンのテキストを強調 */
         .copy-text-section p.copy-label {
-            /* 文字色をグレー(var(--subtle-text))に変更 */
-            color: var(--subtle-text); 
+            color: var(--accent-color); 
             font-weight: bold;
             font-size: 1em;
             margin: 0;
             padding: 0;
         }
+        
+        .copy-text-section small {
+            color: var(--subtle-text);
+            margin-left: 10px;
+        }
 
-        /* メッセージボックスのスタイル (新規追加) */
+        /* メッセージボックスのスタイル */
         .message-box {
             position: fixed;
-            bottom: 60px; /* 画面下から少し上に配置 */
+            bottom: 60px; 
             left: 50%;
             transform: translateX(-50%);
-            background-color: var(--accent-color); /* シアン */
-            color: var(--main-bg); /* メイン背景色（黒）でコントラストを強調 */
+            background-color: var(--accent-color); 
+            color: var(--main-bg); 
             padding: 15px 30px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             font-weight: bold;
             font-size: 1.1em;
-            opacity: 0; /* 初期状態は非表示 */
+            opacity: 0; 
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
             z-index: 1000;
         }
 
         .message-box.show {
-            opacity: 1; /* 表示状態 */
+            opacity: 1; 
             visibility: visible;
         }
     </style>
@@ -326,8 +302,7 @@
             <div class="section pdf-upload-section">
                 <h2>1. PDFファイルを読み込む</h2>
                 <div class="drop-zone" id="pdfDropZone">
-                    <!-- テキストを修正 -->
-                    PDFファイルをここにドラッグ＆ドロップ クリックでファイル選択
+                    PDFファイルをここにドラッグ＆ドロップ<br>クリックでファイル選択
                     <input type="file" id="pdfFile" accept="application/pdf" style="display: none;">
                 </div>
                 <button class="pdf-process-btn" disabled>PDFを処理</button>
@@ -362,7 +337,6 @@
             <div class="edit-area-section">
                 <h2>3. 編集エリア</h2>
                 <p>PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。</p>
-                <!-- 初期テキストを削除し、placeholderのみを使用 -->
                 <textarea id="editor" placeholder="抽出されたテキストがここに表示されます..." aria-label="編集エリア"></textarea>
             </div>
 
@@ -373,7 +347,7 @@
         </div>
     </div>
     
-    <!-- コピー成功メッセージボックス (新規追加) -->
+    <!-- コピー成功メッセージボックス -->
     <div id="messageBox" class="message-box"></div>
 
     <script>
@@ -392,6 +366,8 @@
             const pdfProcessBtn = document.querySelector('.pdf-process-btn');
 
             let selectedFile = null;
+            // ページ番号を含まないテキストのみを保持する変数 (表示内容と同一)
+            let extractedText = ''; 
 
             /**
              * メッセージボックスを表示するヘルパー関数
@@ -424,6 +400,50 @@
             }
 
             /**
+             * ページ内のテキストを分析し、自然な改行を適用して結合する関数
+             * @param {object} textContent - pdf.jsから取得したテキストコンテンツ
+             * @returns {string} - 自然な改行を含むテキスト
+             */
+            function combineTextWithNaturalBreaks(textContent) {
+                let pageText = '';
+                let lastItem = null;
+                
+                // 垂直方向の閾値 (ピクセル単位の差)
+                // この値はPDFのフォントサイズや行間によって変動しますが、一般的な値を使用
+                const LINE_BREAK_TOLERANCE = 2;   // わずかな垂直シフト (同じ行と見なす)
+                const PARA_BREAK_MIN_GAP = 12;    // これより大きいギャップは段落ブレイクと見なす
+
+                for (const item of textContent.items) {
+                    if (lastItem) {
+                        const lastY = lastItem.transform[5];
+                        const currentY = item.transform[5];
+                        
+                        // Y座標は下から上に向かって増加する。lastY - currentY > 0 は、
+                        // 現在のアイテムが前のアイテムよりも下に位置することを意味する (新しい行)
+                        const verticalDelta = lastY - currentY; 
+
+                        if (verticalDelta > PARA_BREAK_MIN_GAP) {
+                            // 大きな垂直ジャンプ -> 段落区切り
+                            pageText += '\n\n';
+                        } else if (verticalDelta > LINE_BREAK_TOLERANCE) {
+                            // 小さな垂直ジャンプ -> 標準の改行
+                            pageText += '\n';
+                        } else {
+                            // 垂直移動がほとんどない -> 同じ行（スペースで結合）
+                            pageText += ' ';
+                        }
+                    }
+                    
+                    // テキストを追記
+                    pageText += item.str;
+                    lastItem = item;
+                }
+                
+                return pageText;
+            }
+
+
+            /**
              * PDFファイルからテキストを抽出する非同期関数
              * @param {File} file - 処理するPDFファイル
              */
@@ -435,6 +455,7 @@
                 
                 editor.value = `PDFを解析中... (${file.name})\n\nしばらくお待ちください...`;
                 pdfProcessBtn.disabled = true;
+                extractedText = ''; // 初期化
 
                 const reader = new FileReader();
                 reader.onload = async function(event) {
@@ -442,6 +463,7 @@
                         const arrayBuffer = event.target.result;
                         const pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
                         const numPages = pdfDocument.numPages;
+                        
                         let fullText = '';
                         
                         // 全ページを順番に処理
@@ -449,17 +471,17 @@
                             const page = await pdfDocument.getPage(i);
                             const textContent = await page.getTextContent();
                             
-                            // テキストアイテムを結合してテキスト行を構築
-                            const pageText = textContent.items.map(item => item.str).join(' ');
+                            // 新しい結合関数を使用して自然な改行を適用
+                            const pageText = combineTextWithNaturalBreaks(textContent);
                             
-                            // ページ番号を示す文字列を削除し、改行のみを追加
-                            // これにより、純粋なテキスト内容のみがエディタに表示されます。
-                            fullText += `\n\n${pageText}`; 
+                            // ページ間の区切りとしてダブル改行を追加
+                            fullText += '\n\n' + pageText; 
                             editor.value = `PDFを解析中... (${i}/${numPages} ページ処理済み)`;
                         }
 
                         // 結果をエディタに表示
-                        editor.value = fullText.trim();
+                        extractedText = fullText.trim();
+                        editor.value = extractedText;
                         showMessage('PDFからテキストを抽出しました。');
 
                     } catch (error) {
@@ -509,21 +531,50 @@
 
             // --- 4. 最終テキストをクリップボードにコピーする機能 ---
             copyTextSection.addEventListener('click', () => {
-                editor.select();
-                
-                let success = false;
-                try {
-                    success = document.execCommand('copy');
-                } catch (err) {
-                    console.error('クリップボードへのコピーに失敗しました:', err);
-                }
+                // extractedText (PDF抽出テキスト) があればそれを使う。なければエディタの現在の内容を使う。
+                const textToCopy = extractedText.length > 0 ? extractedText : editor.value;
 
-                if (success) {
-                    showMessage('クリップボードにコピーしました！');
+                // Clipboard APIを使用してコピーを試みる
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(textToCopy)
+                        .then(() => {
+                            showMessage('クリップボードにコピーしました！');
+                        })
+                        .catch(err => {
+                            console.error('クリップボードへのコピーに失敗しました (Clipboard API):', err);
+                            // フォールバックとして document.execCommand('copy') を試みる
+                            fallbackCopy(textToCopy);
+                        });
                 } else {
+                    // Clipboard APIが使えない場合のフォールバック
+                    fallbackCopy(textToCopy);
+                }
+                
+                // コピー後にエディタの選択を解除
+                editor.selectionStart = editor.selectionEnd = -1;
+            });
+
+            // document.execCommand('copy') を使用したフォールバックコピー関数
+            function fallbackCopy(text) {
+                const tempTextarea = document.createElement('textarea');
+                tempTextarea.value = text;
+                tempTextarea.style.position = 'fixed'; 
+                tempTextarea.style.left = '-9999px';
+                document.body.appendChild(tempTextarea);
+                tempTextarea.select();
+                try {
+                    const success = document.execCommand('copy');
+                    document.body.removeChild(tempTextarea);
+                    if (success) {
+                        showMessage('フォールバックでコピーしました！');
+                    } else {
+                        showMessage('コピーに失敗しました。手動でコピーしてください。');
+                    }
+                } catch (err) {
+                    document.body.removeChild(tempTextarea);
                     showMessage('コピーに失敗しました。手動でコピーしてください。');
                 }
-            });
+            }
 
             // --- 2. シンボル装飾ボタンの機能 ---
             symbolButtons.forEach(button => {
