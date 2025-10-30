@@ -3,487 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDFテキスト抽出＆編集ツール</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>シナリオPDFテキスト抽出＆編集ツール</title>
     <style>
-        :root {
-            --primary: #3b82f6; /* Blue 500 */
-            --background: #1f2937; /* Gray 800 */
-            --card: #374151; /* Gray 700 */
-            --text-light: #f3f4f6;
-        }
+        /* 基本的なスタイル */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--text-light);
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            /* Canvas内で表示されるため、bodyの高さを明示的に設定 */
+            height: 100vh; 
+            overflow: hidden;
         }
-        .card {
-            background-color: var(--card);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
         }
-        .btn {
-            transition: all 0.2s;
+
+        .container {
+            display: flex;
+            /* ヘッダーの高さを引く */
+            height: calc(100vh - 50px); 
+        }
+
+        /* 左側のエリア (25%) */
+        .left-panel {
+            width: 25%;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #fff;
+            border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* コンテンツがはみ出た場合にスクロール */
+        }
+
+        /* 右側のエリア (75%) */
+        .right-panel {
+            width: 75%;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* 各セクションのスタイル */
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        /* 1. PDFファイルを読み込む */
+        .pdf-upload-section {
+            flex-grow: 0;
+        }
+
+        .drop-zone {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .pdf-process-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .pdf-process-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 2. シンボル装飾 */
+        .symbol-decoration-section {
+            flex-grow: 1; /* 残りのスペースを使用 */
+        }
+
+        .symbol-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .symbol-btn {
+            padding: 8px 12px;
+            font-size: 1.2em;
+            background-color: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .symbol-btn:hover {
+            background-color: #ddd;
+        }
+
+        /* 3. 編集エリア */
+        .edit-area-section {
+            height: 80%; /* 右側エリアの80% */
+            display: flex;
+            flex-direction: column;
+        }
+
+        #editor {
+            flex-grow: 1;
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 1em;
+            resize: none;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        /* 4. 最終テキストをコピー */
+        .copy-text-section {
+            height: 20%; /* 右側エリアの20% */
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
+            margin-top: 15px;
         }
-        .btn:hover:not(:disabled) {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        /* カスタムスクロールバー */
-        #editor::-webkit-scrollbar {
-            width: 8px;
-        }
-        #editor::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 10px;
-        }
-        /* ドラッグ＆ドロップエリアのスタイル */
-        #dropArea {
-            border: 2px dashed #4b5563;
-            padding: 2rem;
-            text-align: center;
+
+        .copy-btn {
+            padding: 15px 30px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-        .drag-over {
-            border-color: #3b82f6 !important;
-            background-color: rgba(59, 130, 246, 0.1) !important;
-        }
-        .symbol-btn {
-            font-size: 1.5rem;
-            line-height: 1;
-            padding: 0.5rem;
-            background-color: #4b5563;
-            color: #f3f4f6;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.15s;
-        }
-        .symbol-btn:hover {
-            background-color: #6b7280;
-        }
-        /* 左右分割コンテナの調整 */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-        @media (min-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr 3fr; /* 左右を1:3 (25%:75%)に分割 */
-                align-items: flex-start; 
-            }
-        }
-        .left-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            font-size: 1.2em;
         }
 
-        /* --- 高さ・比率制御のためのカスタムCSS --- */
-        
-        /* 編集エリアの親カード: 右側パネルの上から80%を占める */
-        .editor-container-card {
-            flex: 8; /* 80% */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* コピーボタンの親カード: 右側パネルの下から20%を占める */
-        .copy-container-card {
-            flex: 2; /* 20% */
-        }
-
-        /* エディタの高さ調整 (Flexboxに制御を任せる) */
-        #editor {
-            resize: none; 
-            min-height: 100px; /* 最小高さは確保しつつ、flex-growで拡大 */
-            font-size: 1rem;
-            line-height: 1.6;
-            flex-grow: 1; /* 親カードの残りのスペースを全て占める */
+        .copy-btn:hover {
+            background-color: #1e7e34;
         }
     </style>
 </head>
 <body>
 
-    <div id="app" class="w-full max-w-7xl mx-auto p-4 sm:p-8 space-y-8">
-        <h1 class="text-4xl font-extrabold text-center border-b-2 border-gray-600 pb-4 text-primary">
-            PDFテキスト抽出＆編集ツール
-        </h1>
+    <header>
+        <h1>シナリオPDFテキスト抽出＆編集ツール</h1>
+    </header>
 
-        <div class="main-grid">
+    <div class="container">
+        <div class="left-panel">
             
-            <!-- 左側パネル (1/4幅 - 25%) - ファイル選択とシンボル -->
-            <div class="left-panel">
-                
-                <!-- 1. PDFファイルを読み込む (上半分 50% - 内容に応じて調整) -->
-                <div class="card p-6 rounded-xl space-y-4">
-                    <h2 class="text-2xl font-semibold">1. PDFファイルを読み込む</h2>
-                    
-                    <div id="dropArea" class="rounded-lg border-2 border-dashed border-gray-500 hover:border-blue-500 transition duration-150">
-                        <p class="text-gray-400 text-sm">PDFファイルをここにドラッグ＆ドロップ</p>
-                        <p class="text-gray-400 text-sm py-2">または</p>
-                        <input type="file" id="pdfFile" accept=".pdf" 
-                            class="block w-full text-sm text-gray-300
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-full file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100 cursor-pointer">
-                    </div>
-
-                    <button id="processBtn" onclick="processPDF()" disabled
-                            class="w-full mt-2 btn bg-green-600 text-white hover:bg-green-700">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        PDFを処理
-                    </button>
-                    <div id="loadingIndicator" class="text-center text-yellow-400 hidden mt-2">
-                        <p>ページを処理中... お待ちください。</p>
-                    </div>
+            <div class="section pdf-upload-section">
+                <h2>1. PDFファイルを読み込む</h2>
+                <div class="drop-zone" id="pdfDropZone">
+                    PDFファイルをここにドラッグ＆ドロップ
+                    <input type="file" id="pdfFile" accept="application/pdf" style="display: none;">
                 </div>
-
-                <!-- 2. シンボル装飾ボタン (下半分 50% - 内容に応じて調整) -->
-                <div class="card p-6 rounded-xl space-y-4">
-                    <h2 class="text-2xl font-semibold">2. シンボル装飾（クリックで挿入）</h2>
-                    <div id="symbolPalette" class="grid grid-cols-6 gap-2">
-                        <!-- シンボルボタンがJavaScriptによって挿入されます -->
-                    </div>
-                    <p class="text-sm text-gray-400 pt-2">
-                        シンボルをクリックすると、エディターのカーソル位置に直接挿入されます。
-                    </p>
-                </div>
-                
+                <button class="pdf-process-btn">PDFを処理</button>
             </div>
 
-            <!-- 右側パネル (3/4幅 - 75%) - 編集エリアとコントロール -->
-            <!-- flex-colと画面高さを利用して子要素の比率を制御 -->
-            <div class="lg:col-span-3 flex flex-col space-y-4 h-[calc(100vh-140px)]">
-                
-                <!-- 3. 編集と装飾 (Editor) - 右側パネルの上から80%を占める -->
-                <div class="card p-6 rounded-xl space-y-4 editor-container-card">
-                    <h2 class="text-2xl font-semibold">3. 編集エリア</h2>
-                    
-                    <!-- Editor Text Area - 親カード内の残りの高さを全て占める -->
-                    <textarea id="editor" placeholder="PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。"
-                              class="w-full p-4 rounded-lg bg-gray-800 border border-gray-600 text-text-light focus:ring-primary focus:border-primary"></textarea>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- 行の正規化 -->
-                        <button onclick="normalizeText()" id="normalizeBtn" disabled
-                                class="btn bg-yellow-600 text-white hover:bg-yellow-700 text-sm">
-                            <span class="mr-1">🧹</span> 行の正規化（改行・スペース調整）
-                        </button>
-                        
-                        <!-- 選択範囲への絵文字挿入 -->
-                        <div class="flex space-x-2">
-                            <input type="text" id="emojiInput" placeholder="装飾文字 (例: ✨)" value="✨"
-                                class="flex-grow p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-primary focus:border-primary text-sm">
-                            <button onclick="insertWrapper()" id="emojiBtn" disabled
-                                class="btn bg-indigo-600 text-white hover:bg-indigo-700 text-sm w-1/3">
-                                <span class="mr-1">🔗</span> 選択範囲を装飾
-                            </button>
-                        </div>
-                    </div>
-
-                    <p class="text-sm text-gray-400 pt-2">
-                        *注意: 2列のテキストが誤って混ざる場合、手動で修正してください。
-                    </p>
-                </div>
-                
-                <!-- 4. 最終テキストをコピー - 右側パネルの下から20%を占める -->
-                <div class="card p-6 rounded-xl space-y-4 copy-container-card">
-                    <h2 class="text-2xl font-semibold">4. 最終テキストをコピー</h2>
-                    <button onclick="copyText()" id="copyBtn" disabled
-                            class="w-full mt-2 btn bg-primary text-white hover:bg-blue-600">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2m-2 0h-2"></path></svg>
-                        編集済みテキストをクリップボードにコピー
-                    </button>
+            <div class="section symbol-decoration-section">
+                <h2>2. シンボル装飾</h2>
+                <p>シンボルをクリックすると、エディターのカーソル位置に直接挿入されます。</p>
+                <div class="symbol-grid">
+                    <button class="symbol-btn" data-symbol="★">★</button>
+                    <button class="symbol-btn" data-symbol="☆">☆</button>
+                    <button class="symbol-btn" data-symbol="■">■</button>
+                    <button class="symbol-btn" data-symbol="◇">◇</button>
+                    <button class="symbol-btn" data-symbol="⇒">⇒</button>
+                    <button class="symbol-btn" data-symbol="…">…</button>
+                    <button class="symbol-btn" data-symbol="【">【</button>
+                    <button class="symbol-btn" data-symbol="】">】</button>
                 </div>
             </div>
         </div>
-        
-        <!-- Global Notification -->
-        <div id="notification" class="fixed bottom-5 right-5 p-3 bg-green-500 text-white font-medium rounded-lg opacity-0 transform translate-y-5 transition duration-300 z-50 shadow-lg" role="alert">
-            クリップボードにコピーされました！
-        </div>
 
+        <div class="right-panel">
+            
+            <div class="section edit-area-section">
+                <h2>3. 編集エリア</h2>
+                <p>PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。</p>
+                <textarea id="editor" placeholder="抽出されたテキストがここに表示されます..." aria-label="編集エリア"></textarea>
+            </div>
+
+            <div class="copy-text-section">
+                <button class="copy-btn">最終テキストをクリップボードにコピー</button>
+            </div>
+        </div>
     </div>
 
-    <!-- PDF.js CDN - Necessary for reading PDF files -->
-    <!-- PDF.jsのライブラリの読み込み順序を修正: メインライブラリを先にロードします -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.worker.min.js"></script>
-
-    <script>
-        // PDF.jsライブラリが完全にロードされてからコードを実行するために、
-        // window.onloadでメインロジックをラップします。
-        window.onload = function() {
-            // pdfjsLibが未定義であるエラーを避けるため、ここでWorkerのパスを設定
-            if (typeof pdfjsLib !== 'undefined') {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.worker.min.js';
-            } else {
-                console.error("PDF.js library failed to load.");
-                document.getElementById('editor').value = "エラー: PDF.jsライブラリの読み込みに失敗しました。ページをリロードしてください。";
-                return;
-            }
-
-            const pdfFile = document.getElementById('pdfFile');
-            const processBtn = document.getElementById('processBtn');
-            const editor = document.getElementById('editor');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const normalizeBtn = document.getElementById('normalizeBtn');
-            const emojiBtn = document.getElementById('emojiBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const dropArea = document.getElementById('dropArea');
-            const symbolPalette = document.getElementById('symbolPalette');
-            
-            // 追加されたシンボルリスト
-            const SYMBOLS = ['►', '▼', '▮', '❐', '✧', '✦', '◼︎', '◻︎', '〈', '〉', '《', '》'];
-
-            // --- UI/State Management ---
-
-            /**
-             * コントロールボタンの有効/無効を切り替えます。
-             * @param {boolean} enabled - trueで有効、falseで無効
-             */
-            function enableControls(enabled) {
-                normalizeBtn.disabled = !enabled;
-                emojiBtn.disabled = !enabled;
-                copyBtn.disabled = !enabled;
-            }
-
-            // PDFファイル選択時の処理
-            pdfFile.addEventListener('change', () => {
-                processBtn.disabled = pdfFile.files.length === 0;
-                enableControls(false);
-                editor.value = pdfFile.files.length > 0 ? '' : 'PDFをアップロードして開始してください。';
-            });
-
-            // --- Drag and Drop Handlers ---
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
-            });
-
-            dropArea.addEventListener('drop', handleDrop, false);
-
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-
-                if (files.length > 0 && files[0].type === 'application/pdf') {
-                    // ドロップされたファイルをinput要素に設定し、処理を開始
-                    // ファイルリストを再構築（単一ファイルのみ）
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(files[0]);
-                    pdfFile.files = dataTransfer.files;
-
-                    processPDF();
-                } else {
-                    console.error('PDFファイルのみ対応しています。');
-                }
-            }
-
-
-            // --- Core PDF Processing ---
-
-            /**
-             * PDFファイルを読み込み、テキストを抽出します。
-             */
-            async function processPDF() {
-                const file = pdfFile.files[0];
-                if (!file) {
-                    console.error("No file selected.");
-                    return;
-                }
-
-                processBtn.disabled = true;
-                loadingIndicator.classList.remove('hidden');
-                editor.value = '';
-                enableControls(false);
-
-                try {
-                    const arrayBuffer = await file.arrayBuffer();
-                    // pdfjsLibがwindow.onload内でチェックされているため、ここでは安全に使用できる
-                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                    let fullText = '';
-                    const numPages = pdf.numPages;
-
-                    for (let i = 1; i <= numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const textContent = await page.getTextContent();
-                        
-                        // Simple text extraction: extracts items in the order they appear
-                        const pageText = textContent.items.map(item => item.str).join(' ');
-                        
-                        fullText += pageText + '\n\n--- ページ ' + i + ' ---\n\n';
-                    }
-
-                    editor.value = fullText.trim();
-                    enableControls(true);
-                    editor.focus(); // エディターにフォーカス
-
-                } catch (error) {
-                    console.error("Error processing PDF:", error);
-                    editor.value = "PDFの処理中にエラーが発生しました。詳細についてはコンソールを確認するか、別のファイルを試してください。(テキストベースのPDFですか？)";
-                    enableControls(false);
-                } finally {
-                    processBtn.disabled = false;
-                    loadingIndicator.classList.add('hidden');
-                }
-            }
-
-            // --- Text Modification Functions ---
-            
-            /**
-             * 指定されたテキストをカーソル位置に挿入します。
-             * @param {string} textToInsert - 挿入するテキスト。
-             */
-            function insertTextAtCursor(textToInsert) {
-                const start = editor.selectionStart;
-                const end = editor.selectionEnd;
-                const text = editor.value;
-
-                // 選択範囲を置き換え、またはカーソル位置に挿入
-                let newText = text.substring(0, start) + textToInsert + text.substring(end);
-                editor.value = newText;
-                
-                // カーソル位置を挿入されたテキストの直後に設定
-                const newCursorPos = start + textToInsert.length;
-                editor.focus();
-                editor.setSelectionRange(newCursorPos, newCursorPos);
-            }
-
-            /**
-             * シンボルパレットのボタンクリックで呼び出され、シンボルを挿入します。
-             * @param {string} symbol - 挿入するシンボル。
-             */
-            window.insertSymbol = function(symbol) {
-                insertTextAtCursor(symbol);
-            }
-
-
-            window.normalizeText = function() {
-                if (!editor.value) return;
-
-                let text = editor.value;
-
-                // 1. 行末のハイフンと改行を削除して単語を結合
-                text = text.replace(/-\s*\n\s*/g, '');
-                
-                // 2. 単一の改行（折り返し）をスペースに置換
-                text = text.replace(/(?<!\n)\n(?!\n)/g, ' ');
-
-                // 3. 連続するスペースを一つに削減
-                text = text.replace(/\s{2,}/g, ' '); 
-                
-                // 4. 3つ以上の改行を2つに削減（段落間のスペースを維持）
-                text = text.replace(/\n{3,}/g, '\n\n'); 
-
-                editor.value = text.trim();
-            }
-
-            /**
-             * 選択範囲をインプットボックスのテキストで装飾します (元の insertEmoji のロジック)。
-             */
-            window.insertWrapper = function() {
-                const wrapperText = document.getElementById('emojiInput').value;
-                if (!editor.value || !wrapperText) return;
-
-                const start = editor.selectionStart;
-                const end = editor.selectionEnd;
-                const text = editor.value;
-
-                let newText;
-                if (start !== end) {
-                    // 選択範囲をラップ: [前] [装飾] [選択範囲] [装飾] [後]
-                    newText = text.substring(0, start) + wrapperText + text.substring(start, end) + wrapperText + text.substring(end);
-                    // 選択範囲をラップしたテキストに調整
-                    editor.value = newText;
-                    editor.setSelectionRange(start + wrapperText.length, end + wrapperText.length);
-                } else {
-                    // カーソル位置に挿入
-                    newText = text.substring(0, start) + wrapperText + text.substring(end);
-                    editor.value = newText;
-                    editor.setSelectionRange(start + wrapperText.length, start + wrapperText.length);
-                }
-            }
-
-
-            // --- Clipboard Functionality ---
-
-            function showNotification() {
-                const notification = document.getElementById('notification');
-                notification.classList.add('copy-success');
-                notification.classList.remove('opacity-0', 'translate-y-5');
-
-                setTimeout(() => {
-                    notification.classList.remove('copy-success');
-                    notification.classList.add('opacity-0', 'translate-y-5');
-                }, 1800);
-            }
-            
-            window.copyText = function() {
-                if (!editor.value) return;
-
-                const textToCopy = editor.value;
-                const textarea = document.createElement('textarea');
-                textarea.value = textToCopy;
-                textarea.style.position = 'fixed'; 
-                document.body.appendChild(textarea);
-                textarea.select();
-                
-                try {
-                    document.execCommand('copy');
-                    showNotification();
-                } catch (err) {
-                    console.error('Failed to copy text: ', err);
-                }
-                
-                document.body.removeChild(textarea);
-            }
-
-            // グローバル関数として公開
-            window.processPDF = processPDF;
-            
-            /**
-             * シンボルパレットのHTMLを生成し、挿入します。
-             */
-            function initializeSymbolPalette() {
-                symbolPalette.innerHTML = SYMBOLS.map(symbol => 
-                    `<button class="symbol-btn" onclick="insertSymbol('${symbol}')">${symbol}</button>`
-                ).join('');
-            }
-
-
-            // Initial state setup
-            enableControls(false);
-            initializeSymbolPalette();
-        } // window.onload 終了
-
-    </script>
 </body>
 </html>
