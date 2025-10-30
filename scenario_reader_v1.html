@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8" />
-    <title>v3シナリオPDFテキスト抽出＆編集ツール</title>
+    <title>シナリオPDFテキスト抽出＆編集ツール</title>
     <!-- PDF.js ライブラリをCDN経由で読み込みます -->
     <!-- PDF処理は非同期であるため、ライブラリのロードが必要です -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.worker.min.js"></script>
@@ -28,7 +28,6 @@
             margin: 0;
             padding: 0;
             background-color: var(--main-bg);
-            color: var(--text-color);
             height: 100vh; 
             overflow: hidden;
         }
@@ -45,6 +44,7 @@
         h1 {
             margin: 0;
             font-weight: 300;
+            color: var(--text-color);
         }
 
         .container {
@@ -364,6 +364,9 @@
             let selectedFile = null;
             // 抽出後の最終的なテキスト（後処理済み）
             let extractedText = ''; 
+            
+            // ヘッダー/フッターと見なして無視するページ領域の割合
+            const IGNORE_AREA_RATIO = 0.10; // 上下10%を無視
 
             /**
              * メッセージボックスを表示するヘルパー関数
@@ -399,17 +402,38 @@
              * ページ内のテキストを分析し、自然な改行を適用して結合する関数
              * PDFのレイアウトを再現するため、Y座標の差とフォントの高さから改行を判断します。
              * @param {object} textContent - pdf.jsから取得したテキストコンテンツ
+             * @param {number} pageHeight - ページの高さ (ヘッダー/フッター無視のため)
              * @returns {string} - 自然な改行を含むテキスト
              */
-            function combineTextWithNaturalBreaks(textContent) {
+            function combineTextWithNaturalBreaks(textContent, pageHeight) {
                 let pageText = '';
                 let lastItem = null;
                 
                 // 改行と段落の閾値（フォントの高さに対する比率）
-                const LINE_BREAK_THRESHOLD_RATIO = 0.5; // Y差がこの比率より大きい場合は行替え
-                const PARA_BREAK_THRESHOLD_RATIO = 1.2; // Y差がこの比率より大きい場合は段落区切り
+                const LINE_BREAK_THRESHOLD_RATIO = 0.5; // Y差がこの比率より大きい場合は行替え（単一改行）
+                const PARA_BREAK_THRESHOLD_RATIO = 1.2; // Y差がこの比率より大きい場合は段落区切り（二重改行）
 
-                for (const item of textContent.items) {
+                // ヘッダー/フッターエリアのY座標を計算
+                const ignoreTopY = pageHeight * (1 - IGNORE_AREA_RATIO); // Y座標は上に行くほど大きい
+                const ignoreBottomY = pageHeight * IGNORE_AREA_RATIO;   // Y座標は下に行くほど小さい
+
+                // フィルタリング処理: ヘッダー/フッターを無視
+                const filteredItems = textContent.items.filter(item => {
+                    const currentY = item.transform[5];
+                    // Y座標が上端 or 下端の無視エリア外にあるもののみを抽出
+                    return currentY < ignoreTopY && currentY > ignoreBottomY;
+                });
+                
+                // 抽出されたアイテムがない場合
+                if (filteredItems.length === 0) {
+                    return '';
+                }
+
+
+                for (const item of filteredItems) {
+                    // 空白文字のみのアイテムはスキップ (PDF.jsのバグ対策)
+                    if (!item.str.trim()) continue;
+                    
                     if (lastItem) {
                         const lastY = lastItem.transform[5];
                         const currentY = item.transform[5];
@@ -418,15 +442,18 @@
                         // Y座標は下から上に向かって増加する。lastY - currentY > 0 は、
                         // 現在のアイテムが前のアイテムよりも下に位置すること（新しい行）を意味する。
                         const verticalDelta = lastY - currentY; 
+                        
+                        // 異常に大きなデルタを無視するための上限設定 (誤認識対策)
+                        const MAX_DELTA = pageHeight * 0.5;
 
-                        if (verticalDelta > lastHeight * PARA_BREAK_THRESHOLD_RATIO) {
+                        if (verticalDelta > lastHeight * PARA_BREAK_THRESHOLD_RATIO && verticalDelta < MAX_DELTA) {
                             // 大きな垂直ジャンプ -> 段落区切り
                             pageText += '\n\n';
-                        } else if (verticalDelta > lastHeight * LINE_BREAK_THRESHOLD_RATIO) {
+                        } else if (verticalDelta > lastHeight * LINE_BREAK_THRESHOLD_RATIO && verticalDelta < MAX_DELTA) {
                             // 中程度の垂直ジャンプ -> 標準の改行
                             pageText += '\n';
                         } else {
-                            // 垂直移動がほとんどない -> 同じ行（スペースで結合）
+                            // 垂直移動がほとんどない or 異常に大きなジャンプ -> 同じ行（スペースで結合）
                             pageText += ' ';
                         }
                     }
@@ -440,31 +467,36 @@
             }
             
             /**
-             * 抽出後のテキストに対し、不要な半角スペースを除去する後処理を行う関数。
-             * 全角文字、数字、記号の前後にある余分なスペースを削除します。
+             * 抽出後のテキストに対し、不要な半角スペースの除去と、句読点に基づく改行を行う後処理関数。
              * @param {string} text - 処理前のテキスト
              * @returns {string} - クリーンアップされたテキスト
              */
             function cleanupText(text) {
-                // 1. 全角文字、句読点、記号、数字の前後の半角スペースを削除する
-                // [^\x01-\x7E\s] は、ASCII（半角）文字と空白文字を除いた文字（主に全角文字）
                 
-                // a. 全角文字/数字の直前にある半角スペースを削除 (例: " 2010" -> "2010", " 年" -> "年")
-                text = text.replace(/\s+([^\x01-\x7E\s\r\n])/g, '$1');
+                // 1. 句読点後のスペースを削除（改行処理の前に行う）
+                // 例: 「。」の後に半角スペースがある場合
+                // 対象: 。、？！」（）『』
+                text = text.replace(/([。、？！」）『』\u3000-\u303F])\s+/g, '$1');
                 
-                // b. 全角文字/数字の直後にある半角スペースを削除 (例: "2010 " -> "2010", "年 " -> "年")
-                // アルファベットとの結合を防ぐため、全角文字の後に続くスペースのみをターゲットにする
-                text = text.replace(/([^\x01-\x7E\s\r\n])\s+/g, '$1');
+                // 2. 句読点（。？！」）の後に改行がない場合、単一改行(\n)を強制的に挿入する
+                // 既に改行やファイルの末尾がある場合は適用しない
+                // [\n$] は改行または文字列の終わりを示す
+                text = text.replace(/([。？！」])(?!\n|$)/g, '$1\n');
 
-                // c. 全角記号の前後にあるスペースを削除 (例: 「 I 」 -> 「I」)
-                // 記号（、。！？「」『』など）の直前・直後のスペースを削除
-                // \u3000-\u303F は日本語の句読点・記号の範囲
-                text = text.replace(/\s*([\u3000-\u303F])\s*/g, '$1');
+
+                // 3. 数字/アルファベット/全角文字の前後にある不要なスペースを削除する (前回の修正を保持)
+                // d. 全角文字/数字/記号の直前にある半角スペースを削除
+                // \s+([\u3000-\u303F\u4E00-\u9FFF\uFF00-\uFFEF\u3040-\u309F\u30A0-\u30FF\uff10-\uff19])
+                text = text.replace(/\s+([\u3000-\u303F\u4E00-\u9FFF\uFF00-\uFFEF\u3040-\u309F\u30A0-\u30FF\uff10-\uff19])/g, '$1');
                 
-                // d. 連続する改行を最大2つに絞る（過剰な空行を削除）
+                // e. 全角文字/数字/記号の直後にある半角スペースを削除
+                // ([\u3000-\u303F\u4E00-\u9FFF\uFF00-\uFFEF\u3040-\u309F\u30A0-\u30FF\uff10-\uff19])\s+
+                text = text.replace(/([\u3000-\u303F\u4E00-\u9FFF\uFF00-\uFFEF\u3040-\u309F\u30A0-\u30FF\uff10-\uff19])\s+/g, '$1');
+                
+                // 4. 連続する改行を最大2つに絞る（過剰な空行を削除）
                 text = text.replace(/(\n\s*){3,}/g, '\n\n');
                 
-                // e. 行頭・行末のスペースをトリム
+                // 5. 行頭・行末のスペースをトリム
                 text = text.replace(/^[ \t]+/gm, '').replace(/[ \t]+$/gm, '');
 
                 return text.trim();
@@ -497,14 +529,19 @@
                         // 全ページを順番に処理
                         for (let i = 1; i <= numPages; i++) {
                             const page = await pdfDocument.getPage(i);
-                            // textContent.itemsには各文字ブロックの位置情報が含まれる
+                            const viewport = page.getViewport({ scale: 1.0 });
+                            const pageHeight = viewport.height;
+
                             const textContent = await page.getTextContent();
                             
-                            // Y座標ベースで自然な改行を適用
-                            const pageText = combineTextWithNaturalBreaks(textContent);
+                            // Y座標ベースで自然な改行を適用し、ヘッダー/フッターを無視
+                            const pageText = combineTextWithNaturalBreaks(textContent, pageHeight);
                             
-                            // ページ間の区切りとしてダブル改行を追加（ただし後処理で調整される）
-                            fullText += '\n\n' + pageText; 
+                            // ページ間の区切りとしてダブル改行を追加
+                            if (pageText.trim().length > 0) {
+                                fullText += '\n\n' + pageText; 
+                            }
+                            
                             editor.value = `PDFを解析中... (${i}/${numPages} ページ処理済み)`;
                         }
 
