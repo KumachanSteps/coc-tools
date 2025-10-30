@@ -79,7 +79,6 @@
             background-color: #6b7280;
         }
     </style>
-    <!-- PDF.js CDNのロードを</body>直前に移動し、ロード順序の問題を解決しました。 -->
 </head>
 <body>
 
@@ -193,8 +192,8 @@
         // PDF.jsライブラリが完全にロードされてからコードを実行するために、
         // window.onloadでメインロジックをラップします。
         window.onload = function() {
-            // Set worker source for pdf.js
-            // pdfjsLibが定義された後でのみアクセスできます。
+            // PDF.jsのCDNスクリプトタグが直前で読み込まれているため、
+            // window.onloadを使用することでpdfjsLibが確実に定義されるのを待ちます。
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.worker.min.js';
 
             const pdfFile = document.getElementById('pdfFile');
