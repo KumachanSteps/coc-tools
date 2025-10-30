@@ -67,6 +67,7 @@
             width: 75%;
             background-color: var(--main-bg);
             height: 100%;
+            padding-bottom: 0; /* コピーエリアとの結合のために下パディングを削除 */
         }
 
         /* 各セクションのスタイル */
@@ -78,6 +79,15 @@
             background-color: var(--section-bg);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+        
+        /* 右パネル内のセクションの調整 */
+        .right-panel .section {
+            padding: 0;
+            border: none;
+            background: none;
+            box-shadow: none;
+            margin-bottom: 0; /* 右パネル内のセクション間の余白を削除 */
+        }
 
         h2 {
             margin-top: 0;
@@ -86,15 +96,18 @@
             font-size: 1.2em;
             color: #ffffff;
             font-weight: 400;
+            padding-left: 15px; /* 左パネルのセクションに合わせて調整 */
+            padding-right: 15px;
         }
 
         p {
             color: var(--subtle-text);
+            padding-left: 15px;
+            padding-right: 15px;
         }
 
         /* 1. PDFファイルを読み込む */
         .drop-zone {
-            /* コンソール部分の色を適用 */
             background-color: var(--console-bg);
             border: 2px dashed var(--accent-color);
             padding: 25px;
@@ -106,10 +119,7 @@
             transition: border-color 0.2s;
         }
 
-        .drop-zone:hover {
-            border-color: #0097a7;
-        }
-
+        /* ... (その他のボタンなどのスタイルは省略、大きな変更なし) ... */
         .pdf-process-btn {
             display: block;
             width: 100%;
@@ -124,22 +134,6 @@
             transition: background-color 0.2s;
         }
 
-        .pdf-process-btn:hover {
-            background-color: #0097a7;
-        }
-
-        /* 2. シンボル装飾 */
-        .symbol-decoration-section {
-            flex-grow: 1;
-        }
-
-        .symbol-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
         .symbol-btn {
             padding: 8px 12px;
             font-size: 1.1em;
@@ -151,24 +145,23 @@
             transition: background-color 0.2s, color 0.2s;
             font-weight: bold;
         }
-
         .symbol-btn:hover {
             background-color: var(--accent-color);
             color: var(--main-bg);
         }
-
-        /* 3. 編集エリア (高さ70%) */
+        
+        /* 3. 編集エリア (高さ90%) */
         .edit-area-section {
-            height: 80%; /* 80%に変更 */
+            height: 90%; /* 9割に変更 */
             display: flex;
             flex-direction: column;
-            margin-bottom: 0; /* 下のセクションとの余白を調整 */
+            padding-bottom: 15px; /* 下のセクションとのわずかな区切り */
         }
 
         #editor {
             flex-grow: 1;
-            width: 100%;
-            /* コンソール部分の色を適用 */
+            width: calc(100% - 30px); /* 左右のパディングを考慮 */
+            margin: 0 15px; /* 左右にパディングに合わせた余白 */
             background-color: var(--console-bg); 
             color: var(--text-color);
             border: 1px solid var(--accent-color);
@@ -176,41 +169,53 @@
             font-size: 1em;
             resize: none;
             box-sizing: border-box;
-            margin-top: 10px;
             border-radius: 4px;
             font-family: 'Consolas', 'Courier New', monospace;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 4. 最終テキストをコピー (高さ20%) */
+        /* 4. 最終テキストをコピー (下からの10%) */
         .copy-text-section {
-            height: 20%; /* 20%に変更 */
+            height: 10%; /* 1割に変更 */
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 15px;
-            background-color: var(--main-bg); /* 背景をメインと同じにしてフラットに */
-            padding: 0;
-            border: none;
-            box-shadow: none;
+            /* 目立たない色 #2d2d30 を背景に設定 */
+            background-color: var(--section-bg); 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            /* 右パネルの幅全体を使用 */
+            width: 100%; 
+            margin-top: 0;
+        }
+        
+        /* クリック可能なエリアであることを示すホバーエフェクト */
+        .copy-text-section:hover {
+            background-color: #3e3e42; /* 少し明るくしてホバーを表現 */
         }
 
         .copy-btn {
-            /* 全体の色合いに寄せるため、アクセントカラーを使用 */
-            padding: 18px 35px;
-            background-color: var(--accent-color);
-            color: var(--main-bg);
+            /* ボタンのスタイルをリセットし、テキストを目立たせる */
+            background: none;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1.2em;
+            color: var(--accent-color); /* 目立たない背景に目立つテキスト */
+            padding: 0;
+            font-size: 1em;
             font-weight: bold;
-            transition: background-color 0.2s;
-            width: 80%; /* 幅を調整してスタイリッシュに */
-            max-width: 400px;
+            text-transform: uppercase;
+            cursor: pointer;
+            /* ボタンテキストが中央に来るように調整 */
+            width: auto;
+            max-width: none;
         }
 
-        .copy-btn:hover {
-            background-color: #0097a7;
+        /* 最終コピーボタンのテキストを強調 */
+        .copy-text-section p.copy-label {
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 1em;
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
@@ -256,15 +261,15 @@
 
         <div class="right-panel">
             
-            <div class="section edit-area-section">
+            <div class="edit-area-section">
                 <h2>3. 編集エリア</h2>
                 <p>PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。</p>
                 <textarea id="editor" placeholder="抽出されたテキストがここに表示されます..." aria-label="編集エリア"></textarea>
             </div>
 
-            <div class="copy-text-section">
-                <button class="copy-btn">最終テキストをクリップボードにコピー</button>
-            </div>
+            <button class="copy-text-section" id="copyTextSection" role="button" aria-label="最終テキストをクリップボードにコピー">
+                <p class="copy-label">最終テキストをクリップボードにコピー</p>
+            </button>
         </div>
     </div>
 
