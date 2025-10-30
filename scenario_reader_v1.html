@@ -5,50 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>シナリオPDFテキスト抽出＆編集ツール</title>
     <style>
-        /* 基本的なスタイル */
+        /* 基本的なスタイル: ナイトモード */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
-            /* Canvas内で表示されるため、bodyの高さを明示的に設定 */
+            background-color: #1e1e1e; /* メイン背景 */
+            color: #f0f0f0; /* 基本テキスト色 */
             height: 100vh; 
             overflow: hidden;
         }
 
+        /* ヘッダー */
         header {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
+            background-color: #000000; /* ヘッダー背景 */
+            color: #00bcd4; /* アクセントカラー */
+            padding: 15px 20px;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            margin: 0;
+            font-weight: 300;
         }
 
         .container {
             display: flex;
-            /* ヘッダーの高さを引く */
-            height: calc(100vh - 50px); 
+            height: calc(100vh - 60px); /* ヘッダーの高さを考慮 */
+        }
+
+        /* パネル共通スタイル */
+        .left-panel, .right-panel {
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
 
         /* 左側のエリア (25%) */
         .left-panel {
             width: 25%;
-            padding: 20px;
-            box-sizing: border-box;
-            background-color: #fff;
-            border-right: 1px solid #ccc;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto; /* コンテンツがはみ出た場合にスクロール */
+            background-color: #252526; /* 左パネル背景 */
+            border-right: 1px solid #3c3c3c;
+            overflow-y: auto;
         }
 
         /* 右側のエリア (75%) */
         .right-panel {
             width: 75%;
-            padding: 20px;
-            box-sizing: border-box;
-            background-color: #f9f9f9;
-            display: flex;
-            flex-direction: column;
+            background-color: #1e1e1e;
             height: 100%;
         }
 
@@ -56,76 +62,87 @@
         .section {
             margin-bottom: 20px;
             padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #fff;
+            border: 1px solid #3c3c3c;
+            border-radius: 8px;
+            background-color: #2d2d30; /* セクション背景 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         h2 {
             margin-top: 0;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 5px;
-            font-size: 1.1em;
-            color: #333;
+            border-bottom: 2px solid #00bcd4; /* アクセントカラーの区切り線 */
+            padding-bottom: 8px;
+            font-size: 1.2em;
+            color: #ffffff;
+            font-weight: 400;
         }
 
         /* 1. PDFファイルを読み込む */
-        .pdf-upload-section {
-            flex-grow: 0;
+        .drop-zone {
+            border: 2px dashed #00bcd4;
+            padding: 25px;
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
         }
 
-        .drop-zone {
-            border: 2px dashed #007bff;
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            margin-bottom: 10px;
-            cursor: pointer;
+        .drop-zone:hover {
+            background-color: #3a3a3a;
         }
 
         .pdf-process-btn {
             display: block;
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
+            padding: 12px;
+            background-color: #00bcd4; /* アクセントカラー */
+            color: #1e1e1e;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         .pdf-process-btn:hover {
-            background-color: #0056b3;
+            background-color: #0097a7;
         }
 
         /* 2. シンボル装飾 */
         .symbol-decoration-section {
-            flex-grow: 1; /* 残りのスペースを使用 */
+            flex-grow: 1;
         }
 
         .symbol-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .symbol-btn {
             padding: 8px 12px;
-            font-size: 1.2em;
-            background-color: #e9ecef;
-            border: 1px solid #ccc;
+            font-size: 1.1em;
+            background-color: #3e3e3e;
+            color: #fff;
+            border: 1px solid #555;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: bold;
         }
 
         .symbol-btn:hover {
-            background-color: #ddd;
+            background-color: #00bcd4;
+            color: #1e1e1e;
         }
 
         /* 3. 編集エリア */
         .edit-area-section {
-            height: 80%; /* 右側エリアの80% */
+            height: 80%;
             display: flex;
             flex-direction: column;
         }
@@ -133,17 +150,21 @@
         #editor {
             flex-grow: 1;
             width: 100%;
-            border: 1px solid #ccc;
-            padding: 10px;
+            background-color: #333333; /* エディタ背景 */
+            color: #f0f0f0;
+            border: 1px solid #00bcd4;
+            padding: 15px;
             font-size: 1em;
             resize: none;
             box-sizing: border-box;
             margin-top: 10px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace; /* 見やすいフォント */
         }
 
         /* 4. 最終テキストをコピー */
         .copy-text-section {
-            height: 20%; /* 右側エリアの20% */
+            height: 20%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -151,17 +172,19 @@
         }
 
         .copy-btn {
-            padding: 15px 30px;
-            background-color: #28a745;
-            color: white;
+            padding: 18px 35px;
+            background-color: #4caf50; /* コピーボタンは視認性の高い緑 */
+            color: #1e1e1e;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 1.2em;
+            font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         .copy-btn:hover {
-            background-color: #1e7e34;
+            background-color: #66bb6a;
         }
     </style>
 </head>
@@ -185,16 +208,22 @@
 
             <div class="section symbol-decoration-section">
                 <h2>2. シンボル装飾</h2>
-                <p>シンボルをクリックすると、エディターのカーソル位置に直接挿入されます。</p>
+                <p style="color:#aaa;">シンボルをクリックすると、エディターのカーソル位置に直接挿入されます。</p>
                 <div class="symbol-grid">
-                    <button class="symbol-btn" data-symbol="★">★</button>
-                    <button class="symbol-btn" data-symbol="☆">☆</button>
-                    <button class="symbol-btn" data-symbol="■">■</button>
-                    <button class="symbol-btn" data-symbol="◇">◇</button>
-                    <button class="symbol-btn" data-symbol="⇒">⇒</button>
-                    <button class="symbol-btn" data-symbol="…">…</button>
-                    <button class="symbol-btn" data-symbol="【">【</button>
-                    <button class="symbol-btn" data-symbol="】">】</button>
+                    <button class="symbol-btn" data-symbol="▸">▸</button>
+                    <button class="symbol-btn" data-symbol="▮">▮</button>
+                    <button class="symbol-btn" data-symbol="❐">❐</button>
+                    <button class="symbol-btn" data-symbol="✧">✧</button>
+                    <button class="symbol-btn" data-symbol="✦">✦</button>
+                    <button class="symbol-btn" data-symbol="▶">▶</button>
+                    <button class="symbol-btn" data-symbol="◼︎">◼︎</button>
+                    <button class="symbol-btn" data-symbol="◻︎">◻︎</button>
+                    <button class="symbol-btn" data-symbol="〈">〈</button>
+                    <button class="symbol-btn" data-symbol="〉">〉</button>
+                    <button class="symbol-btn" data-symbol="《">《</button>
+                    <button class="symbol-btn" data-symbol="》">》</button>
+                    <button class="symbol-btn" data-symbol="▼">▼</button>
+                    <button class="symbol-btn" data-symbol="►">►</button>
                 </div>
             </div>
         </div>
@@ -203,7 +232,7 @@
             
             <div class="section edit-area-section">
                 <h2>3. 編集エリア</h2>
-                <p>PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。</p>
+                <p style="color:#aaa;">PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。</p>
                 <textarea id="editor" placeholder="抽出されたテキストがここに表示されます..." aria-label="編集エリア"></textarea>
             </div>
 
