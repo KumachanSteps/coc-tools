@@ -3,6 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <title>シナリオPDFテキスト抽出＆編集ツール</title>
+    <!-- PDF.js ライブラリをCDN経由で読み込みます -->
+    <!-- PDF処理は非同期であるため、ライブラリのロードが必要です -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.min.js"></script>
+    
     <style>
         /* CSS変数 */
         :root {
@@ -11,9 +15,10 @@
             --section-bg: #2d2d30;       /* セクション背景 */
             --console-bg: #1a1a1f;       /* コンソール/エディタ背景 (画像の色をベースに) */
             --accent-color: #00bcd4;     /* アクセントカラー (シアン) */
-            --text-color: #f0f0f0;       /* 基本テキスト色 */
-            --subtle-text: #aaa;         /* 薄いテキスト色 */
+            --text-color: #f0f0f0;       /* 基本テキスト色 (白) */
+            --subtle-text: #aaa;         /* 薄いテキスト色 (灰色) */
             --border-color: #3c3c3c;     /* ボーダー色 */
+            --drop-highlight: #007985;   /* ドロップ時のハイライト色 */
         }
 
         /* 基本的なスタイル: ナイトモード */
@@ -73,11 +78,26 @@
         /* 各セクションのスタイル */
         .section {
             margin-bottom: 20px;
-            padding: 15px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background-color: var(--section-bg);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0; /* セクションが小さくならないように */
+        }
+        
+        /* 1. PDFファイルを読み込むセクションにパディングを維持 */
+        .pdf-upload-section {
+            padding: 15px;
+        }
+
+        /* 2. シンボル装飾セクションにflex-growを適用して残りの高さを占める */
+        .symbol-decoration-section {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 1;
+            margin-bottom: 0; 
+            padding: 0; /* セクション自体のパディングを0にし、内部要素で制御 */
         }
         
         /* 右パネル内のセクションの調整 */
@@ -96,14 +116,22 @@
             font-size: 1.2em;
             color: #ffffff;
             font-weight: 400;
-            padding-left: 15px; /* 左パネルのセクションに合わせて調整 */
+            padding-left: 15px; /* 左右パディングを維持 */
             padding-right: 15px;
+            padding-top: 15px; /* 上パディングを追加 */
+            flex-shrink: 0; 
+        }
+
+        /* シンボル装飾セクションのタイトルと説明文の境界線 */
+        .symbol-decoration-section h2 {
+            margin-bottom: 0;
         }
 
         p {
             color: var(--subtle-text);
             padding-left: 15px;
             padding-right: 15px;
+            flex-shrink: 0; 
         }
 
         /* 1. PDFファイルを読み込む */
@@ -116,8 +144,15 @@
             margin-bottom: 15px;
             cursor: pointer;
             border-radius: 4px;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, background-color 0.2s; /* トランジション追加 */
         }
+        
+        /* ドロップゾーンのハイライトスタイル */
+        .drop-zone.highlight {
+            border-color: var(--drop-highlight);
+            background-color: #38383a; /* ドロップ時の背景色を少し明るく */
+        }
+
 
         /* ... (その他のボタンなどのスタイルは省略、大きな変更なし) ... */
         .pdf-process-btn {
@@ -132,6 +167,37 @@
             font-size: 1em;
             font-weight: bold;
             transition: background-color 0.2s;
+        }
+
+        /* 無効化されたボタンのスタイル */
+        .pdf-process-btn:disabled {
+            background-color: #008c9e; /* 少し暗く */
+            cursor: not-allowed;
+        }
+
+        /* 2. シンボル装飾 - グリッドレイアウトの変更点 */
+        .symbol-grid {
+            flex-grow: 1; 
+            overflow-y: auto; 
+            display: grid;
+            gap: 10px;
+            padding: 10px 15px 15px; 
+            /* デフォルト: 4列 (4x3配列) */
+            grid-template-columns: repeat(4, 1fr);
+        }
+        
+        /* 幅が900px以下の場合 (中程度の幅): 3列 (3x4配列) */
+        @media (max-width: 900px) {
+            .symbol-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* 幅が600px以下の場合 (狭い幅): 2列 (2x6配列) */
+        @media (max-width: 600px) {
+            .symbol-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .symbol-btn {
@@ -174,7 +240,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 4. 最終テキストをコピー (下からの10%) */
+        /* 4. 最終テキストをコピー (下からの10%) - 幅を編集エリアに合わせるために修正 */
         .copy-text-section {
             height: 10%; /* 1割に変更 */
             display: flex;
@@ -184,9 +250,11 @@
             background-color: var(--section-bg); 
             cursor: pointer;
             transition: background-color 0.2s;
-            /* 右パネルの幅全体を使用 */
-            width: 100%; 
-            margin-top: 0;
+            
+            /* #editorと同じ幅とマージンを適用し、編集エリアと幅を揃える */
+            width: calc(100% - 30px); 
+            /* 下部に2pxのマージンを追加 (上/右/下/左 -> 0/15px/2px/15px) */
+            margin: 0 15px 2px; 
         }
         
         /* クリック可能なエリアであることを示すホバーエフェクト */
@@ -211,11 +279,36 @@
 
         /* 最終コピーボタンのテキストを強調 */
         .copy-text-section p.copy-label {
-            color: var(--text-color);
+            /* 文字色をグレー(var(--subtle-text))に変更 */
+            color: var(--subtle-text); 
             font-weight: bold;
             font-size: 1em;
             margin: 0;
             padding: 0;
+        }
+
+        /* メッセージボックスのスタイル (新規追加) */
+        .message-box {
+            position: fixed;
+            bottom: 60px; /* 画面下から少し上に配置 */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-color); /* シアン */
+            color: var(--main-bg); /* メイン背景色（黒）でコントラストを強調 */
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+            font-size: 1.1em;
+            opacity: 0; /* 初期状態は非表示 */
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1000;
+        }
+
+        .message-box.show {
+            opacity: 1; /* 表示状態 */
+            visibility: visible;
         }
     </style>
 </head>
@@ -226,52 +319,269 @@
     </header>
 
     <div class="container">
+        <!-- 左側のパネル (25%) -->
         <div class="left-panel">
             
+            <!-- 1. PDFファイルを読み込む -->
             <div class="section pdf-upload-section">
                 <h2>1. PDFファイルを読み込む</h2>
                 <div class="drop-zone" id="pdfDropZone">
-                    PDFファイルをここにドラッグ＆ドロップ
+                    <!-- テキストを修正 -->
+                    PDFファイルをここにドラッグ＆ドロップ クリックでファイル選択
                     <input type="file" id="pdfFile" accept="application/pdf" style="display: none;">
                 </div>
-                <button class="pdf-process-btn">PDFを処理</button>
+                <button class="pdf-process-btn" disabled>PDFを処理</button>
             </div>
 
+            <!-- 2. シンボル装飾 -->
             <div class="section symbol-decoration-section">
                 <h2>2. シンボル装飾</h2>
                 <p>シンボルをクリックすると、エディターのカーソル位置に直接挿入されます。</p>
                 <div class="symbol-grid">
-                    <button class="symbol-btn" data-symbol="▸">▸</button>
-                    <button class="symbol-btn" data-symbol="▮">▮</button>
-                    <button class="symbol-btn" data-symbol="❐">❐</button>
-                    <button class="symbol-btn" data-symbol="✧">✧</button>
-                    <button class="symbol-btn" data-symbol="✦">✦</button>
-                    <button class="symbol-btn" data-symbol="▶">▶</button>
-                    <button class="symbol-btn" data-symbol="◼︎">◼︎</button>
-                    <button class="symbol-btn" data-symbol="◻︎">◻︎</button>
-                    <button class="symbol-btn" data-symbol="〈">〈</button>
-                    <button class="symbol-btn" data-symbol="〉">〉</button>
+                    <!-- シンボルリスト: ►▼《》〈〉◻︎◼︎❐✦✧▌ -->
+                    <button class="symbol-btn" data-symbol="►">►</button>
+                    <button class="symbol-btn" data-symbol="▼">▼</button>
                     <button class="symbol-btn" data-symbol="《">《</button>
                     <button class="symbol-btn" data-symbol="》">》</button>
-                    <button class="symbol-btn" data-symbol="▼">▼</button>
-                    <button class="symbol-btn" data-symbol="►">►</button>
+                    <button class="symbol-btn" data-symbol="〈">〈</button>
+                    <button class="symbol-btn" data-symbol="〉">〉</button>
+                    <button class="symbol-btn" data-symbol="◻︎">◻︎</button>
+                    <button class="symbol-btn" data-symbol="◼︎">◼︎</button>
+                    <button class="symbol-btn" data-symbol="❐">❐</button>
+                    <button class="symbol-btn" data-symbol="✦">✦</button>
+                    <button class="symbol-btn" data-symbol="✧">✧</button>
+                    <button class="symbol-btn" data-symbol="▌">▌</button>
                 </div>
             </div>
         </div>
 
+        <!-- 右側のパネル (75%) -->
         <div class="right-panel">
             
+            <!-- 3. 編集エリア (高さ90%) -->
             <div class="edit-area-section">
                 <h2>3. 編集エリア</h2>
                 <p>PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。</p>
+                <!-- 初期テキストを削除し、placeholderのみを使用 -->
                 <textarea id="editor" placeholder="抽出されたテキストがここに表示されます..." aria-label="編集エリア"></textarea>
             </div>
 
+            <!-- 4. 最終テキストをコピー (下からの10%) -->
             <button class="copy-text-section" id="copyTextSection" role="button" aria-label="最終テキストをクリップボードにコピー">
                 <p class="copy-label">最終テキストをクリップボードにコピー</p>
             </button>
         </div>
     </div>
+    
+    <!-- コピー成功メッセージボックス (新規追加) -->
+    <div id="messageBox" class="message-box"></div>
 
+    <script>
+        // pdf.js のWorkerパスを設定 (必須)
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.worker.min.js';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = document.getElementById('editor');
+            const copyTextSection = document.getElementById('copyTextSection');
+            const messageBox = document.getElementById('messageBox');
+            const symbolButtons = document.querySelectorAll('.symbol-btn');
+            const pdfDropZone = document.getElementById('pdfDropZone');
+            const pdfFile = document.getElementById('pdfFile');
+            const pdfProcessBtn = document.querySelector('.pdf-process-btn');
+
+            let selectedFile = null;
+
+            /**
+             * メッセージボックスを表示するヘルパー関数
+             * @param {string} text - 表示するメッセージ
+             */
+            function showMessage(text) {
+                messageBox.textContent = text;
+                messageBox.classList.add('show');
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 1500);
+            }
+
+            /**
+             * テキストエリアのカーソル位置に文字列を挿入するヘルパー関数
+             * @param {HTMLTextAreaElement} textarea
+             * @param {string} text
+             */
+            function insertAtCursor(textarea, text) {
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const value = textarea.value;
+
+                // 選択範囲を置き換え、またはカーソル位置に挿入
+                textarea.value = value.substring(0, start) + text + value.substring(end);
+                
+                // 挿入後にカーソル位置を移動
+                textarea.selectionStart = textarea.selectionEnd = start + text.length;
+                textarea.focus();
+            }
+
+            /**
+             * PDFファイルからテキストを抽出する非同期関数
+             * @param {File} file - 処理するPDFファイル
+             */
+            async function extractTextFromPDF(file) {
+                if (!file || file.type !== 'application/pdf' || typeof pdfjsLib === 'undefined') {
+                    showMessage('エラー: PDFファイルが無効か、PDFリーダーがロードされていません。');
+                    return;
+                }
+                
+                editor.value = `PDFを解析中... (${file.name})\n\nしばらくお待ちください...`;
+                pdfProcessBtn.disabled = true;
+
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    try {
+                        const arrayBuffer = event.target.result;
+                        const pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                        const numPages = pdfDocument.numPages;
+                        let fullText = '';
+                        
+                        // 全ページを順番に処理
+                        for (let i = 1; i <= numPages; i++) {
+                            const page = await pdfDocument.getPage(i);
+                            const textContent = await page.getTextContent();
+                            
+                            // テキストアイテムを結合してテキスト行を構築
+                            const pageText = textContent.items.map(item => item.str).join(' ');
+                            
+                            // ページ区切りとテキストを追加
+                            fullText += `\n\n--- ページ ${i}/${numPages} ---\n\n${pageText}`;
+                            editor.value = `PDFを解析中... (${i}/${numPages} ページ処理済み)`;
+                        }
+
+                        // 結果をエディタに表示
+                        editor.value = fullText.trim();
+                        showMessage('PDFからテキストを抽出しました。');
+
+                    } catch (error) {
+                        editor.value = `PDFの解析中にエラーが発生しました。\n\nファイル名: ${file.name}\nエラー詳細: ${error.message}`;
+                        console.error('PDF解析エラー:', error);
+                        showMessage('PDF解析中にエラーが発生しました。');
+                    } finally {
+                        pdfProcessBtn.disabled = false;
+                    }
+                };
+
+                reader.onerror = (error) => {
+                    editor.value = `ファイルの読み込み中にエラーが発生しました: ${error.target.error.name}`;
+                    console.error('FileReaderエラー:', error);
+                    pdfProcessBtn.disabled = false;
+                };
+
+                reader.readAsArrayBuffer(file);
+            }
+
+            /**
+             * ファイルを受け取り、処理を開始するかどうかを決定する関数
+             * @param {FileList} files - 選択された/ドロップされたファイルリスト
+             */
+            function handleFileSelection(files) {
+                if (files.length === 0) return;
+                
+                const file = files[0];
+                if (file.type !== 'application/pdf') {
+                    showMessage('PDFファイルを選択してください。');
+                    selectedFile = null;
+                    pdfProcessBtn.disabled = true;
+                    return;
+                }
+                
+                selectedFile = file;
+                pdfProcessBtn.disabled = false;
+                console.log(`ファイルが選択されました: ${file.name}`);
+                
+                // ファイルが選択されたら、ユーザーが「PDFを処理」を押すのを待つ
+                pdfProcessBtn.textContent = `${file.name} を処理`;
+                editor.value = `PDFファイルがロードされました: ${file.name}\n\n「PDFを処理」ボタンをクリックしてテキスト抽出を開始してください。`;
+            }
+
+            // --- 4. 最終テキストをクリップボードにコピーする機能 ---
+            copyTextSection.addEventListener('click', () => {
+                editor.select();
+                
+                let success = false;
+                try {
+                    success = document.execCommand('copy');
+                } catch (err) {
+                    console.error('クリップボードへのコピーに失敗しました:', err);
+                }
+
+                if (success) {
+                    showMessage('クリップボードにコピーしました！');
+                } else {
+                    showMessage('コピーに失敗しました。手動でコピーしてください。');
+                }
+            });
+
+            // --- 2. シンボル装飾ボタンの機能 ---
+            symbolButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const symbol = e.currentTarget.dataset.symbol;
+                    insertAtCursor(editor, symbol);
+                });
+            });
+
+            // --- 1. PDFファイルの読み込み/処理機能 ---
+            
+            // 1-1. クリックでファイル選択をトリガー
+            pdfDropZone.addEventListener('click', () => {
+                pdfFile.click();
+            });
+
+            // 1-2. ファイル入力の変更イベント
+            pdfFile.addEventListener('change', () => {
+                if (pdfFile.files.length > 0) {
+                    handleFileSelection(pdfFile.files);
+                }
+            });
+
+            // 1-3. ドラッグ＆ドロップ機能
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                pdfDropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                pdfDropZone.addEventListener(eventName, () => {
+                    pdfDropZone.classList.add('highlight');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                pdfDropZone.addEventListener(eventName, () => {
+                    pdfDropZone.classList.remove('highlight');
+                }, false);
+            });
+            
+            // ファイルドロップ時の処理
+            pdfDropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFileSelection(files);
+            }, false);
+
+            // 1-4. 「PDFを処理」ボタンの機能
+            pdfProcessBtn.addEventListener('click', () => {
+                if (selectedFile) {
+                    extractTextFromPDF(selectedFile);
+                } else {
+                    showMessage('処理するPDFファイルを選択してください。');
+                }
+            });
+
+            // 初期状態のボタン表示
+            pdfProcessBtn.textContent = 'PDFを処理';
+        });
+    </script>
 </body>
 </html>
