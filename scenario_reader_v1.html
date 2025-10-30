@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8" />
-    <title>v2シナリオPDFテキスト抽出＆編集ツール</title>
+    <title>v3シナリオPDFテキスト抽出＆編集ツール</title>
     <!-- PDF.js ライブラリをCDN経由で読み込みます -->
     <!-- PDF処理は非同期であるため、ライブラリのロードが必要です -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.worker.min.js"></script>
@@ -228,7 +228,8 @@
             resize: none;
             box-sizing: border-box;
             border-radius: 4px;
-            font-family: 'Consolas', 'Courier New', monospace;
+            /* シナリオ編集に適した等幅フォント */
+            font-family: 'Consolas', 'Courier New', monospace; 
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -258,11 +259,6 @@
             padding: 0;
         }
         
-        .copy-text-section small {
-            color: var(--subtle-text);
-            margin-left: 10px;
-        }
-
         /* メッセージボックスのスタイル */
         .message-box {
             position: fixed;
@@ -366,7 +362,7 @@
             const pdfProcessBtn = document.querySelector('.pdf-process-btn');
 
             let selectedFile = null;
-            // ページ番号を含まないテキストのみを保持する変数 (表示内容と同一)
+            // 抽出後の最終的なテキスト（後処理済み）
             let extractedText = ''; 
 
             /**
@@ -401,6 +397,7 @@
 
             /**
              * ページ内のテキストを分析し、自然な改行を適用して結合する関数
+             * PDFのレイアウトを再現するため、Y座標の差とフォントの高さから改行を判断します。
              * @param {object} textContent - pdf.jsから取得したテキストコンテンツ
              * @returns {string} - 自然な改行を含むテキスト
              */
@@ -408,25 +405,25 @@
                 let pageText = '';
                 let lastItem = null;
                 
-                // 垂直方向の閾値 (ピクセル単位の差)
-                // この値はPDFのフォントサイズや行間によって変動しますが、一般的な値を使用
-                const LINE_BREAK_TOLERANCE = 2;   // わずかな垂直シフト (同じ行と見なす)
-                const PARA_BREAK_MIN_GAP = 12;    // これより大きいギャップは段落ブレイクと見なす
+                // 改行と段落の閾値（フォントの高さに対する比率）
+                const LINE_BREAK_THRESHOLD_RATIO = 0.5; // Y差がこの比率より大きい場合は行替え
+                const PARA_BREAK_THRESHOLD_RATIO = 1.2; // Y差がこの比率より大きい場合は段落区切り
 
                 for (const item of textContent.items) {
                     if (lastItem) {
                         const lastY = lastItem.transform[5];
                         const currentY = item.transform[5];
+                        const lastHeight = lastItem.height;
                         
                         // Y座標は下から上に向かって増加する。lastY - currentY > 0 は、
-                        // 現在のアイテムが前のアイテムよりも下に位置することを意味する (新しい行)
+                        // 現在のアイテムが前のアイテムよりも下に位置すること（新しい行）を意味する。
                         const verticalDelta = lastY - currentY; 
 
-                        if (verticalDelta > PARA_BREAK_MIN_GAP) {
+                        if (verticalDelta > lastHeight * PARA_BREAK_THRESHOLD_RATIO) {
                             // 大きな垂直ジャンプ -> 段落区切り
                             pageText += '\n\n';
-                        } else if (verticalDelta > LINE_BREAK_TOLERANCE) {
-                            // 小さな垂直ジャンプ -> 標準の改行
+                        } else if (verticalDelta > lastHeight * LINE_BREAK_THRESHOLD_RATIO) {
+                            // 中程度の垂直ジャンプ -> 標準の改行
                             pageText += '\n';
                         } else {
                             // 垂直移動がほとんどない -> 同じ行（スペースで結合）
@@ -440,6 +437,37 @@
                 }
                 
                 return pageText;
+            }
+            
+            /**
+             * 抽出後のテキストに対し、不要な半角スペースを除去する後処理を行う関数。
+             * 全角文字、数字、記号の前後にある余分なスペースを削除します。
+             * @param {string} text - 処理前のテキスト
+             * @returns {string} - クリーンアップされたテキスト
+             */
+            function cleanupText(text) {
+                // 1. 全角文字、句読点、記号、数字の前後の半角スペースを削除する
+                // [^\x01-\x7E\s] は、ASCII（半角）文字と空白文字を除いた文字（主に全角文字）
+                
+                // a. 全角文字/数字の直前にある半角スペースを削除 (例: " 2010" -> "2010", " 年" -> "年")
+                text = text.replace(/\s+([^\x01-\x7E\s\r\n])/g, '$1');
+                
+                // b. 全角文字/数字の直後にある半角スペースを削除 (例: "2010 " -> "2010", "年 " -> "年")
+                // アルファベットとの結合を防ぐため、全角文字の後に続くスペースのみをターゲットにする
+                text = text.replace(/([^\x01-\x7E\s\r\n])\s+/g, '$1');
+
+                // c. 全角記号の前後にあるスペースを削除 (例: 「 I 」 -> 「I」)
+                // 記号（、。！？「」『』など）の直前・直後のスペースを削除
+                // \u3000-\u303F は日本語の句読点・記号の範囲
+                text = text.replace(/\s*([\u3000-\u303F])\s*/g, '$1');
+                
+                // d. 連続する改行を最大2つに絞る（過剰な空行を削除）
+                text = text.replace(/(\n\s*){3,}/g, '\n\n');
+                
+                // e. 行頭・行末のスペースをトリム
+                text = text.replace(/^[ \t]+/gm, '').replace(/[ \t]+$/gm, '');
+
+                return text.trim();
             }
 
 
@@ -469,18 +497,21 @@
                         // 全ページを順番に処理
                         for (let i = 1; i <= numPages; i++) {
                             const page = await pdfDocument.getPage(i);
+                            // textContent.itemsには各文字ブロックの位置情報が含まれる
                             const textContent = await page.getTextContent();
                             
-                            // 新しい結合関数を使用して自然な改行を適用
+                            // Y座標ベースで自然な改行を適用
                             const pageText = combineTextWithNaturalBreaks(textContent);
                             
-                            // ページ間の区切りとしてダブル改行を追加
+                            // ページ間の区切りとしてダブル改行を追加（ただし後処理で調整される）
                             fullText += '\n\n' + pageText; 
                             editor.value = `PDFを解析中... (${i}/${numPages} ページ処理済み)`;
                         }
 
+                        // 抽出後のテキストに対してクリーンアップ処理を適用
+                        extractedText = cleanupText(fullText);
+
                         // 結果をエディタに表示
-                        extractedText = fullText.trim();
                         editor.value = extractedText;
                         showMessage('PDFからテキストを抽出しました。');
 
@@ -531,7 +562,7 @@
 
             // --- 4. 最終テキストをクリップボードにコピーする機能 ---
             copyTextSection.addEventListener('click', () => {
-                // extractedText (PDF抽出テキスト) があればそれを使う。なければエディタの現在の内容を使う。
+                // extractedText (PDF抽出＆後処理済みテキスト) があればそれを使う。なければエディタの現在の内容を使う。
                 const textToCopy = extractedText.length > 0 ? extractedText : editor.value;
 
                 // Clipboard APIを使用してコピーを試みる
