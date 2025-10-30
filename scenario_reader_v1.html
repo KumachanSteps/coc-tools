@@ -39,12 +39,7 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        #editor {
-            resize: vertical;
-            min-height: 400px;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
+        
         /* カスタムスクロールバー */
         #editor::-webkit-scrollbar {
             width: 8px;
@@ -78,6 +73,46 @@
         .symbol-btn:hover {
             background-color: #6b7280;
         }
+        /* 左右分割コンテナの調整 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr 3fr; /* 左右を1:3 (25%:75%)に分割 */
+                align-items: flex-start; 
+            }
+        }
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* --- 高さ・比率制御のためのカスタムCSS --- */
+        
+        /* 編集エリアの親カード: 右側パネルの上から80%を占める */
+        .editor-container-card {
+            flex: 8; /* 80% */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* コピーボタンの親カード: 右側パネルの下から20%を占める */
+        .copy-container-card {
+            flex: 2; /* 20% */
+        }
+
+        /* エディタの高さ調整 (Flexboxに制御を任せる) */
+        #editor {
+            resize: none; 
+            min-height: 100px; /* 最小高さは確保しつつ、flex-growで拡大 */
+            font-size: 1rem;
+            line-height: 1.6;
+            flex-grow: 1; /* 親カードの残りのスペースを全て占める */
+        }
     </style>
 </head>
 <body>
@@ -87,12 +122,12 @@
             PDFテキスト抽出＆編集ツール
         </h1>
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div class="main-grid">
             
-            <!-- 左側 (ファイル/シンボル) - 2/5 幅 -->
-            <div class="lg:col-span-2 space-y-8">
+            <!-- 左側パネル (1/4幅 - 25%) - ファイル選択とシンボル -->
+            <div class="left-panel">
                 
-                <!-- 1. PDFファイルを読み込む (Drag & Drop対応) -->
+                <!-- 1. PDFファイルを読み込む (上半分 50% - 内容に応じて調整) -->
                 <div class="card p-6 rounded-xl space-y-4">
                     <h2 class="text-2xl font-semibold">1. PDFファイルを読み込む</h2>
                     
@@ -118,7 +153,7 @@
                     </div>
                 </div>
 
-                <!-- 4. シンボル装飾ボタン -->
+                <!-- 2. シンボル装飾ボタン (下半分 50% - 内容に応じて調整) -->
                 <div class="card p-6 rounded-xl space-y-4">
                     <h2 class="text-2xl font-semibold">2. シンボル装飾（クリックで挿入）</h2>
                     <div id="symbolPalette" class="grid grid-cols-6 gap-2">
@@ -128,16 +163,18 @@
                         シンボルをクリックすると、エディターのカーソル位置に直接挿入されます。
                     </p>
                 </div>
+                
             </div>
 
-            <!-- 右側 (編集/コントロール/コピー) - 3/5 幅 -->
-            <div class="lg:col-span-3 space-y-8">
+            <!-- 右側パネル (3/4幅 - 75%) - 編集エリアとコントロール -->
+            <!-- flex-colと画面高さを利用して子要素の比率を制御 -->
+            <div class="lg:col-span-3 flex flex-col space-y-4 h-[calc(100vh-140px)]">
                 
-                <!-- 2. 編集と装飾 (Editor) -->
-                <div class="card p-6 rounded-xl space-y-4">
+                <!-- 3. 編集と装飾 (Editor) - 右側パネルの上から80%を占める -->
+                <div class="card p-6 rounded-xl space-y-4 editor-container-card">
                     <h2 class="text-2xl font-semibold">3. 編集エリア</h2>
                     
-                    <!-- Editor Text Area -->
+                    <!-- Editor Text Area - 親カード内の残りの高さを全て占める -->
                     <textarea id="editor" placeholder="PDFをアップロードし、「PDFを処理」をクリックすると、抽出されたテキストがここに表示されます。"
                               class="w-full p-4 rounded-lg bg-gray-800 border border-gray-600 text-text-light focus:ring-primary focus:border-primary"></textarea>
                     
@@ -163,9 +200,9 @@
                         *注意: 2列のテキストが誤って混ざる場合、手動で修正してください。
                     </p>
                 </div>
-
-                <!-- 3. 最終テキストをコピー -->
-                <div class="card p-6 rounded-xl space-y-4">
+                
+                <!-- 4. 最終テキストをコピー - 右側パネルの下から20%を占める -->
+                <div class="card p-6 rounded-xl space-y-4 copy-container-card">
                     <h2 class="text-2xl font-semibold">4. 最終テキストをコピー</h2>
                     <button onclick="copyText()" id="copyBtn" disabled
                             class="w-full mt-2 btn bg-primary text-white hover:bg-blue-600">
@@ -173,7 +210,6 @@
                         編集済みテキストをクリップボードにコピー
                     </button>
                 </div>
-
             </div>
         </div>
         
@@ -185,16 +221,22 @@
     </div>
 
     <!-- PDF.js CDN - Necessary for reading PDF files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.worker.min.js"></script>
+    <!-- PDF.jsのライブラリの読み込み順序を修正: メインライブラリを先にロードします -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.worker.min.js"></script>
 
     <script>
         // PDF.jsライブラリが完全にロードされてからコードを実行するために、
         // window.onloadでメインロジックをラップします。
         window.onload = function() {
-            // PDF.jsのCDNスクリプトタグが直前で読み込まれているため、
-            // window.onloadを使用することでpdfjsLibが確実に定義されるのを待ちます。
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.worker.min.js';
+            // pdfjsLibが未定義であるエラーを避けるため、ここでWorkerのパスを設定
+            if (typeof pdfjsLib !== 'undefined') {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.365/pdf.worker.min.js';
+            } else {
+                console.error("PDF.js library failed to load.");
+                document.getElementById('editor').value = "エラー: PDF.jsライブラリの読み込みに失敗しました。ページをリロードしてください。";
+                return;
+            }
 
             const pdfFile = document.getElementById('pdfFile');
             const processBtn = document.getElementById('processBtn');
@@ -254,11 +296,13 @@
 
                 if (files.length > 0 && files[0].type === 'application/pdf') {
                     // ドロップされたファイルをinput要素に設定し、処理を開始
-                    pdfFile.files = files;
+                    // ファイルリストを再構築（単一ファイルのみ）
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(files[0]);
+                    pdfFile.files = dataTransfer.files;
+
                     processPDF();
                 } else {
-                    // PDFファイル以外がドロップされた場合の処理
-                    // alertは使用禁止のためコメントアウト
                     console.error('PDFファイルのみ対応しています。');
                 }
             }
@@ -283,6 +327,7 @@
 
                 try {
                     const arrayBuffer = await file.arrayBuffer();
+                    // pdfjsLibがwindow.onload内でチェックされているため、ここでは安全に使用できる
                     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
                     let fullText = '';
                     const numPages = pdf.numPages;
@@ -318,14 +363,6 @@
              * @param {string} textToInsert - 挿入するテキスト。
              */
             function insertTextAtCursor(textToInsert) {
-                if (!editor.value) {
-                    // エディタが空の場合、単に挿入
-                    editor.value = textToInsert;
-                    editor.focus();
-                    editor.setSelectionRange(textToInsert.length, textToInsert.length);
-                    return;
-                }
-
                 const start = editor.selectionStart;
                 const end = editor.selectionEnd;
                 const text = editor.value;
@@ -344,13 +381,12 @@
              * シンボルパレットのボタンクリックで呼び出され、シンボルを挿入します。
              * @param {string} symbol - 挿入するシンボル。
              */
-            function insertSymbol(symbol) {
-                // PDFロード前でもシンボルは使えるべきなので、無効化チェックを削除しました。
+            window.insertSymbol = function(symbol) {
                 insertTextAtCursor(symbol);
             }
 
 
-            function normalizeText() {
+            window.normalizeText = function() {
                 if (!editor.value) return;
 
                 let text = editor.value;
@@ -373,7 +409,7 @@
             /**
              * 選択範囲をインプットボックスのテキストで装飾します (元の insertEmoji のロジック)。
              */
-            function insertWrapper() {
+            window.insertWrapper = function() {
                 const wrapperText = document.getElementById('emojiInput').value;
                 if (!editor.value || !wrapperText) return;
 
@@ -410,7 +446,7 @@
                 }, 1800);
             }
             
-            function copyText() {
+            window.copyText = function() {
                 if (!editor.value) return;
 
                 const textToCopy = editor.value;
@@ -429,6 +465,9 @@
                 
                 document.body.removeChild(textarea);
             }
+
+            // グローバル関数として公開
+            window.processPDF = processPDF;
             
             /**
              * シンボルパレットのHTMLを生成し、挿入します。
