@@ -16,8 +16,6 @@
             --border-color: #3c3c3c;     /* ボーダー色 */
             /* 編集エリアの左右パディングと余白 */
             --editor-horizontal-padding: 15px; 
-            --copy-area-height: 50px; /* コピーエリアの固定高さ */
-            --bottom-margin: 20px; /* ページ下部からの浮き具合 */
         }
 
         /* 基本的なスタイル: ナイトモード */
@@ -71,8 +69,7 @@
             width: 75%;
             background-color: var(--main-bg);
             height: 100%;
-            padding: 20px; /* 上左右にパディング */
-            padding-bottom: var(--bottom-margin); /* 下部に浮き用のマージンと同じパディング */
+            padding: 20px 20px 0 20px; /* 上はパディングを保持し、下は0 */
         }
         
         /* 各セクションのスタイル */
@@ -101,9 +98,9 @@
             font-size: 1.2em;
             color: #ffffff;
             font-weight: 400;
+            /* 右パネルのパディング20pxから編集エリアの余白15pxを引いた5px */
             padding-left: 0; 
             padding-right: 0;
-            /* 親のパディング20pxに合わせて調整 */
             margin-left: -5px;
             margin-right: -5px;
         }
@@ -114,19 +111,20 @@
             padding-right: 0;
         }
 
-        /* 3. 編集エリア (高さ90%からコピーエリアとマージンの分を引く) */
+        /* ... (その他のボタンなどのスタイルは省略) ... */
+
+        /* 3. 編集エリア (高さ90%) */
         .edit-area-section {
-            /* 100%からコピーエリアの高さと上下マージン、親のパディングを引く */
-            height: calc(100% - var(--copy-area-height) - var(--bottom-margin)); 
+            height: 90%; 
             display: flex;
             flex-direction: column;
             padding-bottom: 15px; 
-            overflow: hidden;
+            overflow: hidden; /* textareaが領域を占めるため */
         }
 
         #editor {
             flex-grow: 1;
-            /* 親の左右パディング20pxからeditorの左右マージン15pxを引いた5px */
+            /* 右パネルの幅100%から左右のパディング40pxと、editor外側の左右パディング15pxを引く */
             width: calc(100% - 30px); 
             margin: 0 15px; 
             background-color: var(--console-bg); 
@@ -141,25 +139,22 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 4. 最終テキストをコピー (浮いているエリア) */
+        /* 4. 最終テキストをコピー (下からの10%) */
         .copy-text-section {
-            height: var(--copy-area-height); /* 固定された高さ */
+            height: 10%; 
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: var(--section-bg); 
             cursor: pointer;
-            transition: background-color 0.2s, box-shadow 0.2s;
-            /* 親の左右パディング20pxを相殺し、幅を100%に戻す */
+            transition: background-color 0.2s;
+            /* 右パネルのパディング20pxを考慮し、幅100%に戻す */
             width: calc(100% + 40px); 
-            margin: 0 -20px var(--bottom-margin) -20px; /* 左右のパディングを相殺し、下に余白を追加 */
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* 浮いている感を出すシャドウ */
+            margin: 0 -20px; /* 親の右パネルのパディングを相殺 */
         }
         
         .copy-text-section:hover {
             background-color: #3e3e42; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* ホバーでシャドウを強調 */
         }
 
         .copy-text-content {
@@ -170,11 +165,13 @@
         }
 
         .copy-text-section p.copy-label {
-            color: var(--subtle-text); /* 灰色 */
+            /* 文字色を灰色に変更 */
+            color: var(--subtle-text); 
             font-weight: bold;
             font-size: 1em;
             margin: 0;
             padding: 0;
+            /* テキストを中央に配置 */
             display: block; 
             text-align: center;
             cursor: pointer;
