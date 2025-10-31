@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8" />
-    <title>シナリオPDFテキスト抽出＆編集ツール</title>
+    <title>v2シナリオPDFテキスト抽出＆編集ツール</title>
     <!-- PDF.js ライブラリをCDN経由で読み込みます -->
     <!-- PDF処理は非同期であるため、ライブラリのロードが必要です -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.worker.min.js"></script>
@@ -399,19 +399,15 @@
             }
 
             /**
-             * ページ内のテキストを分析し、自然な改行を適用して結合する関数
-             * PDFのレイアウトを再現するため、Y座標の差とフォントの高さから改行を判断します。
+             * ページ内のテキストを分析し、**基本的な改行のみ**を適用して結合する関数。
+             * PDF.jsから得られる生のテキストレイヤーの情報をそのまま連結します。
              * @param {object} textContent - pdf.jsから取得したテキストコンテンツ
-             * @param {number} pageHeight - ページの高さ (ヘッダー/フッター無視のため)
-             * @returns {string} - 自然な改行を含むテキスト
+             * @param {number} pageHeight - ページの高さ
+             * @returns {string} - シンプルに結合されたテキスト
              */
             function combineTextWithNaturalBreaks(textContent, pageHeight) {
                 let pageText = '';
                 let lastItem = null;
-                
-                // 改行と段落の閾値（フォントの高さに対する比率）
-                const LINE_BREAK_THRESHOLD_RATIO = 0.5; // Y差がこの比率より大きい場合は行替え（単一改行）
-                const PARA_BREAK_THRESHOLD_RATIO = 1.2; // Y差がこの比率より大きい場合は段落区切り（二重改行）
 
                 // ヘッダー/フッターエリアのY座標を計算
                 const ignoreTopY = pageHeight * (1 - IGNORE_AREA_RATIO); // Y座標は上に行くほど大きい
@@ -429,9 +425,8 @@
                     return '';
                 }
 
-
                 for (const item of filteredItems) {
-                    // 空白文字のみのアイテムはスキップ (PDF.jsのバグ対策)
+                    // 空白文字のみのアイテムはスキップ
                     if (!item.str.trim()) continue;
                     
                     if (lastItem) {
@@ -439,22 +434,13 @@
                         const currentY = item.transform[5];
                         const lastHeight = lastItem.height;
                         
-                        // Y座標は下から上に向かって増加する。lastY - currentY > 0 は、
-                        // 現在のアイテムが前のアイテムよりも下に位置すること（新しい行）を意味する。
-                        const verticalDelta = lastY - currentY; 
-                        
-                        // 異常に大きなデルタを無視するための上限設定 (誤認識対策)
-                        const MAX_DELTA = pageHeight * 0.5;
-
-                        if (verticalDelta > lastHeight * PARA_BREAK_THRESHOLD_RATIO && verticalDelta < MAX_DELTA) {
-                            // 大きな垂直ジャンプ -> 段落区切り
-                            pageText += '\n\n';
-                        } else if (verticalDelta > lastHeight * LINE_BREAK_THRESHOLD_RATIO && verticalDelta < MAX_DELTA) {
-                            // 中程度の垂直ジャンプ -> 標準の改行
-                            // 修正: ここを半角スペースから改行に変更
+                        // 複雑な段落・改行判定をせず、新しい行に移動したと見なせる最小限の閾値で改行を挿入
+                        // (文字の高さの50%以上Y座標が変化したら改行と見なす)
+                        if (lastY - currentY > lastHeight * 0.5) {
+                             // シンプルな改行（\n）を挿入
                             pageText += '\n'; 
                         } else {
-                            // 垂直移動がほとんどない or 異常に大きなジャンプ -> 同じ行（スペースで結合）
+                            // 同じ行と見なし、スペースで結合 (PDF.jsのデフォルトの挙動)
                             pageText += ' ';
                         }
                     }
@@ -468,58 +454,45 @@
             }
             
             /**
-             * 抽出後のテキストに対し、全角/半角変換、不要なスペースの除去、句読点に基づく改行を行う後処理関数。
+             * 抽出後のテキストに対し、ユーザーの指定に基づいた強力な整形を行う関数
+             * - 原則として全てのスペースと改行を削除
+             * - 指定された記号や句読点で改行を挿入
              * @param {string} text - 処理前のテキスト
-             * @returns {string} - クリーンアップされたテキスト
+             * @returns {string} - クリーンアップされた整形済みテキスト
              */
             function cleanupText(text) {
-                
-                // 1. 全角スペース（\u3000）を削除する
-                text = text.replace(/\u3000/g, '');
-                
-                // 2. 全角英数字を半角に変換する
+                // 1. 全角英数字を半角に変換する
                 text = text.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
-                    // 全角→半角変換
                     return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
                 });
+                
+                // 2. すべての半角・全角スペース、タブ、改行コードを削除し、テキストを一本の文字列にする
+                text = text.replace(/[\u3000\s\r\n\t]/g, ''); 
 
-                // 3. 句読点（。？！」）の直後に改行がない場合、強制的に改行を挿入する
-                // 注: 全ての句読点の後に改行を入れることで、スペースの有無に関わらず、
-                // 次の行に強制的に移ります。
-                text = text.replace(/([。？！」])(?!$)/g, '$1\n');
+                // --- 3. 記号と句読点に基づいた改行の挿入 ---
+                
+                // 3-1. §, ■, 【 の直前に改行を挿入
+                // 例: Text§Symbol -> Text\n§Symbol
+                text = text.replace(/([§■【])/g, '\n$1');
 
-                // 4. 特殊文字（■§）の直前が改行でない場合、強制的に二重改行を挿入する
-                // 行頭以外で、かつ直前が改行文字（\n, \r）ではない場合に、間に \n\n を挿入
-                // 修正: 行頭で特殊文字が始まる場合は二重改行を挿入（例: \n§ -> \n\n§）
-                text = text.replace(/([^\n\r])([■§])/g, '$1\n\n$2'); // 行の途中の処理
-                text = text.replace(/^([■§])/m, '\n\n$1'); // 行頭の特殊文字（改行で始まる行）
-                
-                // 5. その他の全角文字の前後にある不要な半角スペースを削除する
-                // 5-1. 句読点（。、？！」（）『』）の後ろにある全ての空白（半角スペース、タブ）を削除 
-                text = text.replace(/([。、？！」（）『』])[\s]+/g, '$1');
+                // 3-2. 】 の直後に改行を挿入
+                // 例: Symbol】Text -> Symbol】\nText
+                text = text.replace(/(】)/g, '$1\n');
 
-                // 5-2. 全角文字の直前にある半角スペースを削除
-                text = text.replace(/\s+([\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, '$1');
+                // 3-3. 。、？、！ の直後に改行を挿入 (例外は次のステップで修正する)
+                // 例: Text。Next -> Text。\nNext
+                text = text.replace(/([。？！])/g, '$1\n');
                 
-                // 5-3. 全角文字の直後にある半角スペースを削除
-                text = text.replace(/([\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s+/g, '$1');
+                // 3-4. 例外処理: ？」 または ！」 の改行を 」 の後に移動する
+                // ステップ3-3により "！\n」" となっている部分を "！」\n" に修正する
+                // 例: セリフか！\n」次へ -> セリフか！」\n次へ
+                text = text.replace(/([？！])\n(」)/g, '$1$2\n');
                 
-                // 6. 連続する改行を最大2つに絞る（過剰な空行を削除）
-                text = text.replace(/(\n\s*){3,}/g, '\n\n');
+                // 4. 連続する改行を1つにまとめる
+                text = text.replace(/\n\n+/g, '\n');
                 
-                // 7. 行頭・行末のスペースをトリム
-                text = text.replace(/^[ \t]+/gm, '').replace(/[ \t]+$/gm, '');
-
-                // 8. 抽出テキスト全体の前後の空白をまず除去
-                text = text.trim();
-                
-                // 9. 抽出テキスト全体に空白行を1行追加 (前後の空白行を保持)
-                if (text.length > 0) {
-                    text = '\n' + text + '\n';
-                }
-                
-                // 最終的に前後の改行を保持したまま返す
-                return text;
+                // 5. テキスト全体の前後の空白をトリムし、前後に改行を1つ追加して返す
+                return '\n' + text.trim() + '\n';
             }
 
 
@@ -565,7 +538,7 @@
                             editor.value = `PDFを解析中... (${i}/${numPages} ページ処理済み)`;
                         }
 
-                        // 抽出後のテキストに対してクリーンアップ処理を適用
+                        // 抽出後のテキストに対して**強力な整形処理**を適用
                         extractedText = cleanupText(fullText);
 
                         // 結果をエディタに表示
