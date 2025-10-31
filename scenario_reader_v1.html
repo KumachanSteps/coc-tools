@@ -309,19 +309,19 @@
                 <h2>2. シンボル装飾</h2>
                 <p>シンボルをクリックすると、エディターのカーソル位置に直接挿入されます。</p>
                 <div class="symbol-grid">
-                    <!-- シンボルリスト: ►▼《》〈〉◻︎◼︎❐✦✧▌ -->
+                    <!-- シンボルリスト: ►▼◻︎◼︎《》〈〉▌❐✦✧ (新しい順番) -->
                     <button class="symbol-btn" data-symbol="►">►</button>
                     <button class="symbol-btn" data-symbol="▼">▼</button>
+                    <button class="symbol-btn" data-symbol="◻︎">◻︎</button>
+                    <button class="symbol-btn" data-symbol="◼︎">◼︎</button>
                     <button class="symbol-btn" data-symbol="《">《</button>
                     <button class="symbol-btn" data-symbol="》">》</button>
                     <button class="symbol-btn" data-symbol="〈">〈</button>
                     <button class="symbol-btn" data-symbol="〉">〉</button>
-                    <button class="symbol-btn" data-symbol="◻︎">◻︎</button>
-                    <button class="symbol-btn" data-symbol="◼︎">◼︎</button>
+                    <button class="symbol-btn" data-symbol="▌">▌</button>
                     <button class="symbol-btn" data-symbol="❐">❐</button>
                     <button class="symbol-btn" data-symbol="✦">✦</button>
                     <button class="symbol-btn" data-symbol="✧">✧</button>
-                    <button class="symbol-btn" data-symbol="▌">▌</button>
                 </div>
             </div>
         </div>
@@ -457,6 +457,7 @@
              * 抽出後のテキストに対し、ユーザーの指定に基づいた強力な整形を行う関数
              * - 原則として全てのスペースと改行を削除
              * - 指定された記号や句読点で改行を挿入
+             * - ステータス値や結合された英単語間に半角スペースを復元
              * @param {string} text - 処理前のテキスト
              * @returns {string} - クリーンアップされた整形済みテキスト
              */
@@ -466,33 +467,59 @@
                     return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
                 });
                 
-                // 2. すべての半角・全角スペース、タブ、改行コードを削除し、テキストを一本の文字列にする
+                // 2. すべての半角・全角スペース、タブ、既存の改行コードを削除し、テキストを一本の文字列にする
+                // これにより、年号や期間（例: 2010年, 1ヶ月前）の間のスペースも完全に消える
                 text = text.replace(/[\u3000\s\r\n\t]/g, ''); 
 
-                // --- 3. 記号と句読点に基づいた改行の挿入 ---
+                // --- 3. スペース復元 ---
                 
-                // 3-1. §, ■, 【 の直前に改行を挿入
-                // 例: Text§Symbol -> Text\n§Symbol
-                text = text.replace(/([§■【])/g, '\n$1');
+                // a) 英語の単語間のスペース復元 (例: TheClearWater -> The Clear Water)
+                // (小文字+大文字) の境界にスペースを挿入
+                text = text.replace(/([a-z])([A-Z])/g, '$1 $2');
+                
+                // b) TRPGステータス表記の間に半角スペースを挿入
+                // STR40CON50SIZ80 のようなパターンを STR40 CON50 SIZ80 に変換
+                // 大文字英字3文字 + 数字 + 大文字英字3文字 の組み合わせを探す
+                // (例: DEX30APP30INT60 -> DEX30 APP30 INT60)
+                const statRegex = /([A-Z]{3}[0-9]+)([A-Z]{3})/g;
+                text = text.replace(statRegex, '$1 $2');
 
-                // 3-2. 】 の直後に改行を挿入
-                // 例: Symbol】Text -> Symbol】\nText
-                text = text.replace(/(】)/g, '$1\n');
+                // c) 復元後、連続するスペースを一つにまとめる
+                text = text.replace(/\s{2,}/g, ' ');
 
-                // 3-3. 。、？、！ の直後に改行を挿入 (例外は次のステップで修正する)
+                // --- 4. 記号と句読点に基づいた改行の挿入 ---
+                
+                // 4-1. §, ■, 【 の直前に 2行改行 (\n\n) を挿入
+                // 例: Text§Symbol -> Text\n\n§Symbol
+                text = text.replace(/([§■【])/g, '\n\n$1');
+
+                // 4-2. 。、？、！ の直後に 1行改行 (\n) を挿入 (一時的な改行、例外処理のため)
                 // 例: Text。Next -> Text。\nNext
                 text = text.replace(/([。？！])/g, '$1\n');
                 
-                // 3-4. 例外処理: ？」 または ！」 の改行を 」 の後に移動する
-                // ステップ3-3により "！\n」" となっている部分を "！」\n" に修正する
-                // 例: セリフか！\n」次へ -> セリフか！」\n次へ
-                text = text.replace(/([？！])\n(」)/g, '$1$2\n');
+                // 4-3. 】 の直後に 1行改行 (\n) を挿入 (一時的な改行)
+                text = text.replace(/(】)/g, '$1\n');
                 
-                // 4. 連続する改行を1つにまとめる
-                text = text.replace(/\n\n+/g, '\n');
+                // 4-4. 例外処理: ？」 または ！」 の改行を 」 の直後とし、2行改行 (\n\n) にする
+                // ステップ4-2により "！\n」" となっている部分を、"！」" に戻し、その後に \n\n を挿入
+                // 例: セリフか！\n」次へ -> セリフか！」\n\n次へ
+                text = text.replace(/([？！])\n(」)/g, '$1$2\n\n');
                 
-                // 5. テキスト全体の前後の空白をトリムし、前後に改行を1つ追加して返す
-                return '\n' + text.trim() + '\n';
+                // 4-5. 句読点（。、！？）の直後に続く 1行改行を削除し、テキストを再結合
+                // (この処理により、4-2で挿入された改行が、4-4の例外処理を経たもの以外は削除される)
+                // ただし、最終的に改行を挿入するのは、4-4の例外処理と、改行が連続する場合の処理に委ねる
+                // 句読点後の改行は、次のステップで処理するため、ここでは「」の後の改行だけを残し、他を一旦削除
+                text = text.replace(/([。？！、])\n/g, '$1');
+
+                // 4-6. 再度、。、？、！ の直後に 1行改行を挿入 (例外処理後のシンプルなルール)
+                text = text.replace(/([。？！])/g, '$1\n');
+                
+                // 5. 連続する改行を最大2つにまとめる
+                // (4-1, 4-4のルールで挿入された \n\n は維持し、それ以上連続する改行を削る)
+                text = text.replace(/\n\n+/g, '\n\n');
+                
+                // 6. テキスト全体の前後の空白をトリムし、最初と最後に空白行(2行改行)を1つ追加して返す (ユーザー要望)
+                return '\n\n' + text.trim() + '\n\n';
             }
 
 
