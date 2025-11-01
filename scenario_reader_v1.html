@@ -533,8 +533,8 @@
 
 
                 // 5. マーカーを二重改行に置換
-                text = text.replace(/###PREBREAK###/g, '\n\n');
-                text = text.replace(/###POSTBREAK###/g, '\n\n');
+                text = text.replace(/###PREBREAK###/g, '\n');
+                text = text.replace(/###POSTBREAK###/g, '\n');
 
 
                 // --- 6. スペース復元 ---
@@ -561,8 +561,21 @@
                 // \nを含まない任意の文字Xに続くQ, A, 『を、X\nQ, X\nA, X\n『 に変換
                 text = text.replace(/([^\n])([QＡ『])/g, '$1\n$2');
                 
-                // 7-3. 」の後に改行を必ず入れる (一重改行)
-                text = text.replace(/(」)([^\n])/g, '$1\n$2');
+                // 7-3. 【再修正】「」内の文字数が10文字を超える場合にのみ「」の後に改行を挿入
+                // パターン: (「セリフ本体) (」) (直後の文字)
+                const speechBreakRegex = /(「([^」]{1,}))(」)([^\n])/g;
+                text = text.replace(speechBreakRegex, (match, group1, speechContent, closingBracket, nextChar) => {
+                    // セリフ本体(speechContent)の文字数をチェック
+                    if (speechContent.length > 12) {
+                        // 10文字を超えている場合、」の後に改行を入れる
+                        // -> 「セリフ本体」\n次文字
+                        return group1 + closingBracket + '\n' + nextChar;
+                    } else {
+                        // 10文字以下の場合は改行を入れない
+                        // -> 「セリフ本体」次文字
+                        return match; // 元の文字列をそのまま返す
+                    }
+                });
 
                 // 7-4. 【修正適用】▼、◆ の前に改行がない場合、改行を2行入れる (・は除外)
                 text = text.replace(/([^\n])([▼◆])/g, '$1\n\n$2');
@@ -582,9 +595,8 @@
                 // 7-5で入れた一時的な改行を削除
                 text = text.replace(/([。？！、])\n/g, '$1');
 
-                // 7-9. 【新規追加】項目開始と見なされる「・」の前に改行を挿入
+                // 7-9. 【適用済】項目開始と見なされる「・」の前に改行を挿入 (人名・語句区切りを回避)
                 // 「。、！？」または「」の直後にある「・」を項目開始と見なし、その前に改行を挿入する。
-                // ただし、既に\n\nが挿入されている場合は除く
                 text = text.replace(/([。？！、」])(・)/g, '$1\n\n$2');
 
                 // 7-10. 再度、。、？、！ の直後に 1行改行を挿入 (シンプルなルール)
