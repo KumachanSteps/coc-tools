@@ -172,7 +172,7 @@ footer {
   </div>
 
   <div class="container">
-    <textarea id="output" readonly></textarea>
+    <textarea id="output" placeholder="整形後のテキストがここに表示されます（手動編集も可能です）"></textarea>
     <button onclick="copyOutput()">コピー</button>
   </div>
 </div>
@@ -180,7 +180,7 @@ footer {
 <div id="messageBox" class="message-box"></div>
 
 <footer>
-  Last Update: 19Oct2025<br>
+  Last Update: 20Feb2026<br>
   当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
   権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
   ©Chaosium Inc.／アークライト／KADOKAWA
@@ -221,7 +221,7 @@ function showMessageBox(message, isError = false) {
 
 // 無視する行を正規表現で定義
 const ignoredLinePatterns = [
-    /^1d100<=\{SAN\}\s+【正気度ロール】$/,
+    /^CC<=\{SAN\}\s+【正気度ロール】$/,
     /^CC<=\s*([0-9]+|\{STR\})\s+【STR】$/,
     /^CC<=\s*([0-9]+|\{CON\})\s+【CON】$/,
     /^CC<=\s*([0-9]+|\{POW\})\s+【POW】$/,
@@ -310,7 +310,7 @@ function formatPalette() {
 
   // ◼️ダイス の順序を調整
   const sortedDice = [];
-  const sanRollLine = `1d100<={SAN} 【正気度ロール】`;
+  const sanRollLine = `CC<={SAN} 【正気度ロール】`;
   const ideaLine = categories.dice.find(line => line.includes("アイデア"));
   const knowledgeLine = categories.dice.find(line => line.includes("知識"));
   const luckLine = `CC<={幸運} 【幸運】`;
@@ -373,7 +373,7 @@ function formatPalette() {
     `CC<={APP} 【APP】`,
     `CC<={SIZ} 【SIZ】`,
     `CC<={INT} 【INT】`,
-    `CC<={EDU} 【EDU}`
+    `CC<={EDU} 【EDU】`
   ];
 
   // 出力順序と見出しをCoC7版に合わせて調整
