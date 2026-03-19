@@ -12,397 +12,220 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CoC7版：成長チェックツール</title>
+<title>CoC6版：ボーナス/ペナルティダイス補正計算ツール</title>
+
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonus/Penalty Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Shippori+Mincho:wght@400;700&display=swap');
+        
+        :root {
+            --coc-red: #9a0000;
+            --coc-dark-red: #660000;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #121212;
+            color: #d1d1d1;
+            line-height: 1.6;
+        }
+
+        .mincho { font-family: 'Shippori Mincho', serif; }
+
+        .card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .input-style {
+            background-color: #0f0f0f;
+            border: 1px solid #444;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .input-style:focus {
+            border-color: var(--coc-red);
+            outline: none;
+            box-shadow: 0 0 8px rgba(154, 0, 0, 0.4);
+        }
+
+        .result-gradient {
+            background: linear-gradient(145deg, #252525 0%, #151515 100%);
+            border-left: 5px solid var(--coc-red);
+        }
+
+        .delta-positive { color: #52ea8c; }
+        .delta-negative { color: #ff5f5f; }
+
+        .rights-footer {
+            font-size: 0.7rem;
+            line-height: 1.5;
+            color: #666;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-results {
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+  
 
 <!-- アップロードされたアイコンファイルを指定しました。 -->
 <!-- このHTMLファイルと同じディレクトリに「kuma_icon.ico」を配置してください -->
 <link rel="icon" href="kuma_icon.ico" type="image/x-icon">
 <!-- ここまでファビコンの設定 -->
   
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-    /* ユーザー提供の新しい基本スタイルを適用 */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-    body {
-        font-family: 'Inter', sans-serif; /* Interフォントを使用 */
-        margin: 0;
-        background-color: #f0f4f8; /* ライトブルー系の背景色 */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh; /* 画面いっぱいに広がるように */
-        padding: 20px;
-    }
-    header {
-        margin-bottom: 30px;
-        text-align: center;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 1000px;
-    }
-    header h1 {
-        font-size: 2.5rem; /* 大きめのフォントサイズ */
-        color: #2c3e50; /* ダークブルー */
-        margin-bottom: 10px;
-    }
-    header p {
-        font-size: 1rem;
-        color: #555;
-        line-height: 1.6;
-    }
-    .main {
-        display: flex;
-        flex-direction: column; /* スマートフォンでは縦並び */
-        gap: 30px;
-        max-width: 1000px;
-        width: 100%;
-    }
-    @media (min-width: 768px) { /* デスクトップでは横並び */
-        .main {
-            flex-direction: row;
-        }
-    }
-    .container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        background-color: #ffffff;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        min-height: 600px; /* 最小高さを確保 */
-    }
-    h2 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #4a6572;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #e0e0e0;
-        padding-bottom: 0.5rem;
-    }
-    textarea {
-        flex-grow: 1; /* コンテナ内で高さを最大限利用 */
-        height: 450px; /* 指定された高さを基本として適用 */
-        min-height: 250px;
-        resize: vertical; /* 縦方向のみリサイズ可能 */
-        padding: 15px;
-        font-family: 'Consolas', 'Courier New', monospace; /* 結果表示は等幅フォント推奨 */
-        font-size: 0.95rem;
-        background-color: #f9f9f9;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-sizing: border-box;
-        color: #333;
-        line-height: 1.5;
-        transition: border-color 0.3s ease-in-out;
-        margin-bottom: 20px;
-    }
-    textarea:focus {
-        outline: none;
-        border-color: #4a90e2; /* フォーカス時のボーダー色 */
-        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-    }
-    
-    /* カスタムボタンCSS (Tailwindで上書きするため、ベースのみ残す) */
-    button {
-        padding: 12px 25px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        border: none;
-        border-radius: 8px;
-        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s;
-        font-weight: 600;
-        width: 100%;
-    }
-    /* メッセージボックスのスタイルは維持 */
-    .message-box {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #333;
-        color: #fff;
-        padding: 15px 30px;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-    }
-    .message-box.show {
-        opacity: 1;
-        visibility: visible;
-    }
-/* フッターのスタイル */
-footer {
-    margin-top: 40px;
-    width: 100%;
-    max-width: 1000px;
-    text-align: center;
-    font-size: 0.75rem; /* 小さなフォントサイズ */
-    color: #777;
-    line-height: 1.4;
-    padding: 10px 0;
-}
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
 
-/* モバイル向けにボタンの幅を調整 */
-@media (max-width: 767px) {
-  button {
-    width: 100%;
-  }
-}
-</style>
-</head>
-<body>
+    <div class="card w-full max-w-md rounded-2xl p-8 mb-4">
+        <header class="mb-10 border-b border-zinc-800 pb-6 text-center">
+            <h1 class="mincho text-3xl font-bold text-white mb-2 tracking-tight">Bonus/Penalty Calculator</h1>
+            <p class="text-zinc-500 text-sm italic font-light">"一瞬でフェアな補正値を計算"</p>
+        </header>
 
+        <div class="space-y-8">
+            <!-- Input: Skill Level -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-2 text-zinc-400">元の成功率 (%)</label>
+                <div class="relative">
+                    <input type="number" id="skillInput" 
+                           class="input-style w-full px-5 py-4 rounded-xl text-2xl font-bold" 
+                           placeholder="30" min="1" max="99"
+                           oninput="processLogic()">
+                    <span class="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-600 font-bold text-lg">%</span>
+                </div>
+            </div>
 
-<header>
-<h1>CoC 7版 成長チェックツール</h1>
-<!-- ユーザー提供のテキストに合わせた説明文に変更 -->
-<p>TRPGセッションのログを貼り付けて、技能の判定結果をキャラクターごとにリストアップします。</p>
-</header>
+            <!-- Input: Dice Choice -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-2 text-zinc-400">ボーナス/ペナルティ選択 (7版形式)</label>
+                <div class="relative">
+                    <select id="diceChoice" 
+                            class="input-style w-full px-5 py-4 rounded-xl appearance-none cursor-pointer pr-10"
+                            onchange="processLogic()">
+                        <option value="1">ボーナスダイス 1個 (CC1)</option>
+                        <option value="2">ボーナスダイス 2個 (CC2)</option>
+                        <option value="-1">ペナルティダイス 1個 (CC-1)</option>
+                        <option value="-2">ペナルティダイス 2個 (CC-2)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.707 6.586 4.293 8z"/></svg>
+                    </div>
+                </div>
+            </div>
 
-<div class="main">
-<div class="container">
-    <h2>ログ入力</h2>
-    <!-- IDをinputに変更 -->
-    <textarea id="input" placeholder="ここにセッションログを貼り付けてください..."></textarea>
-    <!-- ログ解析ボタン (青/白のカスタムスタイルを維持) -->
-    <button onclick="analyzeLog()" 
-            class="px-4 py-3 text-lg font-bold 
-                   bg-white text-blue-600 border border-blue-600 
-                   hover:bg-blue-50 hover:text-blue-700 
-                   shadow-md hover:shadow-lg">
-        ログを解析して出力
-    </button>
-</div>
+            <!-- Output Display -->
+            <div id="resultArea" class="hidden">
+                <div class="result-gradient p-6 rounded-xl space-y-5 animate-results">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                        <span class="text-xs font-bold tracking-widest text-zinc-500 uppercase">7版期待成功率</span>
+                        <span id="rateOutput" class="text-xl font-bold text-white">--</span>
+                    </div>
 
-<div class="container">
-    <h2>解析結果 (成功判定リスト)</h2>
-    <!-- readonly属性を削除し、編集可能にしました -->
-    <textarea id="output" placeholder="ログを解析すると、ここに結果が表示されます。"></textarea>
-    <!-- 結果コピーボタン (緑/白のカスタムスタイルを維持) -->
-    <button onclick="copyOutput()" 
-            class="px-4 py-3 text-lg font-bold 
-                   bg-green-600 text-white 
-                   hover:bg-green-700 
-                   shadow-md hover:shadow-lg">
-        解析結果をコピー
-    </button>
-</div>
-</div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                        <span class="text-xs font-bold tracking-widest text-zinc-500 uppercase">期待値の差 (デルタ)</span>
+                        <span id="deltaOutput" class="text-xl font-bold">--</span>
+                    </div>
 
-<div id="messageBox" class="message-box"></div>
-
-<footer>
-  Last Update: 19Oct2025<br>
-  当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
-  権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
-  ©Chaosium Inc.／アークライト／KADOKAWA
-</footer>
-
-<script>
-    // メッセージボックスを表示する関数
-    function showMessageBox(message, isError = false) {
-        const messageBox = document.getElementById('messageBox');
-        messageBox.textContent = message;
-        messageBox.className = 'message-box show';
-        if (isError) {
-            messageBox.style.backgroundColor = '#dc3545';
-        } else {
-            messageBox.style.backgroundColor = '#28a745';
-        }
-        setTimeout(() => {
-            messageBox.classList.remove('show');
-        }, 2000);
-    }
-
-    // ログを解析する関数 (テキストエリアへの出力に修正)
-    function analyzeLog() {
-        // IDを 'input' に変更
-        const logInput = document.getElementById('input').value;
-        const outputTextarea = document.getElementById('output');
-        const lines = logInput.split('\n');
-        
-        const characterRolls = {}; 
-        const charOrder = []; 
-        
-        // ----------------------------------------------------
-        // 正規表現でログ行を解析
-        const lineMatchRegex = /^\[(.+?)\]\s*([^:]+?)\s*:\s*(CC[<>]?=?[\+\-]?\d*.*?)\s*【(.+?)】.*?(クリティカル|イクストリーム成功|ハード成功|レギュラー成功|成功|スペシャル|スペシャル成功)/;
-
-        const excludedTabs = ['other', '雑談', 'おはらい', 'お祓い'];
-        const excludedSkills = [
-            'STR', 'CON', 'DEX', 'APP', 'SIZ', 'INT', 'EDU', // 能力値 (POW/幸運は除く)
-            'アイデア', '知識', '正気度ロール', // 成長判定対象外の技能
-        ];
-        // ----------------------------------------------------
-
-        lines.forEach(line => {
-            const trimmedLine = line.trim();
-            const match = trimmedLine.match(lineMatchRegex);
+                    <div class="pt-2 text-center">
+                        <span class="block text-xs font-bold tracking-widest text-zinc-500 uppercase mb-3">推奨される補正値 (6版向け)</span>
+                        <div id="suggestedBox" class="text-4xl font-black py-3 px-8 rounded-xl inline-block shadow-inner">
+                            --
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-            if (match) {
-                const [, tabName, characterNameRaw, ccPart, skillName, resultText] = match;
-                
-                // 1. タブの除外ルール
-                const tabNameLower = tabName.toLowerCase();
-                if (excludedTabs.includes(tabNameLower)) {
-                    return;
-                }
-                
-                // 2. キャラクター名抽出
-                const characterName = characterNameRaw.trim(); 
-                
-                // 3. 成長判定対象外の判定（POW/幸運の特殊ルールを含む）を除外
-                const skillBaseName = skillName.replace(/（.*?）|\(.*?\)/g, '').trim();
-                const skillBaseNameUpper = skillBaseName.toUpperCase();
-                
-                const isPOWorLuck = skillBaseNameUpper === 'POW' || skillBaseName === '幸運';
-                const isCritical = resultText.includes('クリティカル');
+            <!-- Empty State Helper -->
+            <div id="placeholder" class="text-center py-6 text-zinc-600 text-sm italic">
+                基準となる成功値を入力！
+            </div>
+        </div>
 
-                if (isPOWorLuck) {
-                    if (!isCritical) {
-                        return; 
-                    }
-                } else if (excludedSkills.includes(skillBaseNameUpper)) {
-                    return;
-                }
-                
-                // 4. キャラクターが初登場の場合、charOrderに追加する
-                if (!characterRolls[characterName]) {
-                    characterRolls[characterName] = [];
-                    charOrder.push(characterName);
-                }
+        <div class="mt-10 pt-4 border-t border-zinc-800 text-center text-xs text-zinc-500 font-medium">
+            ”この補正で切り抜けろ”
+        </div>
+    </div>
 
-                // 5. 表示形式の整形: CC<=...の部分とボーナス/ペナルティダイスの表記を削除
-                let displayLine = trimmedLine
-                    .replace(/^\[.+?\]\s*([^:]+?)\s*:\s*/, '') // タブとキャラ名: を削除
-                    .replace(new RegExp(`^${ccPart.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`), ''); // CC<=...の部分を削除
+    <!-- Rights Footer -->
+    <footer class="rights-footer max-w-md">
+        Last Update: 19Mar2026<br>
+        当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
+        権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
+        ©Chaosium Inc.／アークライト／KADOKAWA
+    </footer>
 
-                // ボーナス・ペナルティダイスの表記を削除
-                displayLine = displayLine.replace(/ボーナス・ペナルティダイス\[.*?\]\s*/, '');
+    <script>
+        function processLogic() {
+            const skillElement = document.getElementById('skillInput');
+            const diceElement = document.getElementById('diceChoice');
+            const resultArea = document.getElementById('resultArea');
+            const placeholder = document.getElementById('placeholder');
+            
+            const S = parseFloat(skillElement.value);
+            const type = parseInt(diceElement.value);
 
-                // メタ情報と共にオブジェクトとして保存
-                characterRolls[characterName].push({
-                    line: displayLine,
-                    skill: skillName.trim(), // 技能名
-                    rank: resultText.trim() // 成功レベル
-                });
+            if (isNaN(S) || S <= 0 || S > 110) { // Allowing slightly over 100 for special cases
+                resultArea.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                return;
             }
-        });
 
-        // ----------------------------------------------------
-        // Step 2: 重複排除処理 (ロジックは維持)
-        const finalRolls = {};
-        
-        for (const charName of charOrder) {
-            const rolls = characterRolls[charName];
-            if (!rolls) continue;
+            resultArea.classList.remove('hidden');
+            placeholder.classList.add('hidden');
 
-            const processedRolls = [];
-            const seenHardOrRegularSkills = new Set();
+            const P = S / 100;
+            let adjustedRate;
+
+            // Mathematical calculation based on verified logic
+            if (type === 1) {
+                adjustedRate = (1 - Math.pow(1 - P, 2)) * 100;
+            } else if (type === 2) {
+                adjustedRate = (1 - Math.pow(1 - P, 3)) * 100;
+            } else if (type === -1) {
+                adjustedRate = Math.pow(P, 2) * 100;
+            } else if (type === -2) {
+                adjustedRate = Math.pow(P, 3) * 100;
+            }
+
+            const rawDelta = adjustedRate - S;
             
-            rolls.forEach(roll => {
-                const rank = roll.rank;
-                const skill = roll.skill;
+            // Rounding to nearest 5
+            const suggestedAdj = Math.round(rawDelta / 5) * 5;
+            const sign = suggestedAdj > 0 ? "+" : "";
 
-                const isHighLevel = rank.includes('クリティカル') || rank.includes('イクストリーム成功') || rank.includes('スペシャル');
-                const isHardOrRegular = rank.includes('ハード成功') || rank.includes('レギュラー成功') || rank === '成功';
-                
-                if (isHighLevel) {
-                    processedRolls.push(roll);
-                } else if (isHardOrRegular) {
-                    if (!seenHardOrRegularSkills.has(skill)) {
-                        processedRolls.push(roll);
-                        seenHardOrRegularSkills.add(skill);
-                    }
-                }
-            });
+            // UI Update
+            document.getElementById('rateOutput').innerText = adjustedRate.toFixed(2) + "%";
             
-            finalRolls[charName] = processedRolls;
-        }
-        // ----------------------------------------------------
-        
-        // 成功度に基づいてソートするためのロジック (オブジェクトを受け取る)
-        const getSortRank = (roll) => {
-            const line = roll.rank;
-            if (line.includes('クリティカル')) return 1;
-            if (line.includes('イクストリーム成功') || line.includes('スペシャル')) return 2;
-            if (line.includes('ハード成功')) return 3;
-            if (line.includes('レギュラー成功') || line.includes('成功')) return 4;
-            return 5;
-        };
+            const deltaElem = document.getElementById('deltaOutput');
+            deltaElem.innerText = (rawDelta > 0 ? "+" : "") + rawDelta.toFixed(2) + "%";
+            deltaElem.className = rawDelta >= 0 ? 'text-xl font-bold delta-positive' : 'text-xl font-bold delta-negative';
 
-
-        // 結果をプレーンテキストとして生成 (Discordコードブロック形式)
-        let resultsText = '';
-        const characterNames = charOrder; 
-        
-        if (characterNames.length === 0) {
-            resultsText = '解析できる成功判定データが見つかりませんでした。ログの形式を確認してください。';
-        } else {
-            for (const charName of characterNames) {
-                const finalCharacterRolls = finalRolls[charName];
-                if (!finalCharacterRolls || finalCharacterRolls.length === 0) continue; 
-
-                // 1. 【名前の成長リスト】
-                resultsText += `【${charName}の成長リスト】\n`;
-                
-                // 2. コードブロック開始
-                resultsText += '```\n';
-
-                // 判定行を成功度順にソート
-                const sortedRolls = finalCharacterRolls.sort((a, b) => getSortRank(a) - getSortRank(b));
-                
-                // ソートされた行を出力
-                sortedRolls.forEach(roll => {
-                    resultsText += `${roll.line}\n`;
-                });
-
-                // 3. コードブロック終了
-                resultsText += '```\n\n';
+            const suggestBox = document.getElementById('suggestedBox');
+            suggestBox.innerText = sign + suggestedAdj + "%";
+            
+            if (suggestedAdj > 0) {
+                suggestBox.style.color = '#52ea8c';
+                suggestBox.style.backgroundColor = 'rgba(82, 234, 140, 0.1)';
+            } else if (suggestedAdj < 0) {
+                suggestBox.style.color = '#ff5f5f';
+                suggestBox.style.backgroundColor = 'rgba(255, 95, 95, 0.1)';
+            } else {
+                suggestBox.style.color = '#fff';
+                suggestBox.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
             }
         }
-
-        outputTextarea.value = resultsText.trim(); // 末尾の改行をトリム
-        showMessageBox('ログの解析が完了しました！');
-    }
-
-    // コピー機能：#output テキストエリアの内容をコピーする (ロジック修正)
-    function copyOutput() {
-        const outputTextarea = document.getElementById('output');
-        if (!outputTextarea.value.trim()) {
-            showMessageBox('コピーする解析結果がありません。', true);
-            return;
-        }
-
-        // Clipboard APIブロックエラーを回避するため、execCommandを使用したフォールバック関数を直接呼び出す
-        tryCopyToClipboardFallback(outputTextarea.value);
-    }
-
-    function tryCopyToClipboardFallback(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.left = '-9999px';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            // document.execCommand('copy') を使用 (iframe環境で最も確実なコピー方法)
-            document.execCommand('copy');
-            showMessageBox('解析結果をクリップボードにコピーしました！');
-        } catch (err) {
-            showMessageBox('コピーに失敗しました。ブラウザの設定を確認してください。', true);
-        } finally {
-            document.body.removeChild(textarea);
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
