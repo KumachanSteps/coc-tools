@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NJD5JZML31"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NJD5JZML31');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoC7版：成長チェックツール</title>
+
+<!-- アップロードされたアイコンファイルを指定しました。 -->
+<!-- このHTMLファイルと同じディレクトリに「kuma_icon.ico」を配置してください -->
+<link rel="icon" href="kuma_icon.ico" type="image/x-icon">
+<!-- ここまでファビコンの設定 -->
+  
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    /* ユーザー提供の新しい基本スタイルを適用 */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    body {
+        font-family: 'Inter', sans-serif; /* Interフォントを使用 */
+        margin: 0;
+        background-color: #f0f4f8; /* ライトブルー系の背景色 */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh; /* 画面いっぱいに広がるように */
+        padding: 20px;
+    }
+    header {
+        margin-bottom: 30px;
+        text-align: center;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 1000px;
+    }
+    header h1 {
+        font-size: 2.5rem; /* 大きめのフォントサイズ */
+        color: #2c3e50; /* ダークブルー */
+        margin-bottom: 10px;
+    }
+    header p {
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.6;
+    }
+    .main {
+        display: flex;
+        flex-direction: column; /* スマートフォンでは縦並び */
+        gap: 30px;
+        max-width: 1000px;
+        width: 100%;
+    }
+    @media (min-width: 768px) { /* デスクトップでは横並び */
+        .main {
+            flex-direction: row;
+        }
+    }
+    .container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        min-height: 600px; /* 最小高さを確保 */
+    }
+    h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #4a6572;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.5rem;
+    }
+    textarea {
+        flex-grow: 1; /* コンテナ内で高さを最大限利用 */
+        height: 450px; /* 指定された高さを基本として適用 */
+        min-height: 250px;
+        resize: vertical; /* 縦方向のみリサイズ可能 */
+        padding: 15px;
+        font-family: 'Consolas', 'Courier New', monospace; /* 結果表示は等幅フォント推奨 */
+        font-size: 0.95rem;
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-sizing: border-box;
+        color: #333;
+        line-height: 1.5;
+        transition: border-color 0.3s ease-in-out;
+        margin-bottom: 20px;
+    }
+    textarea:focus {
+        outline: none;
+        border-color: #4a90e2; /* フォーカス時のボーダー色 */
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    }
+    
+    /* カスタムボタンCSS (Tailwindで上書きするため、ベースのみ残す) */
+    button {
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s;
+        font-weight: 600;
+        width: 100%;
+    }
+    /* メッセージボックスのスタイルは維持 */
+    .message-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #333;
+        color: #fff;
+        padding: 15px 30px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+    .message-box.show {
+        opacity: 1;
+        visibility: visible;
+    }
+/* フッターのスタイル */
+footer {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1000px;
+    text-align: center;
+    font-size: 0.75rem; /* 小さなフォントサイズ */
+    color: #777;
+    line-height: 1.4;
+    padding: 10px 0;
+}
+
+/* モバイル向けにボタンの幅を調整 */
+@media (max-width: 767px) {
+  button {
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+
+<header>
+<h1>CoC 7版 成長チェックツール</h1>
+<!-- ユーザー提供のテキストに合わせた説明文に変更 -->
+<p>TRPGセッションのログを貼り付けて、技能の判定結果をキャラクターごとにリストアップします。</p>
+</header>
+
+<div class="main">
+<div class="container">
+    <h2>ログ入力</h2>
+    <!-- IDをinputに変更 -->
+    <textarea id="input" placeholder="ここにセッションログを貼り付けてください..."></textarea>
+    <!-- ログ解析ボタン (青/白のカスタムスタイルを維持) -->
+    <button onclick="analyzeLog()" 
+            class="px-4 py-3 text-lg font-bold 
+                   bg-white text-blue-600 border border-blue-600 
+                   hover:bg-blue-50 hover:text-blue-700 
+                   shadow-md hover:shadow-lg">
+        ログを解析して出力
+    </button>
+</div>
+
+<div class="container">
+    <h2>解析結果 (成功判定リスト)</h2>
+    <!-- readonly属性を削除し、編集可能にしました -->
+    <textarea id="output" placeholder="ログを解析すると、ここに結果が表示されます。"></textarea>
+    <!-- 結果コピーボタン (緑/白のカスタムスタイルを維持) -->
+    <button onclick="copyOutput()" 
+            class="px-4 py-3 text-lg font-bold 
+                   bg-green-600 text-white 
+                   hover:bg-green-700 
+                   shadow-md hover:shadow-lg">
+        解析結果をコピー
+    </button>
+</div>
+</div>
+
+<div id="messageBox" class="message-box"></div>
+
+<footer>
+  Last Update: 19Oct2025<br>
+  当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
+  権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
+  ©Chaosium Inc.／アークライト／KADOKAWA
+</footer>
+
+<script>
+    // メッセージボックスを表示する関数
+    function showMessageBox(message, isError = false) {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.textContent = message;
+        messageBox.className = 'message-box show';
+        if (isError) {
+            messageBox.style.backgroundColor = '#dc3545';
+        } else {
+            messageBox.style.backgroundColor = '#28a745';
+        }
+        setTimeout(() => {
+            messageBox.classList.remove('show');
+        }, 2000);
+    }
+
+    // ログを解析する関数 (テキストエリアへの出力に修正)
+    function analyzeLog() {
+        // IDを 'input' に変更
+        const logInput = document.getElementById('input').value;
+        const outputTextarea = document.getElementById('output');
+        const lines = logInput.split('\n');
+        
+        const characterRolls = {}; 
+        const charOrder = []; 
+        
+        // ----------------------------------------------------
+        // 正規表現でログ行を解析
+        const lineMatchRegex = /^\[(.+?)\]\s*([^:]+?)\s*:\s*(CC[<>]?=?[\+\-]?\d*.*?)\s*【(.+?)】.*?(クリティカル|イクストリーム成功|ハード成功|レギュラー成功|成功|スペシャル|スペシャル成功)/;
+
+        const excludedTabs = ['other', '雑談', 'おはらい', 'お祓い'];
+        const excludedSkills = [
+            'STR', 'CON', 'DEX', 'APP', 'SIZ', 'INT', 'EDU', // 能力値 (POW/幸運は除く)
+            'アイデア', '知識', '正気度ロール', // 成長判定対象外の技能
+        ];
+        // ----------------------------------------------------
+
+        lines.forEach(line => {
+            const trimmedLine = line.trim();
+            const match = trimmedLine.match(lineMatchRegex);
+            
+            if (match) {
+                const [, tabName, characterNameRaw, ccPart, skillName, resultText] = match;
+                
+                // 1. タブの除外ルール
+                const tabNameLower = tabName.toLowerCase();
+                if (excludedTabs.includes(tabNameLower)) {
+                    return;
+                }
+                
+                // 2. キャラクター名抽出
+                const characterName = characterNameRaw.trim(); 
+                
+                // 3. 成長判定対象外の判定（POW/幸運の特殊ルールを含む）を除外
+                const skillBaseName = skillName.replace(/（.*?）|\(.*?\)/g, '').trim();
+                const skillBaseNameUpper = skillBaseName.toUpperCase();
+                
+                const isPOWorLuck = skillBaseNameUpper === 'POW' || skillBaseName === '幸運';
+                const isCritical = resultText.includes('クリティカル');
+
+                if (isPOWorLuck) {
+                    if (!isCritical) {
+                        return; 
+                    }
+                } else if (excludedSkills.includes(skillBaseNameUpper)) {
+                    return;
+                }
+                
+                // 4. キャラクターが初登場の場合、charOrderに追加する
+                if (!characterRolls[characterName]) {
+                    characterRolls[characterName] = [];
+                    charOrder.push(characterName);
+                }
+
+                // 5. 表示形式の整形: CC<=...の部分とボーナス/ペナルティダイスの表記を削除
+                let displayLine = trimmedLine
+                    .replace(/^\[.+?\]\s*([^:]+?)\s*:\s*/, '') // タブとキャラ名: を削除
+                    .replace(new RegExp(`^${ccPart.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`), ''); // CC<=...の部分を削除
+
+                // ボーナス・ペナルティダイスの表記を削除
+                displayLine = displayLine.replace(/ボーナス・ペナルティダイス\[.*?\]\s*/, '');
+
+                // メタ情報と共にオブジェクトとして保存
+                characterRolls[characterName].push({
+                    line: displayLine,
+                    skill: skillName.trim(), // 技能名
+                    rank: resultText.trim() // 成功レベル
+                });
+            }
+        });
+
+        // ----------------------------------------------------
+        // Step 2: 重複排除処理 (ロジックは維持)
+        const finalRolls = {};
+        
+        for (const charName of charOrder) {
+            const rolls = characterRolls[charName];
+            if (!rolls) continue;
+
+            const processedRolls = [];
+            const seenHardOrRegularSkills = new Set();
+            
+            rolls.forEach(roll => {
+                const rank = roll.rank;
+                const skill = roll.skill;
+
+                const isHighLevel = rank.includes('クリティカル') || rank.includes('イクストリーム成功') || rank.includes('スペシャル');
+                const isHardOrRegular = rank.includes('ハード成功') || rank.includes('レギュラー成功') || rank === '成功';
+                
+                if (isHighLevel) {
+                    processedRolls.push(roll);
+                } else if (isHardOrRegular) {
+                    if (!seenHardOrRegularSkills.has(skill)) {
+                        processedRolls.push(roll);
+                        seenHardOrRegularSkills.add(skill);
+                    }
+                }
+            });
+            
+            finalRolls[charName] = processedRolls;
+        }
+        // ----------------------------------------------------
+        
+        // 成功度に基づいてソートするためのロジック (オブジェクトを受け取る)
+        const getSortRank = (roll) => {
+            const line = roll.rank;
+            if (line.includes('クリティカル')) return 1;
+            if (line.includes('イクストリーム成功') || line.includes('スペシャル')) return 2;
+            if (line.includes('ハード成功')) return 3;
+            if (line.includes('レギュラー成功') || line.includes('成功')) return 4;
+            return 5;
+        };
+
+
+        // 結果をプレーンテキストとして生成 (Discordコードブロック形式)
+        let resultsText = '';
+        const characterNames = charOrder; 
+        
+        if (characterNames.length === 0) {
+            resultsText = '解析できる成功判定データが見つかりませんでした。ログの形式を確認してください。';
+        } else {
+            for (const charName of characterNames) {
+                const finalCharacterRolls = finalRolls[charName];
+                if (!finalCharacterRolls || finalCharacterRolls.length === 0) continue; 
+
+                // 1. 【名前の成長リスト】
+                resultsText += `【${charName}の成長リスト】\n`;
+                
+                // 2. コードブロック開始
+                resultsText += '```\n';
+
+                // 判定行を成功度順にソート
+                const sortedRolls = finalCharacterRolls.sort((a, b) => getSortRank(a) - getSortRank(b));
+                
+                // ソートされた行を出力
+                sortedRolls.forEach(roll => {
+                    resultsText += `${roll.line}\n`;
+                });
+
+                // 3. コードブロック終了
+                resultsText += '```\n\n';
+            }
+        }
+
+        outputTextarea.value = resultsText.trim(); // 末尾の改行をトリム
+        showMessageBox('ログの解析が完了しました！');
+    }
+
+    // コピー機能：#output テキストエリアの内容をコピーする (ロジック修正)
+    function copyOutput() {
+        const outputTextarea = document.getElementById('output');
+        if (!outputTextarea.value.trim()) {
+            showMessageBox('コピーする解析結果がありません。', true);
+            return;
+        }
+
+        // Clipboard APIブロックエラーを回避するため、execCommandを使用したフォールバック関数を直接呼び出す
+        tryCopyToClipboardFallback(outputTextarea.value);
+    }
+
+    function tryCopyToClipboardFallback(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            // document.execCommand('copy') を使用 (iframe環境で最も確実なコピー方法)
+            document.execCommand('copy');
+            showMessageBox('解析結果をクリップボードにコピーしました！');
+        } catch (err) {
+            showMessageBox('コピーに失敗しました。ブラウザの設定を確認してください。', true);
+        } finally {
+            document.body.removeChild(textarea);
+        }
+    }
+</script>
+</body>
+</html>
