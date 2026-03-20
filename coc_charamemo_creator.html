@@ -14,11 +14,11 @@
 <!-- このHTMLファイルと同じディレクトリに「kuma_icon.ico」を配置してください -->
 <link rel="icon" href="kuma_icon.ico" type="image/x-icon">
 <!-- ここまでファビコンの設定 -->
-  
+
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>いあきゃらテキスト変換器</title>
-  
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
     body { background-color: #121212; color: #e0e0e0; font-family: sans-serif; }
@@ -47,12 +47,20 @@
         @apply flex items-center space-x-2 text-xs cursor-pointer p-1 rounded hover:bg-zinc-700 transition;
     }
     .rights-footer {
-            font-size: 0.7rem;
-            line-height: 1.5;
-            color: #666;
-            margin-top: 2rem;
-            text-align: center;
-        }
+        color: #555;
+        font-size: 0.65rem;
+        line-height: 1.4;
+        text-align: center;
+    }
+    .preview-area {
+        background-color: #0f0f0f;
+        border: 1px solid #444;
+        transition: border-color 0.2s;
+    }
+    .preview-area:focus {
+        border-color: #10b981;
+        color: #ffffff;
+    }
 </style>
 </head>
 <body class="p-4 md:p-8 flex flex-col items-center min-h-screen">
@@ -64,69 +72,93 @@
 
     <!-- 入力エリア -->
     <section class="mb-6">
-        <label class="block text-sm font-semibold text-emerald-400 mb-2">1. いあきゃらのテキスト全文を貼り付け</label>
+        <label class="block text-sm font-semibold text-emerald-400 mb-1">
+            1. <strong>いあきゃら</strong>の「出力」▶︎「📄ファイルに出力」にてテキストを出力
+        </label>
+        <label class="block text-sm font-semibold text-emerald-400 mb-2">
+            2. 出力したテキストファイルから全文を貼り付け
+        </label>
         <textarea id="rawTextInput" 
-            class="w-full h-48 bg-zinc-900 text-xs p-4 rounded-xl border border-zinc-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none leading-relaxed" 
+            class="w-full h-40 bg-zinc-900 text-xs p-4 rounded-xl border border-zinc-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none leading-relaxed" 
             placeholder="【基本情報】から始まるテキストをすべて貼り付けてください..."></textarea>
     </section>
 
-    <!-- ステップ2 見出し -->
-    <label class="block w-full text-sm font-semibold text-emerald-400 mb-2">2. キャラメモorキャラ駒の生成オプションを選んで出力</label>
-
-    <!-- 設定 -->
-    <section class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-zinc-800/50 rounded-xl border border-zinc-700">
-            <span class="block text-sm font-bold mb-3 text-emerald-400">表示オプション</span>
-            <div class="grid grid-cols-2 gap-x-2 gap-y-1 mb-4">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="opt-summary" checked class="rounded text-emerald-500 bg-zinc-700">
-                    <span>基本情報</span>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="opt-memo-ref" class="rounded text-emerald-500 bg-zinc-700">
-                    <span>メモ参照</span>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="opt-battle" checked class="rounded text-emerald-500 bg-zinc-700">
-                    <span>武器・防具</span>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="opt-items" checked class="rounded text-emerald-500 bg-zinc-700">
-                    <span>所持品</span>
-                </label>
-            </div>
-
-            <div class="border-t border-zinc-700 my-3 pt-3">
-                <span class="block text-[10px] font-bold mb-2 text-zinc-400 uppercase tracking-wider">キャラ駒生成オプション</span>
-                <div class="grid grid-cols-1 gap-y-1">
+    <!-- 設定とプレビュー -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- オプション設定 -->
+        <section>
+            <label class="block text-sm font-semibold text-emerald-400 mb-2">3. 生成オプション</label>
+            <div class="p-4 bg-zinc-800/50 rounded-xl border border-zinc-700">
+                <span class="block text-[10px] font-bold mb-2 text-zinc-400 uppercase tracking-wider">表示オプション（メモ欄）</span>
+                <div class="grid grid-cols-2 gap-x-2 gap-y-1 mb-4">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="opt-luck-consume" class="rounded text-emerald-500 bg-zinc-700">
-                        <span>幸運消費ルール</span>
+                        <input type="checkbox" id="opt-summary" checked class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                        <span>基本情報</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="opt-ammo-status" class="rounded text-emerald-500 bg-zinc-700">
-                        <span>装弾数追加</span>
+                        <input type="checkbox" id="opt-memo-ref" class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                        <span>メモ参照</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="opt-commands" class="rounded text-emerald-500 bg-zinc-700">
-                        <span>コマンドを追加</span>
+                        <input type="checkbox" id="opt-battle" checked class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                        <span>武器・防具</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="opt-palette" checked class="rounded text-emerald-500 bg-zinc-700">
-                        <span>チャットパレット</span>
+                        <input type="checkbox" id="opt-items" checked class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                        <span>所持品</span>
                     </label>
                 </div>
+
+                <div class="border-t border-zinc-700 pt-3">
+                    <span class="block text-[10px] font-bold mb-2 text-zinc-400 uppercase tracking-wider">駒データ機能設定</span>
+                    <div class="grid grid-cols-1 gap-y-1">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-luck-consume" class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                            <span>幸運をステータスに追加</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-ammo-status" class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                            <span>装弾数をステータスに追加</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-commands" class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                            <span>操作用コマンドを追加</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-palette-format" checked class="rounded text-emerald-500 bg-zinc-700 opt-trigger">
+                            <span>チャットパレット整形</span>
+                        </label>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="flex flex-col justify-center space-y-3">
-            <button id="convertBtn" class="btn-primary text-white font-bold py-3 px-4 rounded-xl shadow-lg text-sm">
-                駒データを生成してコピー
+        </section>
+
+        <!-- プレビュー表示（編集可能） -->
+        <section class="flex flex-col">
+            <label class="block text-sm font-semibold text-emerald-400 mb-2">4. キャラメモ・プレビュー（編集可）</label>
+            <textarea id="memoPreview" 
+                class="w-full flex-grow preview-area text-[10px] p-3 rounded-xl text-zinc-300 outline-none leading-tight resize-none" 
+                placeholder="ここにプレビューが表示されます。自由に書き換えてからコピーできます..."></textarea>
+        </section>
+    </div>
+
+    <!-- アクションボタン -->
+    <section class="flex flex-col space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button id="convertBtn" class="btn-primary text-white font-bold py-3 px-4 rounded-xl shadow-lg text-sm flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
+                <span>駒データを生成してコピー</span>
             </button>
-            <button id="memoOnlyBtn" class="btn-secondary text-white font-bold py-3 px-4 rounded-xl shadow-lg text-sm">
-                キャラメモのみをコピー
+            <button id="memoOnlyBtn" class="btn-secondary text-white font-bold py-3 px-4 rounded-xl shadow-lg text-sm flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>キャラメモのみをコピー</span>
             </button>
-            <p id="statusMsg" class="text-center text-xs h-4"></p>
         </div>
+        <p id="statusMsg" class="text-center text-xs h-4"></p>
     </section>
 
     <!-- フォールバック用エリア -->
@@ -136,34 +168,45 @@
     </div>
 
     <footer class="mt-8 pt-4 border-t border-zinc-800 text-center text-[10px] text-zinc-500">
-        クトゥルフ神話TRPG 6版テキスト形式に対応
+        わざわざキャラメモを手打ちしないですむキャラ駒をあなたに
     </footer>
 </div>
-    <!-- Rights Footer -->
-    <footer class="rights-footer max-w-md">
-        Last Update: 19Mar2026<br>
-        当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
-        権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
-        ©Chaosium Inc.／アークライト／KADOKAWA
-    </footer>
+
+<!-- 権利表記フッター -->
+<footer class="rights-footer max-w-md mt-6">
+    Last Update: 20Mar2026<br>
+    当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
+    権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
+    ©Chaosium Inc.／アークライト／KADOKAWA
+</footer>
+
 <script>
     const convertBtn = document.getElementById('convertBtn');
     const memoOnlyBtn = document.getElementById('memoOnlyBtn');
     const rawTextInput = document.getElementById('rawTextInput');
+    const memoPreview = document.getElementById('memoPreview');
     const statusMsg = document.getElementById('statusMsg');
     const fallbackArea = document.getElementById('fallbackArea');
     const outputJson = document.getElementById('outputJson');
 
     const optSummary = document.getElementById('opt-summary');
     const optMemoRef = document.getElementById('opt-memo-ref');
+    const triggers = document.querySelectorAll('.opt-trigger');
 
-    optSummary.addEventListener('change', () => { if(optSummary.checked) optMemoRef.checked = false; });
-    optMemoRef.addEventListener('change', () => { if(optMemoRef.checked) optSummary.checked = false; });
+    optSummary.addEventListener('change', () => { if(optSummary.checked) optMemoRef.checked = false; updatePreview(); });
+    optMemoRef.addEventListener('change', () => { if(optMemoRef.checked) optSummary.checked = false; updatePreview(); });
+    rawTextInput.addEventListener('input', updatePreview);
+    triggers.forEach(t => t.addEventListener('change', updatePreview));
 
     function extractField(text, label) {
         const reg = new RegExp(`${label}:\\s*([^\\/\\n\\r]+)`, "m");
         const m = text.match(reg);
-        return m ? m[1].trim() : "";
+        if (!m) return "";
+        let val = m[1].trim();
+        if (label === "名前") {
+            val = val.replace(/\s*\(\s*\)$/, "").trim();
+        }
+        return val;
     }
 
     function formatWeapons(rawText) {
@@ -172,7 +215,6 @@
         lines.forEach(line => {
             const trimmed = line.trim();
             if (!trimmed || trimmed.startsWith('名称') || trimmed.startsWith('名前')) return;
-
             const parts = trimmed.split(/\s{2,}|\t+/);
             if (parts.length >= 3) {
                 const [name, rate, dmg, range, count, ammo, dur, other] = parts;
@@ -194,7 +236,6 @@
         lines.forEach(line => {
             const trimmed = line.trim();
             if (!trimmed || trimmed.startsWith('名称') || trimmed.includes('所持金:') || trimmed.includes('借金:')) return;
-
             const parts = trimmed.split(/\s{2,}|\t+/);
             if (parts.length > 0) {
                 const name = parts[0];
@@ -211,6 +252,16 @@
         return result.join('\n');
     }
 
+    function updatePreview() {
+        const text = rawTextInput.value.trim();
+        if (!text) {
+            memoPreview.value = "";
+            return;
+        }
+        const parsed = parseIacharaText(text);
+        memoPreview.value = parsed.memo;
+    }
+
     function parseIacharaText(text) {
         const data = {
             name: "",
@@ -223,13 +274,13 @@
         };
 
         data.name = extractField(text, "名前");
-
         const colorMatch = text.match(/からコード:\s*(#[0-9a-fA-F]{6})/);
         if (colorMatch) data.color = colorMatch[1];
 
         const dbMatch = text.match(/ダメージボーナス\s+([+-]?[\d\w+]+)/);
         const dbValue = dbMatch ? dbMatch[1] : "0";
 
+        let luckVal = 0;
         const statsToExtract = ["STR", "CON", "POW", "DEX", "APP", "SIZ", "INT", "EDU", "HP", "MP", "SAN", "幸運"];
         statsToExtract.forEach(s => {
             const reg = new RegExp(`^${s}\\s+(\\d+)\\s+(\\d+)`, "m");
@@ -238,6 +289,7 @@
                 const val = parseInt(m[1]);
                 const max = parseInt(m[2]);
                 if (s === "DEX") data.initiative = val;
+                if (s === "幸運") luckVal = val;
                 if (["HP", "MP", "SAN"].includes(s)) {
                     data.status.push({ label: s, value: val, max: max });
                 } else if (s === "幸運" && document.getElementById('opt-luck-consume').checked) {
@@ -250,114 +302,194 @@
 
         data.params.push({ label: "DB", value: dbValue });
 
-        // 能力値計算（重複回避用）
         const intParam = data.params.find(p => p.label === "INT");
         const eduParam = data.params.find(p => p.label === "EDU");
         const ideaVal = intParam ? parseInt(intParam.value) * 5 : 0;
         const knowledgeVal = eduParam ? parseInt(eduParam.value) * 5 : 0;
 
-        let paletteLines = [
-            "CC<={SAN} 【正気度ロール】",
-            `CCB<=${ideaVal} 【アイデア】`,
-            "CCB<={幸運} 【幸運】",
-            `CCB<=${knowledgeVal} 【知識】`
-        ];
+        const isFormatted = document.getElementById('opt-palette-format').checked;
 
-        // 技能抽出（アイデア・知識・幸運・ステータス名と被るものを除外）
-        const excludeFromSkills = [...statsToExtract, "アイデア", "知識", "IDE", "技能名"];
-        const skillLines = [...text.matchAll(/^([^\s\d『』]+)\s+(\d+)\s+\d+/gm)];
-        for (const m of skillLines) {
-            const skillName = m[1].trim();
-            const skillValue = m[2];
-            if (skillName && !excludeFromSkills.includes(skillName)) {
-                paletteLines.push(`CCB<=${skillValue} 【${skillName}】`);
-            }
-        }
+        // カテゴリ別パレットバッファ
+        const palettes = {
+            base: [
+                "CC<={SAN} 【正気度ロール】",
+                `CCB<=${ideaVal} 【アイデア】`,
+                "CCB<={幸運} 【幸運】",
+                `CCB<=${knowledgeVal} 【知識】`
+            ],
+            battle: [],
+            search: [],
+            action: [],
+            negoc: [],
+            knowledge: [],
+            defaultSkills: [],
+            abilitySection: [
+                "1d3+0 【ダメージ判定】",
+                "1d4+0 【ダメージ判定】",
+                "1d6+0 【ダメージ判定】"
+            ]
+        };
 
-        // ダメージ判定
-        paletteLines.push("1d3+0 【ダメージ判定】");
-        paletteLines.push("1d4+0 【ダメージ判定】");
-        paletteLines.push("1d6+0 【ダメージ判定】");
-
-        // 能力値×5
         const coreParams = ["STR", "CON", "POW", "DEX", "APP", "SIZ", "INT", "EDU"];
         coreParams.forEach(p => {
-            paletteLines.push(`CCB<={${p}}*5 【${p} × 5】`);
+            palettes.abilitySection.push(`CCB<={${p}}*5 【${p} × 5】`);
         });
 
-        let memoParts = [];
-        
-        if (document.getElementById('opt-summary').checked) {
-            const name = extractField(text, "名前");
-            const job = extractField(text, "職業");
-            const age = extractField(text, "年齢");
-            const gender = extractField(text, "性別");
-            const height = extractField(text, "身長");
-            const weight = extractField(text, "体重");
+        // 技能定義
+        const categories = [
+            { key: 'battle', label: '『戦闘技能』', emoji: '🟥戦闘技能' },
+            { key: 'search', label: '『探索技能』', emoji: '🟦探索技能' },
+            { key: 'action', label: '『行動技能』', emoji: '🟧行動技能・他' },
+            { key: 'negoc', label: '『交渉技能』', emoji: '🟪交渉技能' },
+            { key: 'knowledge', label: '『知識技能』', emoji: '⬜️知識技能' }
+        ];
 
-            let summaryLines = [];
-            if (name) summaryLines.push(`名前: ${name}`);
-            if (job) summaryLines.push(`職業: ${job}`);
-            if (age || gender) summaryLines.push(`年齢: ${age} / 性別: ${gender}`);
-            if (height || weight) summaryLines.push(`身長: ${height} / 体重: ${weight}`);
-            if (summaryLines.length > 0) memoParts.push(summaryLines.join('\n'));
-        }
-        
-        if (document.getElementById('opt-memo-ref').checked) {
-            const memoSection = text.match(/【メモ】([\s\S]+?)(?=\n【|$)/);
-            if (memoSection) memoParts.push(memoSection[1].trim());
-        }
+        const ignoreDefaultCategories = ["目星", "聞き耳", "図書館", "こぶし（パンチ）", "母国語"];
+        const exclusiveSearchSkills = ["目星", "聞き耳", "図書館"];
 
-        const battleSection = text.match(/【戦闘・武器・防具】([\s\S]+?)(?=\n【|$)/);
-        const foundAmmoWeapons = [];
+        // パラメータ化セクション用の保持変数
+        const pVals = {
+            "アイデア": ideaVal,
+            "幸運": luckVal,
+            "知識": knowledgeVal,
+            "目星": 0,
+            "聞き耳": 0,
+            "図書館": 0,
+            "回避": 0
+        };
 
-        if (battleSection && battleSection[1].trim()) {
-            const battleRaw = battleSection[1].trim();
-            
-            if (document.getElementById('opt-battle').checked) {
-                memoParts.push("\n【武器・防具】\n" + formatWeapons(battleRaw));
-            }
+        categories.forEach(cat => {
+            const sectionReg = new RegExp(`${cat.label}[\\s\\S]+?(?=\\n『|【|$)`);
+            const sectionMatch = text.match(sectionReg);
+            if (sectionMatch) {
+                const skillLines = [...sectionMatch[0].matchAll(/^([^\s\d『』]+)\s+(\d+)\s+(\d+)/gm)];
+                skillLines.forEach(m => {
+                    const skillName = m[1].trim();
+                    const totalValue = m[2];
+                    const defaultValue = m[3];
+                    
+                    if (skillName && !statsToExtract.includes(skillName) && !["アイデア", "知識", "IDE", "技能名"].includes(skillName)) {
+                        const line = `CCB<=${totalValue} 【${skillName}】`;
+                        
+                        // パラメータ用データの保存
+                        if (pVals.hasOwnProperty(skillName)) pVals[skillName] = totalValue;
 
-            if (document.getElementById('opt-ammo-status').checked || document.getElementById('opt-commands').checked) {
-                const lines = battleRaw.split('\n');
-                lines.forEach(line => {
-                    const trimmed = line.trim();
-                    if (!trimmed || trimmed.startsWith('名称') || trimmed.startsWith('名前')) return;
-                    const parts = trimmed.split(/\s{2,}|\t+/);
-                    if (parts.length >= 6) {
-                        const name = parts[0];
-                        const ammo = parts[5];
-                        const ammoNum = ammo.match(/\d+/);
-                        if (ammoNum) {
-                            const val = parseInt(ammoNum[0]);
-                            const statusName = `装弾数(${name})`;
-                            foundAmmoWeapons.push({ name: name, statusName: statusName, value: val });
-                            if (document.getElementById('opt-ammo-status').checked) {
-                                data.status.push({ label: statusName, value: val, max: val });
-                            }
+                        // 探索技能のフィルタリング: 指定3種以外は行動技能へ
+                        let targetKey = cat.key;
+                        if (cat.key === 'search' && !exclusiveSearchSkills.includes(skillName)) {
+                            targetKey = 'action';
+                        }
+
+                        const shouldStayInCategory = ignoreDefaultCategories.some(ignore => skillName.includes(ignore));
+
+                        if (isFormatted && totalValue === defaultValue && !shouldStayInCategory) {
+                            palettes.defaultSkills.push(line);
+                        } else {
+                            palettes[targetKey].push(line);
                         }
                     }
                 });
             }
-        }
+        });
 
-        // 操作用コマンドの追加
-        if (document.getElementById('opt-commands').checked) {
-            paletteLines.push(""); 
-            paletteLines.push(":HP-");
-            paletteLines.push(":SAN-");
-            foundAmmoWeapons.forEach(w => {
-                paletteLines.push(`:${w.statusName}-`);
+        // チャットパレットの組み立て
+        let finalPaletteLines = [];
+
+        const foundAmmoWeapons = [];
+        const battleSection = text.match(/【戦闘・武器・防具】([\s\S]+?)(?=\n【|$)/);
+        if (battleSection) {
+            const lines = battleSection[1].trim().split('\n');
+            lines.forEach(line => {
+                const parts = line.trim().split(/\s{2,}|\t+/);
+                if (parts.length >= 6) {
+                    const name = parts[0];
+                    const ammo = parts[5].match(/\d+/);
+                    if (ammo) {
+                        const val = parseInt(ammo[0]);
+                        const statusName = `装弾数(${name})`;
+                        foundAmmoWeapons.push({ statusName, val });
+                    }
+                }
             });
         }
 
-        data.commands = paletteLines.join('\n');
+        if (document.getElementById('opt-commands').checked) {
+            finalPaletteLines.push(":HP-");
+            finalPaletteLines.push(":SAN-");
+            foundAmmoWeapons.forEach(w => finalPaletteLines.push(`:${w.statusName}-`));
+            finalPaletteLines.push(""); 
+        }
 
-        if (document.getElementById('opt-items').checked) {
-            const itemSection = text.match(/【所持品】([\s\S]+?)(?=\n【|$)/);
-            if (itemSection && itemSection[1].trim()) {
-                memoParts.push("\n【所持品】\n" + formatItems(itemSection[1].trim()));
+        finalPaletteLines.push(...palettes.base);
+        finalPaletteLines.push("");
+
+        if (isFormatted) {
+            categories.forEach(cat => {
+                if (palettes[cat.key].length > 0) {
+                    finalPaletteLines.push(cat.emoji);
+                    finalPaletteLines.push(...palettes[cat.key]);
+                    finalPaletteLines.push("");
+                }
+            });
+
+            if (palettes.defaultSkills.length > 0) {
+                finalPaletteLines.push("======初期値======");
+                finalPaletteLines.push(...palettes.defaultSkills);
+                finalPaletteLines.push("");
             }
+
+            finalPaletteLines.push("======能力値======");
+            finalPaletteLines.push(...palettes.abilitySection);
+            finalPaletteLines.push("");
+
+            // =====パラメータ化===== 追加
+            finalPaletteLines.push("=====パラメータ化=====");
+            for (const [key, val] of Object.entries(pVals)) {
+                finalPaletteLines.push(`//${key} = ${val}`);
+            }
+
+        } else {
+            categories.forEach(cat => {
+                finalPaletteLines.push(...palettes[cat.key]);
+            });
+            finalPaletteLines.push(...palettes.defaultSkills);
+            finalPaletteLines.push("");
+            finalPaletteLines.push(...palettes.abilitySection);
+        }
+
+        data.commands = finalPaletteLines.join('\n').trim();
+
+        let memoParts = [];
+        if (document.getElementById('opt-summary').checked) {
+            const n = extractField(text, "名前");
+            const j = extractField(text, "職業");
+            const a = extractField(text, "年齢");
+            const g = extractField(text, "性別");
+            const h = extractField(text, "身長");
+            const w = extractField(text, "体重");
+            let s = [];
+            if (n) s.push(`名前: ${n}`);
+            if (j) s.push(`職業: ${j}`);
+            if (a || g) s.push(`年齢: ${a} / 性別: ${g}`);
+            if (h || w) s.push(`身長: ${h} / 体重: ${w}`);
+            if (s.length > 0) memoParts.push(s.join('\n'));
+        }
+        if (document.getElementById('opt-memo-ref').checked) {
+            const m = text.match(/【メモ】([\s\S]+?)(?=\n【|$)/);
+            if (m) memoParts.push(m[1].trim());
+        }
+        if (battleSection && document.getElementById('opt-battle').checked) {
+            memoParts.push("\n【武器・防具】\n" + formatWeapons(battleSection[1].trim()));
+        }
+        if (document.getElementById('opt-items').checked) {
+            const i = text.match(/【所持品】([\s\S]+?)(?=\n【|$)/);
+            if (i && i[1].trim()) memoParts.push("\n【所持品】\n" + formatItems(i[1].trim()));
+        }
+        
+        if (document.getElementById('opt-ammo-status').checked) {
+            foundAmmoWeapons.forEach(w => {
+                data.status.push({ label: w.statusName, value: w.val, max: w.val });
+            });
         }
 
         data.memo = memoParts.join('\n').trim();
@@ -366,25 +498,18 @@
 
     async function copyToClipboard(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            try {
-                await navigator.clipboard.writeText(text);
-                return true;
-            } catch (err) {}
+            try { await navigator.clipboard.writeText(text); return true; } catch (err) {}
         }
-        try {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            return successful;
-        } catch (err) {
-            return false;
-        }
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        return successful;
     }
 
     function showMessage(msg, isError = false) {
@@ -396,27 +521,26 @@
     convertBtn.onclick = async () => {
         const text = rawTextInput.value.trim();
         if (!text) return showMessage("テキストを入力してください", true);
-
         fallbackArea.classList.add('hidden');
         try {
             const parsed = parseIacharaText(text);
+            const finalMemo = memoPreview.value;
             const ccfoliaData = {
                 kind: "character",
                 data: {
                     name: parsed.name,
-                    memo: parsed.memo,
+                    memo: finalMemo,
                     initiative: parsed.initiative,
                     color: parsed.color,
-                    commands: document.getElementById('opt-palette').checked ? parsed.commands : "",
+                    commands: parsed.commands,
                     status: parsed.status,
                     params: parsed.params,
                 }
             };
             const jsonStr = JSON.stringify(ccfoliaData);
             const success = await copyToClipboard(jsonStr);
-            if (success) {
-                showMessage("駒データをコピーしました！");
-            } else {
+            if (success) showMessage("駒データをコピーしました！");
+            else {
                 showMessage("自動コピー失敗。下の枠からコピーしてください", true);
                 outputJson.value = jsonStr;
                 fallbackArea.classList.remove('hidden');
@@ -430,15 +554,15 @@
         const text = rawTextInput.value.trim();
         if (!text) return showMessage("テキストを入力してください", true);
         try {
-            const parsed = parseIacharaText(text);
-            const success = await copyToClipboard(parsed.memo);
+            const finalMemo = memoPreview.value;
+            if (!finalMemo) return showMessage("コピーするメモがありません", true);
+            const success = await copyToClipboard(finalMemo);
             if (success) showMessage("キャラメモをコピーしました！");
             else showMessage("コピーに失敗しました", true);
         } catch (err) {
-            showMessage("解析エラーが発生しました", true);
+            showMessage("エラーが発生しました", true);
         }
     };
 </script>
 </body>
-</html>
 </html>
