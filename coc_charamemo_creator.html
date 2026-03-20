@@ -46,6 +46,13 @@
     .checkbox-label {
         @apply flex items-center space-x-2 text-xs cursor-pointer p-1 rounded hover:bg-zinc-700 transition;
     }
+    .rights-footer {
+            font-size: 0.7rem;
+            line-height: 1.5;
+            color: #666;
+            margin-top: 2rem;
+            text-align: center;
+        }
 </style>
 </head>
 <body class="p-4 md:p-8 flex flex-col items-center min-h-screen">
@@ -132,12 +139,13 @@
         クトゥルフ神話TRPG 6版テキスト形式に対応
     </footer>
 </div>
-<footer>
-  Last Update: 19Oct2025<br>
-  当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
-  権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
-  ©Chaosium Inc.／アークライト／KADOKAWA
-</footer>
+    <!-- Rights Footer -->
+    <footer class="rights-footer max-w-md">
+        Last Update: 19Mar2026<br>
+        当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
+        権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
+        ©Chaosium Inc.／アークライト／KADOKAWA
+    </footer>
 <script>
     const convertBtn = document.getElementById('convertBtn');
     const memoOnlyBtn = document.getElementById('memoOnlyBtn');
