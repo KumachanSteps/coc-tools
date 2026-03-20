@@ -63,7 +63,7 @@
     }
 </style>
 </head>
-<body class="p-4 md:p-8 flex flex-col items-center min-h-screen">
+<body class="flex flex-col items-center justify-center min-h-screen p-4 md:py-12">
 <div class="glass-card w-full max-w-2xl p-6 md:p-8 rounded-2xl">
     <header class="mb-8 text-center">
         <h1 class="text-2xl font-bold text-white mb-2">iachara Text to CCFOLIA</h1>
@@ -173,7 +173,7 @@
 </div>
 
 <!-- 権利表記フッター -->
-<footer class="rights-footer max-w-md mt-6">
+<footer class="rights-footer max-w-md mt-6 mb-8">
     Last Update: 20Mar2026<br>
     当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br>
     権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br>
@@ -309,7 +309,6 @@
 
         const isFormatted = document.getElementById('opt-palette-format').checked;
 
-        // カテゴリ別パレットバッファ
         const palettes = {
             base: [
                 "CC<={SAN} 【正気度ロール】",
@@ -335,7 +334,6 @@
             palettes.abilitySection.push(`CCB<={${p}}*5 【${p} × 5】`);
         });
 
-        // 技能定義
         const categories = [
             { key: 'battle', label: '『戦闘技能』', emoji: '🟥戦闘技能' },
             { key: 'search', label: '『探索技能』', emoji: '🟦探索技能' },
@@ -347,7 +345,6 @@
         const ignoreDefaultCategories = ["目星", "聞き耳", "図書館", "こぶし（パンチ）", "母国語"];
         const exclusiveSearchSkills = ["目星", "聞き耳", "図書館"];
 
-        // パラメータ化セクション用の保持変数
         const pVals = {
             "アイデア": ideaVal,
             "幸運": luckVal,
@@ -371,10 +368,8 @@
                     if (skillName && !statsToExtract.includes(skillName) && !["アイデア", "知識", "IDE", "技能名"].includes(skillName)) {
                         const line = `CCB<=${totalValue} 【${skillName}】`;
                         
-                        // パラメータ用データの保存
                         if (pVals.hasOwnProperty(skillName)) pVals[skillName] = totalValue;
 
-                        // 探索技能のフィルタリング: 指定3種以外は行動技能へ
                         let targetKey = cat.key;
                         if (cat.key === 'search' && !exclusiveSearchSkills.includes(skillName)) {
                             targetKey = 'action';
@@ -392,7 +387,6 @@
             }
         });
 
-        // チャットパレットの組み立て
         let finalPaletteLines = [];
 
         const foundAmmoWeapons = [];
@@ -442,7 +436,6 @@
             finalPaletteLines.push(...palettes.abilitySection);
             finalPaletteLines.push("");
 
-            // =====パラメータ化===== 追加
             finalPaletteLines.push("=====パラメータ化=====");
             for (const [key, val] of Object.entries(pVals)) {
                 finalPaletteLines.push(`//${key} = ${val}`);
