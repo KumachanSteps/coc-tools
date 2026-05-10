@@ -2,23 +2,19 @@
 <html lang="ja">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NJD5JZML31"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-NJD5JZML31');
-</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- アップロードされたアイコンファイルを指定しました。 -->
-<!-- このHTMLファイルと同じディレクトリに「kuma_icon.ico」を配置してください -->
-<link rel="icon" href="kuma_icon.ico" type="image/x-icon">
-<!-- ここまでファビコンの設定 -->
-
-<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NJD5JZML31"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NJD5JZML31');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- アップロードされたアイコンファイルを指定しました。 -->
+  <!-- このHTMLファイルと同じディレクトリに「kuma_icon.ico」を配置してください -->
+  <link rel="icon" href="kuma_icon.ico" type="image/x-icon" />
+  <!-- ここまでファビコンの設定 -->
   <title>Dice Stat Analyst</title>
   <style>
     :root{--bg:#f6f7fb;--panel:#fff;--ink:#1f2937;--muted:#6b7280;--line:#d1d5db;--accent:#4f46e5;--accent-soft:#eef2ff;--danger:#dc2626;--success:#16a34a;--fail:#b45309;--fail-bg:#fef3c7}
@@ -30,7 +26,7 @@
     .input-panel-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.input-panel-top h2{margin:0}.input-toggle-button{width:auto;min-width:38px;margin:0;padding:7px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;line-height:1}
     main.input-collapsed .input-panel-top{flex-direction:column;justify-content:flex-start;gap:10px;margin-bottom:0}main.input-collapsed .input-panel-top h2{writing-mode:vertical-rl;text-orientation:mixed;font-size:14px;letter-spacing:.08em}main.input-collapsed .input-toggle-button{width:42px;height:42px;padding:0}
     h2{margin:0 0 12px;font-size:16px}h3{margin:16px 0 8px;font-size:14px}label{display:block;margin:8px 0;font-size:13px}
-    input[type=file],input[type=number],textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:180px;max-height:32vh;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.45}#cleanedOutput{min-height:420px;max-height:none}
+    input[type=file],input[type=number],textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:120px;max-height:24vh;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.45}#cleanedOutput{min-height:420px;max-height:none}
     .row,.grid-results,.character-summary-grid,.mini-stats,.chart-row{display:grid;gap:8px}.row{grid-template-columns:1fr 1fr}.grid-results{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.character-summary-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px}.mini-stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:10px}.chart-row{grid-template-columns:70px 1fr 86px;align-items:center;margin:8px 0;font-size:13px}
     .checkline{display:flex;align-items:flex-start;gap:8px;margin:8px 0;color:var(--ink)}.checkline input{margin-top:2px}button{width:100%;margin-top:10px;padding:11px 12px;border:0;border-radius:10px;background:var(--accent);color:white;font-weight:700;cursor:pointer}button.secondary{background:var(--accent-soft);color:var(--accent)}
     .card{padding:12px;background:#f9fafb;border:1px solid var(--line);border-radius:12px}.card .label{margin-bottom:4px;color:var(--muted);font-size:12px}.card .value{font-size:24px;font-weight:800}.card .sub{margin-top:3px;color:var(--muted);font-size:12px}.character-card h3{margin:0 0 10px;font-size:15px}
@@ -59,15 +55,12 @@
         <label class="checkline"><input id="onlyD100" type="checkbox" checked /> d100系ロールのみ抽出する</label>
         <label class="checkline"><input id="groupByCharacter" type="checkbox" checked /> 結果をキャラクターごとに出力する</label>
         <label>自動非表示にする総ロール数<input id="autoHideMaxRolls" type="number" min="0" max="999" value="15" /></label>
-        <label class="checkline"><input id="dropSan" type="checkbox" /> 正気度ロール / SANチェックを除外する</label>
-        <label class="checkline"><input id="dropStatus" type="checkbox" /> アイデア・幸運・知識・能力値ロールを除外する</label>
-        <label class="checkline"><input id="normalizeSpace" type="checkbox" checked /> 余分な空白・装飾記号を軽く整える</label>
         <button id="analyzeBtn">分析する</button><button id="clearBtn" class="secondary">クリア</button>
         <p class="note">対応例：CCB&lt;=80、CC&lt;=60、RESB(10-16)、1d100&lt;=55、s1d100、D100、判定結果の「出目 03 / 100 / ＞ 96」など。<br>キャラクター名は「名前：CC」「名前：CCB」「[main] 名前：CC」「[main] 名前：CCB」形式などから自動検出します。検出されたキャラクターはチェックを外すことで非表示にできます。<br>タブ除外ONの場合、[main] / [メイン] / [HO系] / [ルール] / [メモ] は解析対象、[雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] は除外対象になります。<br>総ロール数が指定値以下のキャラクターはNPC想定として、分析直後は自動で非表示になります。</p>
       </div>
     </section>
     <section>
-      <div class="tabs"><button class="tab-button active" data-tab="summary">キャラクター別サマリー</button><button class="tab-button" data-tab="chart">分布チャート</button><button class="tab-button" data-tab="rolls">抽出ロール</button><button class="tab-button" data-tab="cleaned">整理済みログ</button><button id="summaryShotBtn" class="summary-shot-button" type="button">📷 スクショコピー</button></div>
+      <div class="tabs"><button class="tab-button active" data-tab="summary">キャラクター別サマリー</button><button class="tab-button" data-tab="chart">分布チャート</button><button class="tab-button" data-tab="rolls">抽出ロール</button><button class="tab-button" data-tab="cleaned">整理済みログ</button><button id="summaryShotBtn" class="summary-shot-button" type="button">📷 スクショコピー</button><button id="summaryDownloadBtn" class="summary-shot-button" type="button">⬇️ スクショDL</button></div>
       <div id="summary" class="tab-panel active">
         <h2>キャラクター別サマリー</h2><div class="character-control-bar"><button id="characterControlToggleBtn" class="character-control-toggle" type="button">表示キャラ設定を開く</button></div><div id="characterControls" class="character-controls"></div><div id="characterSummary" class="character-summary-grid"></div>
         <h2>全体サマリー</h2><div class="grid-results"><div class="card"><div class="label">総ロール数</div><div id="totalRolls" class="value">0</div><div class="sub">d100として抽出された件数</div></div><div class="card"><div class="label">成功 / 失敗</div><div id="successFailCount" class="value">0 / 0</div><div id="successFailRate" class="sub">0.00% / 0.00%</div></div><div class="card"><div class="label">クリティカル / ファンブル</div><div id="critFumbleCount" class="value">0 / 0</div><div id="critFumbleRate" class="sub">0.00% / 0.00%</div></div><div class="card"><div class="label">平均出目</div><div id="averageRoll" class="value">-</div><div class="sub">抽出値の平均</div></div></div>
@@ -85,7 +78,7 @@
     const includedTabs=['main','メイン','ルール','rule','rules','メモ','memo','notes','ho'],excludedTabs=['雑談','other','info','おはらい','お祓い','運試し'];
     bindEvents();render();
 
-    function bindEvents(){document.querySelectorAll('.tab-button').forEach(b=>b.addEventListener('click',()=>switchTab(b)));document.querySelectorAll('button[data-sort-key]').forEach(b=>b.addEventListener('click',()=>toggleSort(b.dataset.sortKey)));$('fileInput').addEventListener('change',handleFileInput);$('inputToggleBtn').addEventListener('click',toggleInputPanel);$('characterControlToggleBtn').addEventListener('click',()=>{state.showCharacterControls=!state.showCharacterControls;renderCharacterControls()});$('summaryShotBtn').addEventListener('click',downloadCharacterSummaryPng);$('analyzeBtn').addEventListener('click',analyze);$('clearBtn').addEventListener('click',clearAll);$('copyCleanedBtn').addEventListener('click',copyCleanedLog)}
+    function bindEvents(){document.querySelectorAll('.tab-button').forEach(b=>b.addEventListener('click',()=>switchTab(b)));document.querySelectorAll('button[data-sort-key]').forEach(b=>b.addEventListener('click',()=>toggleSort(b.dataset.sortKey)));$('fileInput').addEventListener('change',handleFileInput);$('inputToggleBtn').addEventListener('click',toggleInputPanel);$('characterControlToggleBtn').addEventListener('click',()=>{state.showCharacterControls=!state.showCharacterControls;renderCharacterControls()});$('summaryShotBtn').addEventListener('click',downloadCharacterSummaryPng);$('summaryDownloadBtn').addEventListener('click',downloadSummaryScreenshot);$('analyzeBtn').addEventListener('click',analyze);$('clearBtn').addEventListener('click',clearAll);$('copyCleanedBtn').addEventListener('click',copyCleanedLog)}
     function switchTab(b){document.querySelectorAll('.tab-button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')}
     async function handleFileInput(e){const f=e.target.files&&e.target.files[0];if(!f)return;$('rawInput').value=await f.text();state.inputPanelMode='auto';analyze()}
     function toggleInputPanel(){const c=$('appLayout').classList.contains('input-collapsed');state.inputPanelMode=c?'open':'collapsed';applyInputPanelLayout()}
@@ -97,7 +90,7 @@
     function prepareText(raw){const s=String(raw||'');if(!looksLikeHtml(s))return s;const doc=new DOMParser().parseFromString(s,'text/html');if(!doc.body)return s;const lines=extractHtmlLogLines(doc);return lines.length?lines.join(LF):decodeHtml(doc.body.innerText||doc.body.textContent||s)}
     function extractHtmlLogLines(doc){return Array.from(doc.body.querySelectorAll('p')).map(extractHtmlLogLine).filter(Boolean)}
     function extractHtmlLogLine(p){const spans=Array.from(p.querySelectorAll('span')).map(s=>cleanLine(decodeHtml(s.textContent||''))).filter(Boolean);return spans.length>=3&&isTabLabel(spans[0])?`${spans[0]} ${spans[1]}：${spans.slice(2).join(' ')}`:cleanLine(decodeHtml(p.textContent||''))}
-    function filterLines(lines){return lines.filter(line=>!($('dropTabs').checked&&!shouldKeepTabLine(line))&&!($('dropSan').checked&&hasAnyText(line,['SAN','正気度','SAN値','SC','SANC','SANチェック','正気度ロール']))&&!($('dropStatus').checked&&isStatusRollLine(line))&&!($('onlyD100').checked&&!looksLikeD100Roll(line)))}
+    function filterLines(lines){return lines.filter(line=>!($('dropTabs').checked&&!shouldKeepTabLine(line))&&!($('onlyD100').checked&&!looksLikeD100Roll(line)))}
     function shouldKeepTabLine(line){const tab=extractLeadingTab(line);return !tab||isIncludedTab(tab)}
     function isIncludedTab(tab){const n=normalizeTabName(tab);if(!n)return true;if(excludedTabs.some(w=>n.includes(normalizeTabName(w))))return false;if(n==='ho'||n.startsWith('ho'))return true;return includedTabs.some(w=>{const x=normalizeTabName(w);return n===x||n.startsWith(x)||n.includes(x)})}
 
@@ -135,15 +128,17 @@
     function renderTable(){$('rollTableBody').innerHTML=getSortedVisibleRolls().map((r,i)=>{const label=classifyRoll(r),pill=label==='Critical'?'crit':label==='Fumble'?'fumble':label==='Success'?'success':label==='Fail'?'fail':'normal';return`<tr><td>${i+1}</td><td>${escapeHtml(r.character||'不明')}</td><td><strong>${r.value}</strong></td><td><span class="pill ${pill}">${label}</span></td><td>${escapeHtml(r.line)}</td></tr>`}).join('')}
     function applyInputPanelLayout(){const layout=$('appLayout'),btn=$('inputToggleBtn');if(!layout||!btn)return;const count=Object.keys(groupRollsByCharacter(getVisibleRolls())).filter(n=>n!=='不明').length,collapse=state.inputPanelMode==='collapsed'||(state.inputPanelMode==='auto'&&count>=4);layout.classList.toggle('input-collapsed',collapse);btn.textContent=collapse?'⇥':'⇤';btn.title=collapse?'入力パネルを開く':'入力パネルを畳む'}
     async function downloadCharacterSummaryPng(){const source=$('summary');if(!source||!$('characterSummary').children.length){alert('コピーできるサマリーがありません。');return}if(!navigator.clipboard||!window.ClipboardItem){alert('このブラウザでは画像のクリップボードコピーに対応していません。');return}const btn=$('summaryShotBtn'),old=btn.textContent;btn.textContent='📷 コピー中...';let wrapper=null,url=null;try{const result=await buildSummaryCanvas();wrapper=result.wrapper;url=result.url;await new Promise((resolve,reject)=>{result.img.onload=()=>resolve();result.img.onerror=()=>reject(new Error('image load failed'));result.img.src=url});const canvas=document.createElement('canvas'),scale=2;canvas.width=result.width*scale;canvas.height=result.height*scale;const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,result.width,result.height);ctx.drawImage(result.img,0,0);const blob=await new Promise((resolve)=>canvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('blob failed');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('コピーしました');btn.textContent=old}catch(e){alert('スクショのコピーに失敗しました。')}finally{if(url)URL.revokeObjectURL(url);if(wrapper&&wrapper.parentNode)document.body.removeChild(wrapper);btn.textContent=old}}
+    async function downloadSummaryScreenshot(){if(!$('summary')||!$('characterSummary').children.length){alert('ダウンロードできるサマリーがありません。');return}const btn=$('summaryDownloadBtn'),old=btn.textContent;btn.textContent='⬇️ 作成中...';let result=null;try{result=await buildSummaryCanvas();await new Promise((resolve,reject)=>{result.img.onload=()=>resolve();result.img.onerror=()=>reject(new Error('image load failed'));result.img.src=result.url});const canvas=summaryCanvasFromImage(result),a=document.createElement('a');a.download='dice-summary-screenshot.png';a.href=canvas.toDataURL('image/png');a.click();showToast('ダウンロードしました')}catch(e){alert('スクショのダウンロードに失敗しました。')}finally{cleanupSummaryCanvas(result);btn.textContent=old}}
+    function summaryCanvasFromImage(result){const canvas=document.createElement('canvas'),scale=2;canvas.width=result.width*scale;canvas.height=result.height*scale;const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,result.width,result.height);ctx.drawImage(result.img,0,0);return canvas}
+    function cleanupSummaryCanvas(result){if(!result)return;if(result.url)URL.revokeObjectURL(result.url);if(result.wrapper&&result.wrapper.parentNode)document.body.removeChild(result.wrapper)}
     async function buildSummaryCanvas(){const source=$('summary'),wrapper=document.createElement('div');wrapper.style.position='fixed';wrapper.style.left='-10000px';wrapper.style.top='0';wrapper.style.width=source.scrollWidth+'px';wrapper.style.padding='20px';wrapper.style.background='#ffffff';wrapper.style.color=getComputedStyle(document.body).color;const clone=source.cloneNode(true);clone.querySelector('.character-control-bar')?.remove();clone.querySelector('#characterControls')?.remove();wrapper.appendChild(clone);document.body.appendChild(wrapper);inlineStyles(wrapper);const width=Math.ceil(wrapper.scrollWidth),height=Math.ceil(wrapper.scrollHeight),svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><foreignObject width="100%" height="100%">'+new XMLSerializer().serializeToString(wrapper)+'</foreignObject></svg>',url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'})),img=new Image();return{wrapper,width,height,url,img}}
     function inlineStyles(node){const all=[node,...node.querySelectorAll('*')];all.forEach(el=>{const cs=getComputedStyle(el);let css='';for(let i=0;i<cs.length;i++){const p=cs[i];css+=p+':'+cs.getPropertyValue(p)+';'}el.setAttribute('style',(el.getAttribute('style')||'')+css)})}
     function showToast(message){const toast=$('toast');if(!toast)return;toast.textContent=message;toast.classList.add('visible');clearTimeout(toast._timer);toast._timer=setTimeout(()=>toast.classList.remove('visible'),1200)}
 
     function looksLikeHtml(v){const s=String(v||'').toLowerCase();return['<html','<body','<p','<span','<div','<br','&lt;','&gt;'].some(t=>s.includes(t))}
     function looksLikeD100Roll(line){return findDiceCommandIndex(line)>=0||hasAnyText(line,['出目','判定','決定的成功','致命的失敗','ファンブル','クリティカル'])}
-    function isStatusRollLine(line){return hasAnyText(line,['アイデア','幸運','知識','STR','CON','POW','DEX','APP','SIZ','INT','EDU'])}
     function normalizeNewlines(v){return String(v||'').replaceAll(CR+LF,LF).replaceAll(CR,LF)}
-    function cleanLine(line){let s=String(line||'');if(!$('normalizeSpace').checked)return s.trim();s=s.replaceAll(String.fromCharCode(8203),'').replaceAll(String.fromCharCode(8204),'').replaceAll(String.fromCharCode(8205),'').replaceAll(String.fromCharCode(65279),'').replaceAll('&nbsp;',' ').replaceAll('│','|').replaceAll('┃','|').replaceAll('｜','|').replaceAll('　',' ').replaceAll(TAB,' ');while(s.includes('  '))s=s.replaceAll('  ',' ');return s.trim()}
+    function cleanLine(line){let s=String(line||'');s=s.replaceAll(String.fromCharCode(8203),'').replaceAll(String.fromCharCode(8204),'').replaceAll(String.fromCharCode(8205),'').replaceAll(String.fromCharCode(65279),'').replaceAll('&nbsp;',' ').replaceAll('│','|').replaceAll('┃','|').replaceAll('｜','|').replaceAll('　',' ').replaceAll(TAB,' ');while(s.includes('  '))s=s.replaceAll('  ',' ');return s.trim()}
     function decodeHtml(text){const t=document.createElement('textarea');t.innerHTML=text;return t.value}
     function isTabLabel(v){const s=String(v||'').trim();return s.startsWith('[')&&s.endsWith(']')}
     function extractLeadingTab(line){const s=String(line||'').trim();if(!s.startsWith('['))return'';const end=s.indexOf(']');return end>=0?s.slice(1,end):''}
@@ -163,3 +158,4 @@
   </script>
 </body>
 </html>
+
