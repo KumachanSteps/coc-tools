@@ -137,7 +137,60 @@
 
     function enterScreenshotMode(){document.body.classList.add('screenshot-mode');document.body.scrollTop=0;document.documentElement.scrollTop=0}
     function exitScreenshotMode(){document.body.classList.remove('screenshot-mode')}
-    function handleGlobalKeydown(event){if(event.key==='Escape'&&document.body.classList.contains('screenshot-mode'))exitScreenshotMode()}
+
+    /* =========================================================
+      Keyboard Shortcuts / ショートカット設定
+      ---------------------------------------------------------
+      Alt + O / Ctrl + Shift + O / Cmd + Shift + O : Choose File
+      Alt + T / Ctrl + Shift + T / Cmd + Shift + T : Theme Toggle
+      Alt + S / Ctrl + Shift + S / Cmd + Shift + S : Screenshot View
+      Esc                                         : Exit Screenshot View
+      ========================================================= */
+    function handleGlobalKeydown(event){
+      if(event.key==='Escape'&&document.body.classList.contains('screenshot-mode')){
+        event.preventDefault();
+        exitScreenshotMode();
+        return;
+      }
+      if(event.repeat)return;
+      if(isShortcut(event,'o')){
+        event.preventDefault();
+        openFileChooserByShortcut();
+        return;
+      }
+      if(isShortcut(event,'t')){
+        event.preventDefault();
+        toggleThemeByShortcut();
+        return;
+      }
+      if(isShortcut(event,'s')){
+        event.preventDefault();
+        enterScreenshotModeByShortcut();
+      }
+    }
+    function isShortcut(event,key){
+      const pressed=String(event.key||'').toLowerCase()===key;
+      const altOnly=event.altKey&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey;
+      const ctrlOrCmdShift=(event.ctrlKey||event.metaKey)&&event.shiftKey&&!event.altKey;
+      return pressed&&(altOnly||ctrlOrCmdShift);
+    }
+    function openFileChooserByShortcut(){
+      const input=$('fileInput');
+      if(!input)return;
+      if(document.body.classList.contains('screenshot-mode'))exitScreenshotMode();
+      state.inputPanelMode='open';
+      applyInputPanelLayout();
+      input.click();
+      showToast('ファイル選択を開きました','success');
+    }
+    function toggleThemeByShortcut(){
+      toggleTheme();
+      showToast(state.dark?'ナイトモードに切替':'ライトモードに切替','success');
+    }
+    function enterScreenshotModeByShortcut(){
+      enterScreenshotMode();
+      showToast('スクショビューを表示しました','success');
+    }
     async function downloadScreenshotView(){const btn=$('screenshotDownloadBtn'),old=btn.textContent;btn.textContent='⬇️ 作成中...';let result=null;try{result=buildScreenshotViewImage();await loadScreenshotImage(result);const canvas=screenshotCanvasFromImage(result),link=document.createElement('a');link.download='dice-summary-screenshot-view.png';link.href=canvas.toDataURL('image/png');link.click();showToast('DLに成功しました','success')}catch(e){console.error(e);showToast('DLに失敗しました','error')}finally{cleanupScreenshotImage(result);btn.textContent=old}}
     async function copyScreenshotView(){const btn=$('screenshotCopyBtn'),old=btn.textContent;btn.textContent='📋 コピー中...';let result=null;try{if(!navigator.clipboard||!window.ClipboardItem)throw new Error('clipboard unsupported');result=buildScreenshotViewImage();await loadScreenshotImage(result);const canvas=screenshotCanvasFromImage(result),blob=await canvasToBlob(canvas);if(!blob)throw new Error('blob failed');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('コピーができました','success')}catch(e){console.error(e);showToast('コピーに失敗しました','error')}finally{cleanupScreenshotImage(result);btn.textContent=old}}
     function canvasToBlob(canvas){return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('blob failed')),'image/png'))}
