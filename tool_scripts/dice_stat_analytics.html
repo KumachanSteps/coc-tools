@@ -11,163 +11,1628 @@
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- アップロードされたアイコンファイルを指定しました。 -->
-  <!-- このHTMLファイルと同じディレクトリに「kuma_icon.ico」を配置してください -->
   <link rel="icon" href="kuma_icon.ico" type="image/x-icon" />
-  <!-- ここまでファビコンの設定 -->
   <title>Dice Stat Analyst</title>
   <style>
-    :root{--bg:#f6f7fb;--panel:#fff;--ink:#1f2937;--muted:#6b7280;--line:#d1d5db;--accent:#4f46e5;--accent-soft:#eef2ff;--danger:#dc2626;--success:#16a34a;--fail:#b45309;--fail-bg:#fef3c7;--card:#f9fafb;--field:#fff;--bar-bg:#eef2f7;--mini:#fff;--tab:#f3f4f6}body.dark{--bg:#0f172a;--panel:#1e293b;--ink:#e5e7eb;--muted:#94a3b8;--line:#334155;--accent:#818cf8;--accent-soft:#312e81;--danger:#f87171;--success:#4ade80;--fail:#fbbf24;--fail-bg:#451a03;--card:#111827;--field:#0f172a;--bar-bg:#334155;--mini:#0f172a;--tab:#111827}
-    *{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
-    header{flex:0 0 auto;padding:18px 24px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px}header h1{margin:0;font-size:22px;letter-spacing:.02em}header p{margin:6px 0 0;color:var(--muted);font-size:13px}.header-actions{display:flex;gap:8px;flex:0 0 auto;align-items:center}.theme-switch{width:auto;margin:0;padding:0;border:0;background:transparent;box-shadow:none;cursor:pointer}.theme-switch-track{position:relative;display:flex;align-items:center;justify-content:space-between;width:132px;height:60px;padding:0 18px;border-radius:999px;background:linear-gradient(180deg,#f1f5f9 0%,#dbe3ee 100%);box-shadow:inset 0 4px 10px rgba(15,23,42,.10),inset 0 -2px 6px rgba(255,255,255,.85),0 6px 16px rgba(15,23,42,.10);transition:background .25s ease,box-shadow .25s ease}.theme-switch-side{position:relative;z-index:1;font-size:24px;line-height:1;user-select:none;transition:color .25s ease,opacity .25s ease,transform .25s ease}.theme-switch-side-sun{color:#f59e0b;opacity:.35}.theme-switch-side-moon{color:#94a3b8;opacity:.75}.theme-switch-thumb{position:absolute;left:4px;top:4px;width:52px;height:52px;border-radius:50%;background:linear-gradient(180deg,#f8b84a 0%,#f59e0b 100%);box-shadow:0 4px 10px rgba(0,0,0,.18),inset 0 2px 3px rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;transition:transform .28s ease,background .28s ease,box-shadow .28s ease}.theme-switch-thumb-icon{position:absolute;font-size:28px;line-height:1;transition:opacity .2s ease,transform .2s ease}.theme-switch-thumb-sun{color:#fff7ed;opacity:1;transform:scale(1)}.theme-switch-thumb-moon{color:#eef2ff;opacity:0;transform:scale(.7)}body.dark .theme-switch-track{background:linear-gradient(180deg,#34406b 0%,#26345f 100%);box-shadow:inset 0 4px 10px rgba(2,6,23,.30),inset 0 -2px 6px rgba(255,255,255,.06),0 6px 16px rgba(2,6,23,.24)}body.dark .theme-switch-thumb{transform:translateX(72px);background:linear-gradient(180deg,#6f8df8 0%,#4f6fe8 100%);box-shadow:0 4px 10px rgba(0,0,0,.28),inset 0 2px 3px rgba(255,255,255,.18)}body.dark .theme-switch-side-sun{color:#94a3b8;opacity:.35}body.dark .theme-switch-side-moon{color:#e2e8f0;opacity:.95}body.dark .theme-switch-thumb-sun{opacity:0;transform:scale(.7)}body.dark .theme-switch-thumb-moon{opacity:1;transform:scale(1)}.theme-switch:focus-visible .theme-switch-track{outline:3px solid rgba(79,70,229,.35);outline-offset:3px}
-    main{flex:1 1 auto;min-height:0;width:100%;max-width:1440px;margin:0 auto;padding:18px;display:grid;grid-template-columns:360px minmax(0,1fr);gap:18px;align-items:stretch;overflow:hidden;transition:grid-template-columns .22s ease,max-width .22s ease}main.input-collapsed{max-width:1560px;grid-template-columns:72px minmax(0,1fr)}
-    section{padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 18px rgba(15,23,42,.04)}main>section{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden}
-    main>section:first-child{position:relative;transition:padding .22s ease}main.input-collapsed>section:first-child{padding:10px;overflow:hidden}main.input-collapsed .input-content{display:none}
-    .input-panel-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.input-panel-top h2{margin:0}.input-toggle-button{width:auto;min-width:38px;margin:0;padding:7px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;line-height:1}
-    main.input-collapsed .input-panel-top{flex-direction:column;justify-content:flex-start;gap:10px;margin-bottom:0}main.input-collapsed .input-panel-top h2{writing-mode:vertical-rl;text-orientation:mixed;font-size:14px;letter-spacing:.08em}main.input-collapsed .input-toggle-button{width:42px;height:42px;padding:0}
-    h2{margin:0 0 12px;font-size:16px}h3{margin:16px 0 8px;font-size:14px}label{display:block;margin:8px 0;font-size:13px}
-    input[type=file],input[type=number],textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);font:inherit}textarea{min-height:120px;max-height:24vh;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.45}#cleanedOutput{min-height:420px;max-height:none}
-    .row,.grid-results,.character-summary-grid,.mini-stats,.chart-row{display:grid;gap:8px}.row{grid-template-columns:1fr 1fr}.grid-results{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.character-summary-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px}.mini-stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:10px}.chart-row{grid-template-columns:70px 1fr 86px;align-items:center;margin:8px 0;font-size:13px}
-    .checkline{display:flex;align-items:flex-start;gap:8px;margin:8px 0;color:var(--ink)}.checkline input{margin-top:2px}button{width:100%;margin-top:10px;padding:11px 12px;border:0;border-radius:10px;background:var(--accent);color:white;font-weight:700;cursor:pointer}button.secondary{background:var(--accent-soft);color:var(--accent)}
-    .card{padding:12px;background:var(--card);border:1px solid var(--line);border-radius:12px}.card .label{margin-bottom:4px;color:var(--muted);font-size:12px}.card .value{font-size:24px;font-weight:800}.card .sub{margin-top:3px;color:var(--muted);font-size:12px}.character-card h3{margin:0 0 10px;font-size:15px}
-    .character-control-bar{display:flex;align-items:center;gap:8px;margin:0 0 12px}.character-control-toggle,.summary-shot-button{width:auto;margin:0;padding:7px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;line-height:1}.summary-shot-button{background:var(--accent);color:#fff;display:inline-flex;align-items:center;gap:4px}.character-controls{display:none;flex-wrap:wrap;gap:8px;margin:0 0 14px}.character-controls.visible{display:flex}.character-toggle{display:inline-flex;align-items:center;gap:6px;width:auto;margin:0;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--field);font-size:12px}
-    .mini-stat{min-width:0;overflow:hidden;padding:8px;background:var(--mini);border:1px solid var(--line);border-radius:10px}.mini-stat .label{overflow:hidden;color:var(--muted);font-size:9px;line-height:1.2;letter-spacing:-.04em;white-space:nowrap;text-overflow:clip}.mini-stat .value{font-size:18px;font-weight:800}
-    .bar-wrap{height:22px;overflow:hidden;background:var(--bar-bg);border:1px solid var(--line);border-radius:999px}.bar{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .2s ease}
-    table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:var(--card);color:var(--muted);font-weight:700;vertical-align:middle}.sortable-header{display:inline-flex;align-items:center;gap:8px;line-height:1;white-space:nowrap}
-    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.tab-button{width:auto;margin:0;padding:8px 12px;background:var(--tab);color:var(--ink);border:1px solid var(--line)}.tab-button.active{background:var(--accent);color:white;border-color:var(--accent)}.tab-panel{display:none}.tab-panel.active{display:block}
-    .note{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.5}.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700}.pill.crit,.pill.success{background:#dcfce7;color:var(--success)}.pill.fumble{background:#fee2e2;color:var(--danger)}.pill.normal{background:#f3f4f6;color:var(--muted)}.pill.fail{background:var(--fail-bg);color:var(--fail)}
-    .sort-button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:26px;height:26px;min-width:26px;margin:0;padding:0;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:700;line-height:1;vertical-align:middle}.toast{position:fixed;left:50%;top:50%;z-index:9999;transform:translate(-50%,-50%) scale(.96);padding:16px 24px;border-radius:999px;background:rgba(31,41,55,.92);color:#fff;font-size:16px;font-weight:800;box-shadow:0 18px 40px rgba(15,23,42,.25);opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}.toast.visible{opacity:1;transform:translate(-50%,-50%) scale(1)}.toast.success{background:rgba(22,163,74,.94)}.toast.error{background:rgba(220,38,38,.94)}.toast.success{background:rgba(22,163,74,.94)}.toast.error{background:rgba(220,38,38,.94)}.screenshot-action-bar{display:none;position:fixed;right:24px;top:18px;z-index:9998;gap:10px;align-items:center}.screenshot-exit-button,.screenshot-download-button,.screenshot-copy-button{width:auto;margin:0;padding:10px 16px;border-radius:999px;color:#fff;box-shadow:0 12px 30px rgba(15,23,42,.22)}.screenshot-exit-button{background:var(--accent)}.screenshot-download-button{background:#0f172a}.screenshot-copy-button{background:#16a34a}body.screenshot-mode{min-height:100vh;height:auto;overflow:auto;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:84px 24px 24px}body.screenshot-mode header,body.screenshot-mode #inputPanel,body.screenshot-mode .tabs,body.screenshot-mode .character-control-bar,body.screenshot-mode #characterControls{display:none!important}body.screenshot-mode .screenshot-action-bar{display:flex}body.screenshot-mode main,body.screenshot-mode main.input-collapsed{display:block;width:100%;max-width:1180px;margin:0 auto;padding:20px;overflow:visible;background:#fff;border:2px solid #c7d2fe;border-radius:22px;box-shadow:0 18px 45px rgba(79,70,229,.12),0 0 0 8px rgba(238,242,255,.85)}body.screenshot-mode main>section{height:auto;overflow:visible;border:0;box-shadow:none;background:transparent;padding:0}body.screenshot-mode main>section:nth-child(2){display:block}body.screenshot-mode .tab-panel{display:none}body.screenshot-mode #summary{display:block}body.screenshot-mode #summary h2:first-child{font-size:22px;margin-bottom:16px;padding-right:160px}body.screenshot-mode .character-summary-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}body.screenshot-mode .grid-results{margin-bottom:10px}body.screenshot-mode .card{background:#f9fafb}body.screenshot-mode #summary>.card:last-child{margin-bottom:0}body.dark.screenshot-mode{background:linear-gradient(180deg,#020617 0%,#0f172a 100%)}body.dark.screenshot-mode main,body.dark.screenshot-mode main.input-collapsed{background:#0f172a;color:#e5e7eb;border-color:#6366f1;box-shadow:0 18px 45px rgba(2,6,23,.45),0 0 0 8px rgba(99,102,241,.18)}body.dark.screenshot-mode main>section{background:transparent;color:#e5e7eb}body.dark.screenshot-mode #summary h2,body.dark.screenshot-mode #summary h3,body.dark.screenshot-mode .character-card h3{color:#e5e7eb}body.dark.screenshot-mode .card,body.dark.screenshot-mode .mini-stat{background:#1e293b;color:#e5e7eb;border-color:#334155}body.dark.screenshot-mode .card .label,body.dark.screenshot-mode .card .sub,body.dark.screenshot-mode .mini-stat .label,body.dark.screenshot-mode .note{color:#94a3b8}body.dark.screenshot-mode .bar-wrap{background:#334155;border-color:#475569}body.dark.screenshot-mode .bar{background:#818cf8}
-    @media(max-width:980px){body{height:auto;overflow:auto;display:block}main,main.input-collapsed{height:auto;max-width:1440px;overflow:visible;grid-template-columns:1fr}main.input-collapsed .input-content{display:block}main.input-collapsed .input-panel-top{flex-direction:row;justify-content:space-between;margin-bottom:12px}main.input-collapsed .input-panel-top h2{writing-mode:horizontal-tb;font-size:16px}main>section{height:auto;max-height:none;overflow:visible}textarea{max-height:none}.grid-results{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    /* ===== Color Variables ===== */
+    :root {
+      --bg: #f6f7fb;
+      --panel: #fff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --accent: #4f46e5;
+      --accent-soft: #eef2ff;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --fail: #b45309;
+      --fail-bg: #fef3c7;
+      --card: #f9fafb;
+      --field: #fff;
+      --mini: #fff;
+      --bar-bg: #eef2f7;
+      --tab: #f3f4f6;
+    }
+
+    body.dark {
+      --bg: #1a1a2e;
+      --panel: #16213e;
+      --ink: #e4e4e7;
+      --muted: #a1a1aa;
+      --line: #3f3f46;
+      --accent: #6366f1;
+      --accent-soft: #312e81;
+      --card: #27374d;
+      --field: #27374d;
+      --mini: #2a3f5f;
+      --bar-bg: #3f3f46;
+      --tab: #27374d;
+    }
+
+    /* ===== Base Styles ===== */
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.screenshot-mode {
+      height: auto;
+      overflow: auto;
+    }
+
+    /* ===== Header ===== */
+    header {
+      flex: 0 0 auto;
+      padding: 18px 24px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    header > div {
+      flex: 1;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    #themeButton,
+    #shotModeButton {
+      width: auto;
+      margin: 0;
+      padding: 7px 12px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    #themeButton:hover,
+    #shotModeButton:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    #themeButton:active,
+    #shotModeButton:active {
+      transform: scale(0.95);
+    }
+
+    #themeButton.ghost {
+      background: transparent;
+      border-color: var(--muted);
+      color: var(--muted);
+    }
+
+    #themeButton.ghost:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ===== Main Layout ===== */
+    main {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+      overflow: hidden;
+      transition: grid-template-columns 0.22s ease;
+    }
+
+    main.screenshot-mode {
+      grid-template-columns: 1fr;
+      max-width: 100%;
+      padding: 12px;
+    }
+
+    /* ===== Sections ===== */
+    section {
+      padding: 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    main > section {
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    main > section:first-child {
+      position: relative;
+      transition: padding 0.22s ease;
+    }
+
+    main.input-collapsed > section:first-child {
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    main.input-collapsed .input-content {
+      display: none;
+    }
+
+    /* ===== Input Panel ===== */
+    .input-panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .input-panel-top h2 { margin: 0; }
+
+    .input-toggle-button {
+      width: auto;
+      min-width: 38px;
+      margin: 0;
+      padding: 6px 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    main.input-collapsed .input-panel-top {
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 10px;
+      margin-bottom: 0;
+    }
+
+    main.input-collapsed .input-panel-top h2 {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      margin: 0;
+    }
+
+    /* ===== Headings & Labels ===== */
+    h2 { margin: 0 0 12px; font-size: 16px; }
+    h3 { margin: 16px 0 8px; font-size: 14px; }
+
+    label {
+      display: block;
+      margin: 8px 0;
+      font-size: 13px;
+    }
+
+    /* ===== Form Inputs ===== */
+    input[type=file],
+    input[type=number],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--field);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 120px;
+      max-height: 200px;
+      resize: vertical;
+    }
+
+    input[type=file]:focus,
+    input[type=number]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    /* ===== Layout Grids ===== */
+    .row,
+    .grid-results,
+    .character-summary-grid,
+    .mini-stats,
+    .chart-row {
+      display: grid;
+      gap: 8px;
+    }
+
+    .row { grid-template-columns: 1fr 1fr; }
+    .grid-results { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+    .character-summary-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .mini-stats { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); }
+    .chart-row { grid-template-columns: repeat(10, 1fr); }
+
+    /* ===== Checkboxes ===== */
+    .checkline {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 8px 0;
+      color: var(--ink);
+    }
+
+    .checkline input { margin-top: 2px; }
+
+    /* ===== Buttons ===== */
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 11px 12px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    button:hover { background: var(--accent); opacity: 0.9; }
+    button:active { transform: scale(0.98); }
+
+    button.secondary {
+      background: var(--line);
+      color: var(--ink);
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      padding: 12px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .card .label {
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .card .value {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .card .sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .card.character-card {
+      border-left: 4px solid var(--accent);
+    }
+
+    /* ===== Character Controls ===== */
+    .character-control-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .character-control-toggle,
+    .summary-shot-button {
+      width: auto;
+      margin: 0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    #characterControls {
+      display: none;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      margin-bottom: 12px;
+    }
+
+    #characterControls.visible {
+      display: grid;
+      max-height: 500px;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    /* ===== Mini Stats ===== */
+    .mini-stat {
+      min-width: 0;
+      overflow: hidden;
+      padding: 8px;
+      background: var(--mini);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .mini-stat .label {
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mini-stat .value {
+      font-size: 16px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    /* ===== Progress Bar ===== */
+    .bar-wrap {
+      height: 22px;
+      overflow: hidden;
+      background: var(--bar-bg);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width 0.2s ease;
+    }
+
+    /* ===== Tables ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      background: var(--card);
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    /* ===== Tabs ===== */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .tab-button {
+      width: auto;
+      margin: 0;
+      padding: 8px 12px;
+      background: var(--tab);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ===== Notes & Pills ===== */
+    .note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pill.crit,
+    .pill.success {
+      background: #dbeafe;
+      color: #0c4a6e;
+    }
+
+    .pill.fumble {
+      background: #fee2e2;
+      color: #7f1d1d;
+    }
+
+    .pill.fail {
+      background: var(--fail-bg);
+      color: #92400e;
+    }
+
+    /* ===== Sort Button ===== */
+    .sort-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      margin: 0;
+      padding: 0;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    /* ===== Toast Notification ===== */
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      padding: 12px 16px;
+      background: #1f2937;
+      color: white;
+      border-radius: 8px;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    #toast.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #toast.success { background: var(--success); }
+    #toast.error { background: var(--danger); }
+
+    /* ===== Screenshot Action Bar ===== */
+    .screenshot-action-bar {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 16px;
+      background: var(--accent);
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    body.screenshot-mode .screenshot-action-bar {
+      display: flex;
+    }
+
+    .screenshot-download-button,
+    .screenshot-copy-button,
+    .screenshot-exit-button {
+      width: auto;
+      margin: 0;
+      padding: 8px 12px;
+      background: white;
+      color: var(--accent);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ===== Responsive Design ===== */
+    @media (max-width: 980px) {
+      body { height: auto; overflow: auto; display: block; }
+      main, main.input-collapsed {
+        height: auto;
+        max-width: 1440px;
+        overflow: visible;
+        grid-template-columns: 1fr;
+      }
+      main.input-collapsed .input-content { display: block; }
+      .grid-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .character-summary-grid { grid-template-columns: 1fr; }
+      .header-buttons { flex-direction: column; width: 100%; }
+      #themeButton, #shotModeButton { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <header><div><h1>Dice Stat Analyst</h1><p>セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布、整理済みログを生成します。</p></div><div class="header-actions"><button id="themeToggleBtn" class="theme-switch" type="button" aria-label="ナイトモードに切替" aria-pressed="false" title="ナイトモードに切替"><span class="theme-switch-track"><span class="theme-switch-side theme-switch-side-sun">☀</span><span class="theme-switch-side theme-switch-side-moon">☾</span><span class="theme-switch-thumb"><span class="theme-switch-thumb-icon theme-switch-thumb-sun">☀</span><span class="theme-switch-thumb-icon theme-switch-thumb-moon">☾</span></span></span></button></div></header>
+  <header>
+    <div>
+      <h1>Dice Stat Analyst</h1>
+      <p>セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布、整理済みログを表示します</p>
+    </div>
+    <div class="header-buttons">
+      <button id="themeButton" class="ghost" type="button" aria-pressed="false" aria-keyshortcuts="Alt+T Control+Shift+T Meta+Shift+T" title="ショートカット: Alt+T / Ctrl+Shift+T / Cmd+Shift+T">🌙 夜</button>
+      <button id="shotModeButton" type="button" aria-keyshortcuts="Alt+S Control+Shift+S Meta+Shift+S" title="ショートカット: Alt+S / Ctrl+Shift+S / Cmd+Shift+S">📸 スクショ表示</button>
+    </div>
+  </header>
+
   <div id="toast" class="toast">コピーしました</div>
+
   <div id="screenshotActionBar" class="screenshot-action-bar">
     <button id="screenshotDownloadBtn" class="screenshot-download-button" type="button">⬇️ このビューをDL</button>
     <button id="screenshotCopyBtn" class="screenshot-copy-button" type="button">📋 このビューをコピー</button>
     <button id="screenshotExitBtn" class="screenshot-exit-button" type="button">通常表示に戻す</button>
   </div>
+
   <main id="appLayout">
+    <!-- Input Panel -->
     <section id="inputPanel">
-      <div class="input-panel-top"><h2>入力</h2><button id="inputToggleBtn" class="input-toggle-button" type="button">⇤</button></div>
+      <div class="input-panel-top">
+        <h2>入力</h2>
+        <button id="inputToggleBtn" class="input-toggle-button" type="button">⇤</button>
+      </div>
       <div class="input-content">
-        <label>セッションログHTMLファイル<input id="fileInput" type="file" accept=".html,.htm,.txt" /></label>
+        <label>セッションログHTMLファイル
+          <input id="fileInput" type="file" accept=".html,.htm,.txt" aria-keyshortcuts="Alt+O Control+Shift+O Meta+Shift+O" title="ショートカット: Alt+O / Ctrl+Shift+O / Cmd+Shift+O" />
+        </label>
         <label>またはログ本文を貼り付け<textarea id="rawInput" placeholder="HTMLまたはテキストログを貼り付け"></textarea></label>
-        <h3>判定範囲</h3><div class="row"><label>クリティカル上限<input id="critMax" type="number" min="1" max="100" value="5" /></label><label>ファンブル下限<input id="fumbleMin" type="number" min="1" max="100" value="96" /></label></div>
+
+        <h3>判定範囲</h3>
+        <div class="row">
+          <label>クリティカル上限<input id="critMax" type="number" min="1" max="100" value="5" /></label>
+          <label>ファンブル下限<input id="fumbleMin" type="number" min="1" max="100" value="96" /></label>
+        </div>
+
         <h3>ログ整理チェックリスト</h3>
         <label class="checkline"><input id="dropTabs" type="checkbox" checked /> [雑談] / [other] / [info] 系の行を除外する</label>
         <label class="checkline"><input id="onlyD100" type="checkbox" checked /> d100系ロールのみ抽出する</label>
         <label class="checkline"><input id="groupByCharacter" type="checkbox" checked /> 結果をキャラクターごとに出力する</label>
         <label>自動非表示にする総ロール数<input id="autoHideMaxRolls" type="number" min="0" max="999" value="15" /></label>
-        <button id="analyzeBtn">分析する</button><button id="clearBtn" class="secondary">クリア</button>
-        <p class="note">対応例：CCB&lt;=80、CC&lt;=60、RESB(10-16)、1d100&lt;=55、s1d100、D100、判定結果の「出目 03 / 100 / ＞ 96」など。<br>キャラクター名は「名前：CC」「名前：CCB」「[main] 名前：CC」「[main] 名前：CCB」形式などから自動検出します。検出されたキャラクターはチェックを外すことで非表示にできます。<br>タブ除外ONの場合、[main] / [メイン] / [HO系] / [ルール] / [メモ] は解析対象、[雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] は除外対象になります。<br>総ロール数が指定値以下のキャラクターはNPC想定として、分析直後は自動で非表示になります。</p>
+
+        <button id="analyzeBtn">分析する</button>
+        <button id="clearBtn" class="secondary">クリア</button>
+
+        <p class="note">対応例：CCB&lt;=80、CC&lt;=60、RESB(10-16)、1d100&lt;=55、s1d100、D100、判定結果の「出目 03 / 100 / ＞ 96」など。<br>キャラクター名は「名前：」の形式で指定します。</p>
       </div>
     </section>
+
+    <!-- Results Panel -->
     <section>
-      <div class="tabs"><button class="tab-button active" data-tab="summary">キャラクター別サマリー</button><button class="tab-button" data-tab="chart">分布チャート</button><button class="tab-button" data-tab="rolls">抽出ロール</button><button class="tab-button" data-tab="cleaned">整理済みログ</button><button id="summaryShotBtn" class="summary-shot-button" type="button">📷 スクショ表示</button></div>
-      <div id="summary" class="tab-panel active">
-        <h2>キャラクター別サマリー</h2><div class="character-control-bar"><button id="characterControlToggleBtn" class="character-control-toggle" type="button">表示キャラ設定を開く</button></div><div id="characterControls" class="character-controls"></div><div id="characterSummary" class="character-summary-grid"></div>
-        <h2>全体サマリー</h2><div class="grid-results"><div class="card"><div class="label">総ロール数</div><div id="totalRolls" class="value">0</div><div class="sub">d100として抽出された件数</div></div><div class="card"><div class="label">成功 / 失敗</div><div id="successFailCount" class="value">0 / 0</div><div id="successFailRate" class="sub">0.00% / 0.00%</div></div><div class="card"><div class="label">クリティカル / ファンブル</div><div id="critFumbleCount" class="value">0 / 0</div><div id="critFumbleRate" class="sub">0.00% / 0.00%</div></div><div class="card"><div class="label">平均出目</div><div id="averageRoll" class="value">-</div><div class="sub">抽出値の平均</div></div></div>
-        <div class="card"><h3>メモ</h3><p id="summaryMemo" class="note">ログを入力して「分析する」を押してください。</p></div>
+      <div class="tabs">
+        <button class="tab-button active" data-tab="summary">キャラクター別サマリー</button>
+        <button class="tab-button" data-tab="chart">分布チャート</button>
+        <button class="tab-button" data-tab="rolls">抽出ロール一覧</button>
+        <button class="tab-button" data-tab="cleaned">整理済みログ</button>
       </div>
-      <div id="chart" class="tab-panel"><h2>出目分布：10刻み</h2><div id="barChart"></div></div>
-      <div id="rolls" class="tab-panel"><h2>抽出ロール一覧</h2><table><thead><tr><th>#</th><th><span class="sortable-header">キャラクター <button class="sort-button" data-sort-key="character">↕</button></span></th><th><span class="sortable-header">出目 <button class="sort-button" data-sort-key="value">↕</button></span></th><th><span class="sortable-header">分類 <button class="sort-button" data-sort-key="classification">↕</button></span></th><th>元ログ行</th></tr></thead><tbody id="rollTableBody"></tbody></table></div>
-      <div id="cleaned" class="tab-panel"><h2>整理済みログ</h2><textarea id="cleanedOutput" readonly></textarea><button id="copyCleanedBtn" class="secondary">整理済みログをコピー</button></div>
+
+      <!-- Summary Tab -->
+      <div id="summary" class="tab-panel active">
+        <h2>キャラクター別サマリー</h2>
+        <div class="character-control-bar">
+          <button id="characterControlToggleBtn" class="character-control-toggle" type="button">表示キャラ設定を開く</button>
+          <button id="summaryShotBtn" class="summary-shot-button" type="button">📸 このビューをSS</button>
+        </div>
+        <div id="characterControls"></div>
+        <div id="characterSummary" class="character-summary-grid"></div>
+
+        <h2>全体サマリー</h2>
+        <div class="grid-results">
+          <div class="card">
+            <div class="label">総ロール数</div>
+            <div id="totalRolls" class="value">0</div>
+            <div class="sub">d100として抽出されたロール</div>
+          </div>
+          <div class="card">
+            <div class="label">クリティカル率</div>
+            <div id="critRate" class="value">0%</div>
+            <div class="sub"><span id="critCount">0</span> / <span id="critTotal">0</span></div>
+          </div>
+          <div class="card">
+            <div class="label">ファンブル率</div>
+            <div id="fumbleRate" class="value">0%</div>
+            <div class="sub"><span id="fumbleCount">0</span> / <span id="fumbleTotal">0</span></div>
+          </div>
+          <div class="card">
+            <div class="label">平均値</div>
+            <div id="avgValue" class="value">-</div>
+            <div class="sub">すべてのロールの平均</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>メモ</h3>
+          <p id="summaryMemo" class="note">ログを入力して「分析する」を押してください。</p>
+        </div>
+      </div>
+
+      <!-- Chart Tab -->
+      <div id="chart" class="tab-panel">
+        <h2>出目分布：10刻み</h2>
+        <div id="barChart"></div>
+      </div>
+
+      <!-- Rolls Tab -->
+      <div id="rolls" class="tab-panel">
+        <h2>抽出ロール一覧</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>
+                <span class="sortable-header">
+                  キャラクター
+                  <button class="sort-button" data-sort-key="character" type="button">⇅</button>
+                </span>
+              </th>
+              <th>
+                <span class="sortable-header">
+                  出目
+                  <button class="sort-button" data-sort-key="value" type="button">⇅</button>
+                </span>
+              </th>
+              <th>結果</th>
+              <th>ログ行</th>
+            </tr>
+          </thead>
+          <tbody id="rollTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Cleaned Log Tab -->
+      <div id="cleaned" class="tab-panel">
+        <h2>整理済みログ</h2>
+        <textarea id="cleanedOutput" readonly></textarea>
+        <button id="copyCleanedBtn" class="secondary">整理済みログをコピー</button>
+      </div>
     </section>
   </main>
+
   <script>
-    const $=id=>document.getElementById(id),LF=String.fromCharCode(10),CR=String.fromCharCode(13),TAB=String.fromCharCode(9);
-    const state={rolls:[],cleanedLines:[],hiddenCharacters:new Set(),sort:{key:'index',direction:'asc'},showCharacterControls:false,inputPanelMode:'auto',dark:false};
-    const diceCommands=['SRESB','RESB','SCCB','SCBR','SCC','CCB','CBR','CC','S1D100','1D100','SD100','D100','D％','D%'];
-    const includedTabs=['main','メイン','ルール','rule','rules','メモ','memo','notes','ho'],excludedTabs=['雑談','other','info','おはらい','お祓い','運試し'];
-    bindEvents();render();
+    /* ===== CONSTANTS & STATE ===== */
+    const $ = id => document.getElementById(id);
+    const LF = String.fromCharCode(10);
+    const CR = String.fromCharCode(13);
+    const TAB = String.fromCharCode(9);
 
-    function bindEvents(){$('themeToggleBtn').addEventListener('click',toggleTheme);document.querySelectorAll('.tab-button').forEach(b=>b.addEventListener('click',()=>switchTab(b)));document.querySelectorAll('button[data-sort-key]').forEach(b=>b.addEventListener('click',()=>toggleSort(b.dataset.sortKey)));$('fileInput').addEventListener('change',handleFileInput);$('inputToggleBtn').addEventListener('click',toggleInputPanel);$('characterControlToggleBtn').addEventListener('click',()=>{state.showCharacterControls=!state.showCharacterControls;renderCharacterControls()});$('summaryShotBtn').addEventListener('click',enterScreenshotMode);$('screenshotExitBtn').addEventListener('click',exitScreenshotMode);$('screenshotDownloadBtn').addEventListener('click',downloadScreenshotView);$('screenshotCopyBtn').addEventListener('click',copyScreenshotView);document.addEventListener('keydown',handleGlobalKeydown);$('analyzeBtn').addEventListener('click',analyze);$('clearBtn').addEventListener('click',clearAll);$('copyCleanedBtn').addEventListener('click',copyCleanedLog)}
-    function switchTab(b){document.querySelectorAll('.tab-button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')}
-    async function handleFileInput(e){const f=e.target.files&&e.target.files[0];if(!f)return;$('rawInput').value=await f.text();state.inputPanelMode='auto';analyze()}
-    function toggleInputPanel(){const c=$('appLayout').classList.contains('input-collapsed');state.inputPanelMode=c?'open':'collapsed';applyInputPanelLayout()}
-    async function copyCleanedLog(){const t=$('cleanedOutput').value||'';if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(t);else{$('cleanedOutput').select();document.execCommand('copy')}$('copyCleanedBtn').textContent='コピーしました';setTimeout(()=>$('copyCleanedBtn').textContent='整理済みログをコピー',1200)}
-    function clearAll(){$('fileInput').value='';$('rawInput').value='';state.rolls=[];state.cleanedLines=[];state.hiddenCharacters=new Set();state.showCharacterControls=false;state.inputPanelMode='auto';render()}
-    function toggleTheme(){state.dark=!state.dark;syncThemeSwitch()}
-    function syncThemeSwitch(){document.body.classList.toggle('dark',state.dark);const btn=$('themeToggleBtn');if(!btn)return;btn.setAttribute('aria-pressed',state.dark?'true':'false');btn.setAttribute('title',state.dark?'ライトモードに切替':'ナイトモードに切替');btn.setAttribute('aria-label',state.dark?'ライトモードに切替':'ナイトモードに切替')}
+    const state = {
+      rolls: [],
+      cleanedLines: [],
+      hiddenCharacters: new Set(),
+      sort: { key: 'index', direction: 'asc' },
+      showCharacterControls: false,
+      inputPanelMode: 'auto',
+      dark: false
+    };
 
-    function analyze(){state.inputPanelMode='auto';const lines=normalizeNewlines(prepareText($('rawInput').value||'')).split(LF).map(cleanLine).filter(Boolean),filtered=filterLines(lines),rolls=extractRollData(filtered);state.cleanedLines=filtered;state.rolls=rolls;applyDefaultCharacterVisibility(rolls);render()}
-    function extractRollData(lines){const rolls=[];let current='';lines.forEach((line,i)=>{const name=extractCharacterName(line),usable=isUsableCharacterName(name),values=extractRollsFromLine(line);if(usable)current=name;values.forEach(value=>rolls.push({value,character:usable?name:(current||'不明'),line,lineNo:i+1}))});return rolls}
-    function prepareText(raw){const s=String(raw||'');if(!looksLikeHtml(s))return s;const doc=new DOMParser().parseFromString(s,'text/html');if(!doc.body)return s;const lines=extractHtmlLogLines(doc);return lines.length?lines.join(LF):decodeHtml(doc.body.innerText||doc.body.textContent||s)}
-    function extractHtmlLogLines(doc){return Array.from(doc.body.querySelectorAll('p')).map(extractHtmlLogLine).filter(Boolean)}
-    function extractHtmlLogLine(p){const spans=Array.from(p.querySelectorAll('span')).map(s=>cleanLine(decodeHtml(s.textContent||''))).filter(Boolean);return spans.length>=3&&isTabLabel(spans[0])?`${spans[0]} ${spans[1]}：${spans.slice(2).join(' ')}`:cleanLine(decodeHtml(p.textContent||''))}
-    function filterLines(lines){return lines.filter(line=>!($('dropTabs').checked&&!shouldKeepTabLine(line))&&!($('onlyD100').checked&&!looksLikeD100Roll(line)))}
-    function shouldKeepTabLine(line){const tab=extractLeadingTab(line);return !tab||isIncludedTab(tab)}
-    function isIncludedTab(tab){const n=normalizeTabName(tab);if(!n)return true;if(excludedTabs.some(w=>n.includes(normalizeTabName(w))))return false;if(n==='ho'||n.startsWith('ho'))return true;return includedTabs.some(w=>{const x=normalizeTabName(w);return n===x||n.startsWith(x)||n.includes(x)})}
+    const diceCommands = ['SRESB', 'RESB', 'SCCB', 'SCBR', 'SCC', 'CCB', 'CBR', 'CC', 'S1D100', '1D100', 'SD100', 'D100', 'D％', 'D%'];
+    const includedTabs = ['main', 'メイン', 'ルール', 'rule', 'rules', 'メモ', 'memo', 'notes', 'ho'];
+    const excludedTabs = ['雑談', 'other', 'info', 'おはらい', 'お祓い', '運試し'];
 
-    function extractCharacterName(line){const text=String(line||'').trim(),i=findDiceCommandIndex(text);if(i<0)return'不明';let before=text.slice(0,i).trim();if(!before)return'不明';before=trimTrailingSeparators(trimTrailingRollPrefix(removeLeadingTab(before)));return cleanCharacterName(before)}
-    function extractRollsFromLine(line){const text=String(line||''),i=findDiceCommandIndex(text);if(i<0)return[];const nums=extractNumbersAfterResultMarkers(text.slice(i));if(nums.length)return[nums[0]];return extractNumbersAfterWords(text,['出目','roll','rolled','dice','ダイス']).slice(0,1)}
-    function findDiceCommandIndex(text){const upper=String(text||'').toUpperCase(),idx=[];diceCommands.forEach(cmd=>{let from=0;while(from<upper.length){const i=upper.indexOf(cmd,from);if(i<0)break;const prev=i>0?upper[i-1]:'';if(!prev||!isAsciiAlphaNumber(prev))idx.push(i);from=i+cmd.length}});return idx.length?Math.min(...idx):-1}
-    function extractNumbersAfterResultMarkers(text){const values=[],markers=['＞','>','→'];for(let i=0;i<text.length;i++){if(!markers.includes(text[i]))continue;const n=readRollResultNumberFrom(text,i+1);if(n!==null&&n>=1&&n<=100)values.push(n)}return values}
-    function readRollResultNumberFrom(text,start){let i=start;while(i<text.length&&isWhitespace(text[i]))i++;if(i>=text.length||text[i]<'0'||text[i]>'9')return null;let d='';while(i<text.length&&text[i]>='0'&&text[i]<='9')d+=text[i++];if(['d','D','Ｄ','ｄ'].includes(text[i]||''))return null;return isValidRollResultTail(text.slice(i))?Number(d):null}
-    function isValidRollResultTail(tail){const t=String(tail||'').trim(),l=t.toLowerCase();return !t||['＞','>','→','#'].some(m=>t.startsWith(m))||['成功','失敗','決定的成功','致命的失敗','クリティカル','ファンブル'].some(w=>t.startsWith(w))||l.startsWith('success')||l.startsWith('fail')}
-    function extractNumbersAfterWords(text,words){const lower=String(text||'').toLowerCase(),values=[];words.forEach(w=>{const i=lower.indexOf(String(w).toLowerCase());if(i<0)return;const n=readNumberFrom(text,i+String(w).length);if(n!==null&&n>=1&&n<=100)values.push(n)});return values}
-    function readNumberFrom(text,start){let d='';for(let i=start;i<text.length;i++){const c=text[i];if(c>='0'&&c<='9')d+=c;else if(d)break}return d?Number(d):null}
-    function extractTargetNumber(line){const text=String(line||'').replaceAll('＜=','<=').replaceAll('≦','<=').replaceAll('＝','=').toUpperCase(),i=findDiceCommandIndex(text);if(i<0)return null;const part=text.slice(i,i+120);let op=part.indexOf('<='),offset=2;if(op<0){op=part.indexOf('<');offset=1}if(op<0)return null;const v=readNumberFrom(part,op+offset);return Number.isInteger(v)&&v>=1&&v<=100?v:null}
+    /* ===== INITIALIZATION ===== */
+    bindEvents();
+    render();
 
-    function classify(value){const crit=clamp(Number($('critMax').value||5),1,100),fum=clamp(Number($('fumbleMin').value||96),1,100);return value<=crit?'Critical':value>=fum?'Fumble':'Normal'}
-    function classifyRoll(roll){const base=classify(roll.value);if(base==='Critical'||base==='Fumble')return base;const line=String(roll.line||''),lower=line.toLowerCase(),fail=line.includes('失敗')||lower.includes('failure')||lower.includes('fail'),success=line.includes('成功')||line.includes('スペシャル')||line.includes('イクストリーム')||line.includes('ハード')||line.includes('レギュラー')||lower.includes('success');if(fail)return'Fail';if(success)return'Success';const target=extractTargetNumber(line);return target!==null?roll.value<=target?'Success':'Fail':'Normal'}
-    function getOutcomeCounts(rolls){const c={critical:0,fumble:0,success:0,fail:0,normal:0};rolls.forEach(r=>{const l=classifyRoll(r);if(l==='Critical'){c.critical++;c.success++}else if(l==='Fumble'){c.fumble++;c.fail++}else if(l==='Success')c.success++;else if(l==='Fail')c.fail++;else c.normal++});return c}
-    function classificationOrder(label){return{Critical:1,Success:2,Normal:3,Fail:4,Fumble:5}[label]||99}
+    /* ===== EVENT BINDING ===== */
+    function bindEvents() {
+      $('themeButton').addEventListener('click', toggleTheme);
+      $('shotModeButton').addEventListener('click', enterScreenshotMode);
+      $('analyzeBtn').addEventListener('click', analyze);
+      $('clearBtn').addEventListener('click', clearAll);
+      $('fileInput').addEventListener('change', handleFileInput);
+      $('inputToggleBtn').addEventListener('click', toggleInputPanel);
+      $('copyCleanedBtn').addEventListener('click', copyCleanedLog);
+      $('characterControlToggleBtn').addEventListener('click', () => {
+        state.showCharacterControls = !state.showCharacterControls;
+        render();
+      });
+      $('summaryShotBtn').addEventListener('click', () => {
+        enterScreenshotMode();
+      });
+      $('screenshotDownloadBtn').addEventListener('click', downloadScreenshotView);
+      $('screenshotCopyBtn').addEventListener('click', copyScreenshotView);
+      $('screenshotExitBtn').addEventListener('click', exitScreenshotMode);
 
-    function applyDefaultCharacterVisibility(rolls){const chars=getDetectedCharactersFromRolls(rolls),grouped=groupRollsByCharacter(rolls),threshold=clamp(Number($('autoHideMaxRolls').value||15),0,999),hidden=new Set();chars.forEach(n=>{const count=grouped[n]?grouped[n].length:0;if(count<=threshold)hidden.add(n)});state.hiddenCharacters=hidden}
-    function getVisibleRolls(){return $('groupByCharacter').checked?state.rolls.filter(r=>!state.hiddenCharacters.has(r.character||'不明')):state.rolls}
-    function getDetectedCharacters(){return getDetectedCharactersFromRolls(state.rolls)}
-    function getDetectedCharactersFromRolls(rolls){return[...new Set(rolls.map(r=>r.character||'不明'))].sort(compareCharacterNames)}
-    function groupRollsByCharacter(rolls){return rolls.reduce((acc,r)=>{const n=r.character||'不明';(acc[n] ||= []).push(r);return acc},{})}
-    function compareCharacterNames(a,b){if(a==='不明')return 1;if(b==='不明')return-1;return String(a).localeCompare(String(b),'ja')}
-    function toggleSort(key){if(state.sort.key===key)state.sort.direction=state.sort.direction==='asc'?'desc':'asc';else state.sort={key,direction:'asc'};renderTable()}
-    function getSortedVisibleRolls(){const dir=state.sort.direction==='desc'?-1:1,rolls=getVisibleRolls().map((r,i)=>({...r,originalIndex:i}));rolls.sort((a,b)=>{let res=state.sort.key==='character'?compareCharacterNames(a.character||'不明',b.character||'不明'):state.sort.key==='value'?a.value-b.value:state.sort.key==='classification'?classificationOrder(classifyRoll(a))-classificationOrder(classifyRoll(b)):a.originalIndex-b.originalIndex;if(res===0)res=a.originalIndex-b.originalIndex;return res*dir});return rolls}
+      document.querySelectorAll('.tab-button').forEach(b => b.addEventListener('click', () => switchTab(b)));
+      document.querySelectorAll('button[data-sort-key]').forEach(b => b.addEventListener('click', () => toggleSort(b.dataset.sortKey)));
+      document.addEventListener('keydown', handleShortcuts);
+      
+      ['dropTabs', 'onlyD100', 'groupByCharacter'].forEach(id => {
+        $(id).addEventListener('change', () => {
+          if (state.rolls.length) render();
+        });
+      });
+    }
 
-    function render(){renderCharacterControls();renderSummary();renderCharacterSummary();renderChart();renderTable();$('cleanedOutput').value=state.cleanedLines.join(LF);applyInputPanelLayout()}
-    function renderSummary(){const rolls=getVisibleRolls(),total=rolls.length,values=rolls.map(r=>r.value),out=getOutcomeCounts(rolls),avg=total?values.reduce((a,b)=>a+b,0)/total:null;$('totalRolls').textContent=total;$('successFailCount').textContent=`${out.success} / ${out.fail}`;$('successFailRate').textContent=`${rate(out.success,total)}% / ${rate(out.fail,total)}%`;$('critFumbleCount').textContent=`${out.critical} / ${out.fumble}`;$('critFumbleRate').textContent=`${rate(out.critical,total)}% / ${rate(out.fumble,total)}%`;$('averageRoll').textContent=avg===null?'-':avg.toFixed(2);if(!total){$('summaryMemo').textContent=state.rolls.length?'表示対象のロールがありません。キャラクターのチェックを戻してください。':'d100ロールを抽出できませんでした。ログ形式に合わせて「d100系ロールのみ抽出する」を外すか、元ログ行の形式を確認してください。';return}const all=state.rolls.length,hidden=all-total,chars=getDetectedCharacters().length;$('summaryMemo').textContent=`検出した${all}件のd100ロールのうち、表示対象${total}件を集計しました。検出キャラクター数は${chars}です。非表示ロール数は${hidden}件です。総ロール数${$('autoHideMaxRolls').value}以下のキャラクターは初期状態で非表示です。クリティカル判定は${$('critMax').value}以下、ファンブル判定は${$('fumbleMin').value}以上です。`}
-    function renderCharacterControls(){const box=$('characterControls'),btn=$('characterControlToggleBtn'),chars=getDetectedCharacters();if(!box)return;box.classList.toggle('visible',state.showCharacterControls);if(btn)btn.textContent=state.showCharacterControls?'表示キャラ設定を隠す':'表示キャラ設定を開く';if(!$('groupByCharacter').checked||!chars.length){box.innerHTML='';if(btn)btn.style.display='none';return}if(btn)btn.style.display='inline-flex';box.innerHTML=chars.map(name=>{const checked=state.hiddenCharacters.has(name)?'':'checked',count=state.rolls.filter(r=>(r.character||'不明')===name).length;return`<label class="character-toggle"><input type="checkbox" data-character="${escapeAttribute(name)}" ${checked}>${escapeHtml(name)} (${count})</label>`}).join('');box.querySelectorAll('input[data-character]').forEach(input=>input.addEventListener('change',()=>{const name=input.getAttribute('data-character')||'不明';input.checked?state.hiddenCharacters.delete(name):state.hiddenCharacters.add(name);state.inputPanelMode=state.inputPanelMode==='open'?'open':'auto';render()}))}
-    function renderCharacterSummary(){const box=$('characterSummary');if(!box)return;if(!$('groupByCharacter').checked){box.innerHTML='<div class="card"><p class="note">キャラクター別出力はオフです。全体サマリーのみ表示しています。</p></div>';return}const grouped=groupRollsByCharacter(getVisibleRolls()),names=Object.keys(grouped).sort(compareCharacterNames);box.innerHTML=names.length?names.map(n=>renderCharacterCard(n,grouped[n])).join(''):'<div class="card"><p class="note">表示対象のキャラクターがありません。キャラクターのチェックを戻してください。</p></div>'}
-    function renderCharacterCard(name,rolls){const values=rolls.map(r=>r.value),total=values.length,out=getOutcomeCounts(rolls),avg=total?values.reduce((a,b)=>a+b,0)/total:0;return`<div class="card character-card"><h3>${escapeHtml(name)}</h3><div class="mini-stats"><div class="mini-stat"><div class="label">総ロール</div><div class="value">${total}</div></div><div class="mini-stat"><div class="label">平均出目</div><div class="value">${avg.toFixed(2)}</div></div><div class="mini-stat"><div class="label">成功 / 失敗</div><div class="value">${out.success} / ${out.fail}</div><div class="label">${rate(out.success,total)}% / ${rate(out.fail,total)}%</div></div><div class="mini-stat"><div class="label">クリティカル / ファンブル</div><div class="value">${out.critical} / ${out.fumble}</div><div class="label">${rate(out.critical,total)}% / ${rate(out.fumble,total)}%</div></div></div>${renderBins(values)}</div>`}
-    function renderChart(){const box=$('barChart');if(!box)return;if(!$('groupByCharacter').checked){box.innerHTML=renderBins(getVisibleRolls().map(r=>r.value));return}const grouped=groupRollsByCharacter(getVisibleRolls()),names=Object.keys(grouped).sort(compareCharacterNames);box.innerHTML=names.length?names.map(n=>`<div class="card" style="margin-bottom:12px;"><h3>${escapeHtml(n)}</h3>${renderBins(grouped[n].map(r=>r.value))}</div>`).join(''):'<p class="note">表示対象のロールがありません。</p>'}
-    function renderBins(values){const bins=Array.from({length:10},(_,i)=>({label:`${i*10+1}-${i*10+10}`,count:0}));values.forEach(v=>bins[Math.min(9,Math.floor((v-1)/10))].count++);const max=Math.max(1,...bins.map(b=>b.count)),total=values.length;return bins.map(b=>`<div class="chart-row"><div>${b.label}</div><div class="bar-wrap"><div class="bar" style="width:${(b.count/max)*100}%"></div></div><div>${b.count}件 / ${rate(b.count,total)}%</div></div>`).join('')}
-    function renderTable(){$('rollTableBody').innerHTML=getSortedVisibleRolls().map((r,i)=>{const label=classifyRoll(r),pill=label==='Critical'?'crit':label==='Fumble'?'fumble':label==='Success'?'success':label==='Fail'?'fail':'normal';return`<tr><td>${i+1}</td><td>${escapeHtml(r.character||'不明')}</td><td><strong>${r.value}</strong></td><td><span class="pill ${pill}">${label}</span></td><td>${escapeHtml(r.line)}</td></tr>`}).join('')}
-    function applyInputPanelLayout(){const layout=$('appLayout'),btn=$('inputToggleBtn');if(!layout||!btn)return;const count=Object.keys(groupRollsByCharacter(getVisibleRolls())).filter(n=>n!=='不明').length,collapse=state.inputPanelMode==='collapsed'||(state.inputPanelMode==='auto'&&count>=4);layout.classList.toggle('input-collapsed',collapse);btn.textContent=collapse?'⇥':'⇤';btn.title=collapse?'入力パネルを開く':'入力パネルを畳む'}
+    /* ===== KEYBOARD SHORTCUTS ===== */
+    function handleShortcuts(event) {
+      if (event.isComposing || event.repeat) return;
+      
+      const key = event.key.toLowerCase();
+      const altOnly = event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey;
+      const ctrlShift = (event.ctrlKey || event.metaKey) && event.shiftKey && !event.altKey;
+      
+      if (!altOnly && !ctrlShift) return;
 
-    function enterScreenshotMode(){document.body.classList.add('screenshot-mode');document.body.scrollTop=0;document.documentElement.scrollTop=0}
-    function exitScreenshotMode(){document.body.classList.remove('screenshot-mode')}
-    function handleGlobalKeydown(event){if(event.key==='Escape'&&document.body.classList.contains('screenshot-mode'))exitScreenshotMode()}
-    async function downloadScreenshotView(){const btn=$('screenshotDownloadBtn'),old=btn.textContent;btn.textContent='⬇️ 作成中...';let result=null;try{result=buildScreenshotViewImage();await loadScreenshotImage(result);const canvas=screenshotCanvasFromImage(result),link=document.createElement('a');link.download='dice-summary-screenshot-view.png';link.href=canvas.toDataURL('image/png');link.click();showToast('DLに成功しました','success')}catch(e){console.error(e);showToast('DLに失敗しました','error')}finally{cleanupScreenshotImage(result);btn.textContent=old}}
-    async function copyScreenshotView(){const btn=$('screenshotCopyBtn'),old=btn.textContent;btn.textContent='📋 コピー中...';let result=null;try{if(!navigator.clipboard||!window.ClipboardItem)throw new Error('clipboard unsupported');result=buildScreenshotViewImage();await loadScreenshotImage(result);const canvas=screenshotCanvasFromImage(result),blob=await canvasToBlob(canvas);if(!blob)throw new Error('blob failed');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('コピーができました','success')}catch(e){console.error(e);showToast('コピーに失敗しました','error')}finally{cleanupScreenshotImage(result);btn.textContent=old}}
-    function canvasToBlob(canvas){return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('blob failed')),'image/png'))}
-    function buildScreenshotViewImage(){const summary=$('summary').cloneNode(true),controlBar=summary.querySelector('.character-control-bar'),controls=summary.querySelector('#characterControls');if(controlBar)controlBar.remove();if(controls)controls.remove();const wrapper=document.createElement('div');wrapper.style.position='fixed';wrapper.style.left='-10000px';wrapper.style.top='0';wrapper.style.width='1180px';wrapper.style.padding='20px';wrapper.style.background=state.dark?'#0f172a':'#fff';wrapper.style.border=state.dark?'2px solid #6366f1':'2px solid #c7d2fe';wrapper.style.borderRadius='22px';wrapper.style.boxShadow=state.dark?'0 18px 45px rgba(2,6,23,.45),0 0 0 8px rgba(99,102,241,.18)':'0 18px 45px rgba(79,70,229,.12),0 0 0 8px rgba(238,242,255,.85)';wrapper.style.color=state.dark?'#e5e7eb':'#1f2937';wrapper.appendChild(summary);document.body.appendChild(wrapper);inlineStyles(wrapper);const width=Math.ceil(wrapper.scrollWidth),height=Math.ceil(wrapper.scrollHeight),svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><foreignObject width="100%" height="100%">'+new XMLSerializer().serializeToString(wrapper)+'</foreignObject></svg>',url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'})),img=new Image();return{wrapper,width,height,url,img}}
-    function loadScreenshotImage(result){return new Promise((resolve,reject)=>{result.img.onload=resolve;result.img.onerror=reject;result.img.src=result.url})}
-    function screenshotCanvasFromImage(result){const canvas=document.createElement('canvas'),scale=2;canvas.width=result.width*scale;canvas.height=result.height*scale;const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.fillStyle='#fff';ctx.fillRect(0,0,result.width,result.height);ctx.drawImage(result.img,0,0);return canvas}
-    function cleanupScreenshotImage(result){if(!result)return;if(result.url)URL.revokeObjectURL(result.url);if(result.wrapper&&result.wrapper.parentNode)document.body.removeChild(result.wrapper)}
-    function inlineStyles(node){[node,...node.querySelectorAll('*')].forEach(el=>{const cs=getComputedStyle(el);let css='';for(let i=0;i<cs.length;i++){const p=cs[i];css+=p+':'+cs.getPropertyValue(p)+';'}el.setAttribute('style',(el.getAttribute('style')||'')+css)})}
-    function showToast(message,type=''){const toast=$('toast');if(!toast)return;toast.textContent=message;toast.classList.remove('success','error','visible');if(type)toast.classList.add(type);requestAnimationFrame(()=>toast.classList.add('visible'));clearTimeout(toast._timer);toast._timer=setTimeout(()=>toast.classList.remove('visible','success','error'),1400)}
+      if (key === 'o') {
+        event.preventDefault();
+        $('fileInput').click();
+      } else if (key === 't') {
+        event.preventDefault();
+        toggleTheme();
+      } else if (key === 's') {
+        event.preventDefault();
+        enterScreenshotMode();
+      }
+    }
 
-    function looksLikeHtml(v){const s=String(v||'').toLowerCase();return['<html','<body','<p','<span','<div','<br','&lt;','&gt;'].some(t=>s.includes(t))}
-    function looksLikeD100Roll(line){return findDiceCommandIndex(line)>=0||hasAnyText(line,['出目','判定','決定的成功','致命的失敗','ファンブル','クリティカル'])}
-    function normalizeNewlines(v){return String(v||'').replaceAll(CR+LF,LF).replaceAll(CR,LF)}
-    function cleanLine(line){let s=String(line||'');s=s.replaceAll(String.fromCharCode(8203),'').replaceAll(String.fromCharCode(8204),'').replaceAll(String.fromCharCode(8205),'').replaceAll(String.fromCharCode(65279),'').replaceAll('&nbsp;',' ').replaceAll('│','|').replaceAll('┃','|').replaceAll('｜','|').replaceAll('　',' ').replaceAll(TAB,' ');while(s.includes('  '))s=s.replaceAll('  ',' ');return s.trim()}
-    function decodeHtml(text){const t=document.createElement('textarea');t.innerHTML=text;return t.value}
-    function isTabLabel(v){const s=String(v||'').trim();return s.startsWith('[')&&s.endsWith(']')}
-    function extractLeadingTab(line){const s=String(line||'').trim();if(!s.startsWith('['))return'';const end=s.indexOf(']');return end>=0?s.slice(1,end):''}
-    function normalizeTabName(tab){return String(tab||'').trim().toLowerCase().replaceAll(' ','').replaceAll('　','').replaceAll(TAB,'')}
-    function removeLeadingTab(v){const s=String(v||'').trim();if(!s.startsWith('['))return s;const end=s.indexOf(']');return end>=0?s.slice(end+1).trim():s}
-    function trimTrailingSeparators(v){let s=String(v||'').trim();const sep=[':','：','-','―','＞','>'];while(s&&sep.includes(s[s.length-1]))s=s.slice(0,-1).trim();return s}
-    function trimTrailingRollPrefix(v){let s=String(v||'').trim().replaceAll('×','x').replaceAll('Ｘ','x').replaceAll('ｘ','x');const lower=s.toLowerCase(),i=lower.lastIndexOf('x');if(i<0)return s;const tail=lower.slice(i+1).trim();if(!tail||tail.split('').some(c=>c<'0'||c>'9'))return s;return trimTrailingSeparators(s.slice(0,i).trim())||s}
-    function cleanCharacterName(name){return String(name||'').replaceAll('[','').replaceAll(']','').replaceAll('「','').replaceAll('」','').replaceAll('『','').replaceAll('』','').replaceAll('【','').replaceAll('】','').trim()||'不明'}
-    function isUsableCharacterName(name){const s=String(name||'').trim();return !!s&&s!=='不明'&&!['(',')','（','）'].includes(s)&&s.replaceAll('(','').replaceAll(')','').replaceAll('（','').replaceAll('）','').trim()!==''}
-    function isAsciiAlphaNumber(c){return(c>='A'&&c<='Z')||(c>='0'&&c<='9')}
-    function isWhitespace(c){return c===' '||c==='　'||c===TAB||c===LF||c===CR}
-    function hasAnyText(v,terms){const s=String(v||'').toLowerCase();return terms.some(t=>s.includes(String(t).toLowerCase()))}
-    function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
-    function rate(count,total){return total?((count/total)*100).toFixed(2):'0.00'}
-    function escapeHtml(v){return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
-    function escapeAttribute(v){return escapeHtml(v).replaceAll('`','&#096;')}
+    /* ===== TAB MANAGEMENT ===== */
+    function switchTab(btn) {
+      document.querySelectorAll('.tab-button').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      const tabId = btn.dataset.tab;
+      $(tabId)?.classList.add('active');
+    }
+
+    /* ===== FILE & INPUT HANDLING ===== */
+    async function handleFileInput(e) {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      $('rawInput').value = await f.text();
+      state.inputPanelMode = 'auto';
+      analyze();
+    }
+
+    function toggleInputPanel() {
+      const c = $('appLayout').classList.contains('input-collapsed');
+      state.inputPanelMode = c ? 'open' : 'collapsed';
+      applyInputPanelLayout();
+    }
+
+    async function copyCleanedLog() {
+      const t = $('cleanedOutput').value || '';
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(t);
+        showToast('整理済みログをコピーしました', 'success');
+      } else {
+        $('cleanedOutput').select();
+        document.execCommand('copy');
+        showToast('整理済みログをコピーしました', 'success');
+      }
+    }
+
+    function clearAll() {
+      $('fileInput').value = '';
+      $('rawInput').value = '';
+      state.rolls = [];
+      state.cleanedLines = [];
+      state.hiddenCharacters.clear();
+      state.showCharacterControls = false;
+      state.inputPanelMode = 'auto';
+      render();
+    }
+
+    /* ===== THEME TOGGLE ===== */
+    function toggleTheme() {
+      state.dark = !state.dark;
+      syncThemeSwitch();
+    }
+
+    function syncThemeSwitch() {
+      document.body.classList.toggle('dark', state.dark);
+      const btn = $('themeButton');
+      if (!btn) return;
+      btn.setAttribute('aria-pressed', state.dark ? 'true' : 'false');
+      btn.textContent = state.dark ? '☀️ 昼' : '🌙 夜';
+    }
+
+    /* ===== ANALYSIS & PARSING ===== */
+    function analyze() {
+      state.inputPanelMode = 'auto';
+      const lines = normalizeNewlines(prepareText($('rawInput').value || ''))
+        .split(LF)
+        .map(cleanLine)
+        .filter(Boolean);
+      const filtered = filterLines(lines);
+      const rolls = extractRollData(filtered);
+      state.rolls = rolls;
+      state.cleanedLines = filtered;
+      applyDefaultCharacterVisibility(rolls);
+      render();
+    }
+
+    function extractRollData(lines) {
+      const rolls = [];
+      let current = '';
+      lines.forEach((line, i) => {
+        const name = extractCharacterName(line);
+        const usable = isUsableCharacterName(name);
+        const values = extractRollsFromLine(line);
+        if (usable && values.length) {
+          current = name;
+          values.forEach(value => {
+            rolls.push({ character: current, value, line });
+          });
+        }
+      });
+      return rolls;
+    }
+
+    function prepareText(raw) {
+      const s = String(raw || '');
+      if (!looksLikeHtml(s)) return s;
+      const doc = new DOMParser().parseFromString(s, 'text/html');
+      if (!doc.body) return s;
+      const lines = extractHtmlLogLines(doc);
+      return lines.join(LF);
+    }
+
+    function extractHtmlLogLines(doc) {
+      return Array.from(doc.body.querySelectorAll('p'))
+        .map(extractHtmlLogLine)
+        .filter(Boolean);
+    }
+
+    function extractHtmlLogLine(p) {
+      const spans = Array.from(p.querySelectorAll('span'))
+        .map(s => cleanLine(decodeHtml(s.textContent || '')))
+        .filter(Boolean);
+      return spans.length >= 3 && isTabLabel(spans[0])
+        ? `${spans[0]} ${spans[1]} ${spans.slice(2).join(' ')}`
+        : '';
+    }
+
+    function filterLines(lines) {
+      return lines.filter(line =>
+        !($('dropTabs').checked && !shouldKeepTabLine(line)) &&
+        !($('onlyD100').checked && !looksLikeD100Roll(line))
+      );
+    }
+
+    function shouldKeepTabLine(line) {
+      const tab = extractLeadingTab(line);
+      return !tab || isIncludedTab(tab);
+    }
+
+    function isIncludedTab(tab) {
+      const n = normalizeTabName(tab);
+      if (!n) return true;
+      if (excludedTabs.some(w => n.includes(normalizeTabName(w)))) return false;
+      if (n === 'ho' || n.startsWith('ho')) return true;
+      return includedTabs.some(w => n.includes(normalizeTabName(w)));
+    }
+
+    /* ===== CHARACTER NAME EXTRACTION ===== */
+    function extractCharacterName(line) {
+      const text = String(line || '').trim();
+      const i = findDiceCommandIndex(text);
+      if (i < 0) return '不明';
+      let before = text.slice(0, i).trim();
+      if (!before) return '不明';
+      before = trimTrailingRollPrefix(trimTrailingSeparators(before));
+      before = cleanCharacterName(before);
+      const clean = isAsciiAlphaNumber(before[0]) ? '不明' : before;
+      return clean || '不明';
+    }
+
+    /* ===== DICE ROLL EXTRACTION ===== */
+    function extractRollsFromLine(line) {
+      const text = String(line || '');
+      const i = findDiceCommandIndex(text);
+      if (i < 0) return [];
+      const nums = extractNumbersAfterResultMarkers(text.slice(i));
+      if (nums.length) return [nums[0]];
+      const target = extractTargetNumber(line);
+      if (target) return [target];
+      return extractNumbersAfterWords(text, ['出目', '判定']);
+    }
+
+    function findDiceCommandIndex(text) {
+      const upper = String(text || '').toUpperCase();
+      const idx = [];
+      diceCommands.forEach(cmd => {
+        let from = 0;
+        while (from < upper.length) {
+          const i = upper.indexOf(cmd, from);
+          if (i < 0) break;
+          idx.push(i);
+          from = i + 1;
+        }
+      });
+      return idx.length ? Math.min(...idx) : -1;
+    }
+
+    function extractNumbersAfterResultMarkers(text) {
+      const values = [];
+      const markers = ['＞', '>', '→'];
+      for (let i = 0; i < text.length; i++) {
+        if (!markers.includes(text[i])) continue;
+        const n = readRollResultNumberFrom(text, i + 1);
+        if (n !== null) {
+          const tail = text.slice(i + 1 + String(n).length);
+          if (isValidRollResultTail(tail)) values.push(n);
+        }
+      }
+      return values;
+    }
+
+    function readRollResultNumberFrom(text, start) {
+      let i = start;
+      while (i < text.length && isWhitespace(text[i])) i++;
+      if (i >= text.length || text[i] < '0' || text[i] > '9') return null;
+      let d = '';
+      while (i < text.length && text[i] >= '0' && text[i] <= '9') d += text[i++];
+      return d ? Number(d) : null;
+    }
+
+    function isValidRollResultTail(tail) {
+      const t = String(tail || '').trim();
+      const l = t.toLowerCase();
+      return !t || ['＞', '>', '→', '#'].some(m => t.startsWith(m)) ||
+             ['成功', '失敗', '決定的成功', '致命的失敗', 'ファンブル', 'クリティカル'].some(w => l.includes(w));
+    }
+
+    function extractNumbersAfterWords(text, words) {
+      const lower = String(text || '').toLowerCase();
+      const values = [];
+      words.forEach(w => {
+        const i = lower.indexOf(String(w).toLowerCase());
+        if (i < 0) return;
+        const n = readNumberFrom(text, i + w.length);
+        if (n !== null) values.push(n);
+      });
+      return values;
+    }
+
+    function readNumberFrom(text, start) {
+      let d = '';
+      for (let i = start; i < text.length; i++) {
+        const c = text[i];
+        if (c >= '0' && c <= '9') d += c;
+        else if (d) break;
+      }
+      return d ? Number(d) : null;
+    }
+
+    function extractTargetNumber(line) {
+      const text = String(line || '')
+        .replaceAll('＜=', '<=')
+        .replaceAll('≦', '<=')
+        .replaceAll('＝', '=')
+        .toUpperCase();
+      const i = findDiceCommandIndex(text);
+      if (i < 0) return null;
+      const after = text.slice(i);
+      const eqIdx = after.indexOf('<=');
+      if (eqIdx < 0) return null;
+      return readNumberFrom(after, eqIdx + 2);
+    }
+
+    /* ===== CLASSIFICATION ===== */
+    function classify(value) {
+      const crit = clamp(Number($('critMax').value || 5), 1, 100);
+      const fum = clamp(Number($('fumbleMin').value || 96), 1, 100);
+      return value <= crit ? 'Critical' : value >= fum ? 'Fumble' : 'Normal';
+    }
+
+    function classifyRoll(roll) {
+      const base = classify(roll.value);
+      if (base === 'Critical' || base === 'Fumble') return base;
+      const line = String(roll.line || '');
+      const lower = line.toLowerCase();
+      const fail = line.includes('失敗') || line.includes('Fail') || lower.includes('fail');
+      return fail ? 'Fail' : 'Success';
+    }
+
+    function getOutcomeCounts(rolls) {
+      const c = { critical: 0, fumble: 0, success: 0, fail: 0, normal: 0 };
+      rolls.forEach(r => {
+        const l = classifyRoll(r);
+        if (l === 'Critical') { c.critical++; c.success++; }
+        else if (l === 'Fumble') { c.fumble++; c.fail++; }
+        else if (l === 'Success') c.success++;
+        else if (l === 'Fail') c.fail++;
+        else c.normal++;
+      });
+      return c;
+    }
+
+    function classificationOrder(label) {
+      return { Critical: 1, Success: 2, Normal: 3, Fail: 4, Fumble: 5 }[label] || 99;
+    }
+
+    /* ===== CHARACTER VISIBILITY ===== */
+    function applyDefaultCharacterVisibility(rolls) {
+      const chars = getDetectedCharactersFromRolls(rolls);
+      const grouped = groupRollsByCharacter(rolls);
+      const threshold = clamp(Number($('autoHideMaxRolls').value || 15), 0, 999);
+      state.hiddenCharacters.clear();
+      chars.forEach(name => {
+        if (grouped[name]?.length <= threshold) return;
+        state.hiddenCharacters.add(name);
+      });
+    }
+
+    function getVisibleRolls() {
+      return $('groupByCharacter').checked
+        ? state.rolls.filter(r => !state.hiddenCharacters.has(r.character || '不明'))
+        : state.rolls;
+    }
+
+    function getDetectedCharacters() {
+      return getDetectedCharactersFromRolls(state.rolls);
+    }
+
+    function getDetectedCharactersFromRolls(rolls) {
+      return [...new Set(rolls.map(r => r.character || '不明'))].sort(compareCharacterNames);
+    }
+
+    function groupRollsByCharacter(rolls) {
+      return rolls.reduce((acc, r) => {
+        const n = r.character || '不明';
+        (acc[n] ||= []).push(r);
+        return acc;
+      }, {});
+    }
+
+    function compareCharacterNames(a, b) {
+      if (a === '不明') return 1;
+      if (b === '不明') return -1;
+      return String(a).localeCompare(String(b), 'ja');
+    }
+
+    /* ===== SORTING ===== */
+    function toggleSort(key) {
+      if (state.sort.key === key)
+        state.sort.direction = state.sort.direction === 'asc' ? 'desc' : 'asc';
+      else
+        state.sort = { key, direction: 'asc' };
+      renderTable();
+    }
+
+    function getSortedVisibleRolls() {
+      const dir = state.sort.direction === 'desc' ? -1 : 1;
+      const rolls = getVisibleRolls().map((r, i) => ({ ...r, originalIndex: i }));
+      rolls.sort((a, b) => {
+        let res = state.sort.key === 'character'
+          ? compareCharacterNames(a.character, b.character)
+          : state.sort.key === 'value'
+          ? a.value - b.value
+          : a.originalIndex - b.originalIndex;
+        return res * dir;
+      });
+      return rolls;
+    }
+
+    /* ===== RENDERING ===== */
+    function render() {
+      renderCharacterControls();
+      renderSummary();
+      renderCharacterSummary();
+      renderChart();
+      renderTable();
+      $('cleanedOutput').value = state.cleanedLines.join(LF);
+      applyInputPanelLayout();
+    }
+
+    function renderSummary() {
+      const rolls = getVisibleRolls();
+      const total = rolls.length;
+      const values = rolls.map(r => r.value);
+      const out = getOutcomeCounts(rolls);
+      const avg = total ? values.reduce((a, b) => a + b, 0) / total : null;
+
+      $('totalRolls').textContent = total;
+      $('critRate').textContent = rate(out.critical, total) + '%';
+      $('critCount').textContent = out.critical;
+      $('critTotal').textContent = total;
+      $('fumbleRate').textContent = rate(out.fumble, total) + '%';
+      $('fumbleCount').textContent = out.fumble;
+      $('fumbleTotal').textContent = total;
+      $('avgValue').textContent = avg !== null ? avg.toFixed(2) : '-';
+
+      const memo = total === 0
+        ? 'ログを入力して「分析する」を押してください。'
+        : `${total}個のロールを分析しました。`;
+      $('summaryMemo').textContent = memo;
+    }
+
+    function renderCharacterControls() {
+      const box = $('characterControls');
+      const btn = $('characterControlToggleBtn');
+      const chars = getDetectedCharacters();
+      if (!box) return;
+
+      box.classList.toggle('visible', state.showCharacterControls);
+      if (!state.showCharacterControls) {
+        box.innerHTML = '';
+        return;
+      }
+
+      box.innerHTML = chars
+        .filter(c => c !== '不明')
+        .map(name => {
+          const hidden = state.hiddenCharacters.has(name);
+          return `
+            <label class="checkline" style="margin:0;padding:8px;background:var(--card);border-radius:8px;border:1px solid var(--line);">
+              <input type="checkbox" ${hidden ? '' : 'checked'} onchange="toggleCharacterVisibility('${escapeAttribute(name)}')">
+              <span>${escapeHtml(name)}</span>
+            </label>
+          `;
+        })
+        .join('');
+    }
+
+    function toggleCharacterVisibility(name) {
+      if (state.hiddenCharacters.has(name))
+        state.hiddenCharacters.delete(name);
+      else
+        state.hiddenCharacters.add(name);
+      render();
+    }
+
+    function renderCharacterSummary() {
+      const box = $('characterSummary');
+      if (!box) return;
+
+      if (!$('groupByCharacter').checked) {
+        box.innerHTML = '<div class="card"><p class="note">キャラクター別出力は無効です。チェックボックスをONにしてください。</p></div>';
+        return;
+      }
+
+      const grouped = groupRollsByCharacter(getVisibleRolls());
+      const chars = getDetectedCharacters().filter(c => !state.hiddenCharacters.has(c));
+
+      box.innerHTML = chars
+        .map(name => renderCharacterCard(name, grouped[name] || []))
+        .join('');
+    }
+
+    function renderCharacterCard(name, rolls) {
+      const values = rolls.map(r => r.value);
+      const total = values.length;
+      const out = getOutcomeCounts(rolls);
+      const avg = total ? values.reduce((a, b) => a + b, 0) / total : 0;
+
+      return `
+        <div class="card character-card">
+          <div style="margin-bottom:12px;">
+            <h3 style="margin:0;">${escapeHtml(name)}</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+              <div class="mini-stat">
+                <div class="label">ロール数</div>
+                <div class="value">${total}</div>
+              </div>
+              <div class="mini-stat">
+                <div class="label">平均値</div>
+                <div class="value">${avg.toFixed(1)}</div>
+              </div>
+              <div class="mini-stat">
+                <div class="label">クリ率</div>
+                <div class="value">${rate(out.critical, total)}%</div>
+              </div>
+              <div class="mini-stat">
+                <div class="label">ファ率</div>
+                <div class="value">${rate(out.fumble, total)}%</div>
+              </div>
+            </div>
+          </div>
+          <div class="mini-stats">
+            <span class="pill crit">🎯 ${out.critical}</span>
+            <span class="pill success">✓ ${out.success}</span>
+            <span class="pill fail">✗ ${out.fail}</span>
+            <span class="pill fumble">💥 ${out.fumble}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderChart() {
+      const box = $('barChart');
+      if (!box) return;
+
+      if (!$('groupByCharacter').checked) {
+        box.innerHTML = renderBins(getVisibleRolls().map(r => r.value));
+        return;
+      }
+
+      const grouped = groupRollsByCharacter(getVisibleRolls());
+      const chars = getDetectedCharacters().filter(c => !state.hiddenCharacters.has(c));
+
+      box.innerHTML = chars
+        .map(name => `
+          <div style="margin-bottom:24px;">
+            <h4 style="margin:0 0 8px;font-size:12px;">${escapeHtml(name)}</h4>
+            ${renderBins(grouped[name].map(r => r.value))}
+          </div>
+        `)
+        .join('');
+    }
+
+    function renderBins(values) {
+      const bins = Array.from({ length: 10 }, (_, i) => ({ label: `${i * 10 + 1}-${i * 10 + 10}`, count: 0 }));
+      values.forEach(v => bins[Math.min(9, Math.floor((v - 1) / 10))].count++);
+      const max = Math.max(...bins.map(b => b.count), 1);
+
+      return `
+        <div class="chart-row">
+          ${bins.map(b => `
+            <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+              <div class="bar-wrap" style="width:100%;flex:1;display:flex;align-items:flex-end;">
+                <div class="bar" style="width:${(b.count / max) * 100}%"></div>
+              </div>
+              <div style="font-size:10px;color:var(--muted);text-align:center;">${b.label}</div>
+              <div style="font-size:11px;font-weight:700;">${b.count}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderTable() {
+      $('rollTableBody').innerHTML = getSortedVisibleRolls()
+        .map((r, i) => {
+          const label = classifyRoll(r);
+          const pill = label === 'Critical' ? 'crit' : label === 'Fumble' ? 'fumble' : label === 'Success' ? 'success' : 'fail';
+          return `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${escapeHtml(r.character || '不明')}</td>
+              <td style="font-weight:700;font-size:14px;">${r.value}</td>
+              <td><span class="pill ${pill}">${label}</span></td>
+              <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(String(r.line || ''))}</td>
+            </tr>
+          `;
+        })
+        .join('');
+    }
+
+    function applyInputPanelLayout() {
+      const layout = $('appLayout');
+      const btn = $('inputToggleBtn');
+      if (!layout || !btn) return;
+
+      const count = Object.keys(groupRollsByCharacter(getVisibleRolls()))
+        .filter(n => n !== '不明').length;
+      const shouldCollapse = state.inputPanelMode === 'collapsed' || (state.inputPanelMode === 'auto' && count > 0);
+
+      layout.classList.toggle('input-collapsed', shouldCollapse);
+      btn.textContent = shouldCollapse ? '⇥' : '⇤';
+    }
+
+    /* ===== SCREENSHOT FUNCTIONS ===== */
+    function enterScreenshotMode() {
+      document.body.classList.add('screenshot-mode');
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+
+    function exitScreenshotMode() {
+      document.body.classList.remove('screenshot-mode');
+    }
+
+    async function downloadScreenshotView() {
+      const btn = $('screenshotDownloadBtn');
+      const old = btn.textContent;
+      btn.textContent = '⬇️ 作成中...';
+      let result = null;
+      try {
+        result = buildScreenshotViewImage();
+        await loadScreenshotImage(result);
+        const blob = await canvasToBlob(screenshotCanvasFromImage(result));
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dice-analyst-${new Date().toISOString().split('T')[0]}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('スクリーンショットをダウンロードしました', 'success');
+      } catch (e) {
+        showToast('ダウンロードに失敗しました', 'error');
+      } finally {
+        btn.textContent = old;
+        cleanupScreenshotImage(result);
+        exitScreenshotMode();
+      }
+    }
+
+    async function copyScreenshotView() {
+      const btn = $('screenshotCopyBtn');
+      const old = btn.textContent;
+      btn.textContent = '📋 コピー中...';
+      let result = null;
+      try {
+        if (!navigator.clipboard || !window.ClipboardItem)
+          throw new Error('Clipboard API not supported');
+        result = buildScreenshotViewImage();
+        await loadScreenshotImage(result);
+        const blob = await canvasToBlob(screenshotCanvasFromImage(result));
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        showToast('スクリーンショットをコピーしました', 'success');
+      } catch (e) {
+        showToast('コピーに失敗しました', 'error');
+      } finally {
+        btn.textContent = old;
+        cleanupScreenshotImage(result);
+        exitScreenshotMode();
+      }
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('blob failed')), 'image/png');
+      });
+    }
+
+    function buildScreenshotViewImage() {
+      const summary = $('summary').cloneNode(true);
+      const controlBar = summary.querySelector('.character-control-bar');
+      const controls = summary.querySelector('#characterControls');
+      if (controlBar) controlBar.style.display = 'none';
+      if (controls) controls.classList.remove('visible');
+
+      inlineStyles(summary);
+
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'fixed';
+      wrapper.style.left = '-10000px';
+      wrapper.style.top = '0';
+      wrapper.style.width = 'auto';
+      wrapper.style.background = 'white';
+      wrapper.appendChild(summary);
+      document.body.appendChild(wrapper);
+
+      const img = new Image();
+      const url = URL.createObjectURL(new Blob(
+        [new XMLSerializer().serializeToString(wrapper)],
+        { type: 'image/svg+xml;charset=utf-8' }
+      ));
+
+      return {
+        wrapper,
+        img,
+        url,
+        width: wrapper.offsetWidth || 600,
+        height: wrapper.offsetHeight || 400
+      };
+    }
+
+    function loadScreenshotImage(result) {
+      return new Promise((resolve, reject) => {
+        result.img.onload = resolve;
+        result.img.onerror = reject;
+        result.img.src = result.url;
+      });
+    }
+
+    function screenshotCanvasFromImage(result) {
+      const canvas = document.createElement('canvas');
+      const scale = 2;
+      canvas.width = result.width * scale;
+      canvas.height = result.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+      ctx.drawImage(result.img, 0, 0);
+      return canvas;
+    }
+
+    function cleanupScreenshotImage(result) {
+      if (!result) return;
+      if (result.url) URL.revokeObjectURL(result.url);
+      if (result.wrapper?.parentNode) document.body.removeChild(result.wrapper);
+    }
+
+    function inlineStyles(node) {
+      [node, ...node.querySelectorAll('*')].forEach(el => {
+        const cs = getComputedStyle(el);
+        let css = '';
+        for (let i = 0; i < cs.length; i++) {
+          const p = cs[i];
+          css += p + ':' + cs.getPropertyValue(p) + ';';
+        }
+        el.setAttribute('style', css);
+      });
+    }
+
+    function showToast(message, type = '') {
+      const toast = $('toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.remove('success', 'error', 'visible');
+      if (type) toast.classList.add(type);
+      requestAnimationFrame(() => toast.classList.add('visible'));
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove('visible'), 3000);
+    }
+
+    /* ===== UTILITY FUNCTIONS ===== */
+    function looksLikeHtml(v) {
+      const s = String(v || '').toLowerCase();
+      return ['<html', '<body', '<p', '<span', '<div', '<br', '&lt;', '&gt;'].some(t => s.includes(t));
+    }
+
+    function looksLikeD100Roll(line) {
+      return findDiceCommandIndex(line) >= 0 ||
+             hasAnyText(line, ['出目', '判定', '決定的成功', '致命的失敗', 'ファンブル', 'クリティカル']);
+    }
+
+    function normalizeNewlines(v) {
+      return String(v || '').replaceAll(CR + LF, LF).replaceAll(CR, LF);
+    }
+
+    function cleanLine(line) {
+      let s = String(line || '');
+      for (let i = 8203; i <= 8205; i++)
+        s = s.replaceAll(String.fromCharCode(i), '');
+      return s.trim();
+    }
+
+    function decodeHtml(text) {
+      const t = document.createElement('textarea');
+      t.innerHTML = text;
+      return t.value;
+    }
+
+    function isTabLabel(v) {
+      const s = String(v || '').trim();
+      return s.startsWith('[') && s.endsWith(']');
+    }
+
+    function extractLeadingTab(line) {
+      const s = String(line || '').trim();
+      if (!s.startsWith('[')) return '';
+      const end = s.indexOf(']');
+      return end >= 0 ? s.slice(1, end) : '';
+    }
+
+    function normalizeTabName(tab) {
+      return String(tab || '')
+        .trim()
+        .toLowerCase()
+        .replaceAll(' ', '')
+        .replaceAll('　', '')
+        .replaceAll(TAB, '');
+    }
+
+    function removeLeadingTab(v) {
+      const s = String(v || '').trim();
+      if (!s.startsWith('[')) return s;
+      const end = s.indexOf(']');
+      return end >= 0 ? s.slice(end + 1).trim() : s;
+    }
+
+    function trimTrailingSeparators(v) {
+      let s = String(v || '').trim();
+      const sep = [':', '：', '-', '―', '＞', '>'];
+      while (s && sep.includes(s[s.length - 1])) s = s.slice(0, -1).trim();
+      return s;
+    }
+
+    function trimTrailingRollPrefix(v) {
+      let s = String(v || '')
+        .trim()
+        .replaceAll('×', 'x')
+        .replaceAll('Ｘ', 'x')
+        .replaceAll('ｘ', 'x');
+      const lower = s.toLowerCase();
+      const i = lower.lastIndexOf('x');
+      if (i < 0) return s;
+      const after = s.slice(i + 1).trim();
+      return /^\d/.test(after) ? s.slice(0, i).trim() : s;
+    }
+
+    function cleanCharacterName(name) {
+      return String(name || '')
+        .replaceAll('[', '')
+        .replaceAll(']', '')
+        .replaceAll('「', '')
+        .replaceAll('」', '')
+        .replaceAll('『', '')
+        .replaceAll('』', '')
+        .replaceAll('【', '')
+        .replaceAll('】', '');
+    }
+
+    function isUsableCharacterName(name) {
+      const s = String(name || '').trim();
+      return !!s && s !== '不明' &&
+             !['(', ')', '（', '）'].includes(s) &&
+             s.replaceAll('(', '').replaceAll(')', '').replaceAll('（', '').replaceAll('）', '').length > 0;
+    }
+
+    function isAsciiAlphaNumber(c) {
+      return (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+    }
+
+    function isWhitespace(c) {
+      return c === ' ' || c === '　' || c === TAB || c === LF || c === CR;
+    }
+
+    function hasAnyText(v, terms) {
+      const s = String(v || '').toLowerCase();
+      return terms.some(t => s.includes(String(t).toLowerCase()));
+    }
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function rate(count, total) {
+      return total ? ((count / total) * 100).toFixed(2) : '0.00';
+    }
+
+    function escapeHtml(v) {
+      return String(v)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function escapeAttribute(v) {
+      return escapeHtml(v).replaceAll('`', '&#096;');
+    }
   </script>
 </body>
 </html>
