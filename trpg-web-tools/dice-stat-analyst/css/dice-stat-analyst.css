@@ -455,3 +455,11 @@ body.screenshot-mode .shortcut-help-button{
     padding:12px 18px 16px;
   }
 }
+/* Emergency fix: shortcut modal should be hidden by default */
+#shortcutModal.shortcut-modal{
+  display:none;
+}
+
+#shortcutModal.shortcut-modal.open{
+  display:flex;
+}
