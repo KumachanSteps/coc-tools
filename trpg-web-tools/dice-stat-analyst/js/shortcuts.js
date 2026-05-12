@@ -35,7 +35,7 @@ function exitScreenshotMode() {
   Ctrl / Cmd + Shift + C
     → 表示キャラ設定の開閉
 
-  Ctrl / Cmd + Shift + M
+  Ctrl / Cmd + Shift + T
     → ナイトモード切替
 
   Ctrl / Cmd + Shift + V
@@ -44,8 +44,11 @@ function exitScreenshotMode() {
   Ctrl / Cmd + Backspace
     → 確認後クリア
 
+  ?
+    → ショートカット一覧を開く
+
   Esc
-    → スクショ表示中のみ通常表示に戻す
+    → ショートカット一覧 / スクショ表示を閉じる
 */
 
 function handleGlobalKeydown(event) {
@@ -53,66 +56,125 @@ function handleGlobalKeydown(event) {
   const isCommand = event.ctrlKey || event.metaKey;
   const isCommandShift = isCommand && event.shiftKey;
   const isScreenshotMode = document.body.classList.contains('screenshot-mode');
+  const isModalOpen = typeof isShortcutModalOpen === 'function' && isShortcutModalOpen();
 
-  // Esc: スクショ表示中のみ通常表示へ戻す。通常時は誤削除防止のため何もしない。
+  /*
+    Esc:
+    1. ショートカットモーダルが開いていれば閉じる
+    2. スクショ表示中なら通常表示へ戻す
+    3. 通常時は何もしない
+  */
   if (event.key === 'Escape') {
+    if (isModalOpen) {
+      event.preventDefault();
+      closeShortcutModal();
+      return;
+    }
+
     if (isScreenshotMode) {
       event.preventDefault();
       exitScreenshotMode();
+      return;
     }
+
     return;
   }
 
-  // Ctrl / Cmd + O: ファイル選択
+  /*
+    ?:
+    入力欄・数値欄にフォーカスしているときは、通常入力を優先する。
+  */
+  if (
+    event.key === '?' &&
+    !isCommand &&
+    !event.altKey &&
+    !event.ctrlKey &&
+    !event.metaKey &&
+    !isTypingInEditableField()
+  ) {
+    event.preventDefault();
+
+    if (typeof openShortcutModal === 'function') {
+      openShortcutModal();
+    }
+
+    return;
+  }
+
+  /*
+    Ctrl / Cmd + O:
+    ファイル選択
+  */
   if (isCommand && !event.shiftKey && key === 'o') {
     event.preventDefault();
     $('fileInput').click();
     return;
   }
 
-  // Ctrl / Cmd + Enter: 分析する
+  /*
+    Ctrl / Cmd + Enter:
+    分析する
+  */
   if (isCommand && event.key === 'Enter') {
     event.preventDefault();
     analyze();
     return;
   }
 
-  // Ctrl / Cmd + L: 入力欄にフォーカス
+  /*
+    Ctrl / Cmd + L:
+    入力欄にフォーカス
+  */
   if (isCommand && !event.shiftKey && key === 'l') {
     event.preventDefault();
     $('rawInput').focus();
     return;
   }
 
-  // Ctrl / Cmd + Shift + I: 入力パネル開閉
+  /*
+    Ctrl / Cmd + Shift + I:
+    入力パネル開閉
+  */
   if (isCommandShift && key === 'i') {
     event.preventDefault();
     toggleInputPanel();
     return;
   }
 
-  // Ctrl / Cmd + 1: キャラクター別サマリー
+  /*
+    Ctrl / Cmd + 1:
+    キャラクター別サマリー
+  */
   if (isCommand && !event.shiftKey && key === '1') {
     event.preventDefault();
     activateTabByName('summary');
     return;
   }
 
-  // Ctrl / Cmd + 2: 分布チャート
+  /*
+    Ctrl / Cmd + 2:
+    分布チャート
+  */
   if (isCommand && !event.shiftKey && key === '2') {
     event.preventDefault();
     activateTabByName('chart');
     return;
   }
 
-  // Ctrl / Cmd + 3: 抽出ロール
+  /*
+    Ctrl / Cmd + 3:
+    抽出ロール
+  */
   if (isCommand && !event.shiftKey && key === '3') {
     event.preventDefault();
     activateTabByName('rolls');
     return;
   }
 
-  // Ctrl / Cmd + Shift + C: 表示キャラ設定の開閉
+  /*
+    Ctrl / Cmd + Shift + C:
+    表示キャラ設定の開閉
+  */
   if (isCommandShift && key === 'c') {
     event.preventDefault();
     state.showCharacterControls = !state.showCharacterControls;
@@ -120,14 +182,20 @@ function handleGlobalKeydown(event) {
     return;
   }
 
-  // Ctrl / Cmd + Shift + M: ナイトモード切替
-  if (isCommandShift && key === 'm') {
+  /*
+    Ctrl / Cmd + Shift + T:
+    ナイトモード切替
+  */
+  if (isCommandShift && key === 't') {
     event.preventDefault();
     toggleTheme();
     return;
   }
 
-  // Ctrl / Cmd + Shift + V: スクショ表示 / 通常表示
+  /*
+    Ctrl / Cmd + Shift + V:
+    スクショ表示 / 通常表示
+  */
   if (isCommandShift && key === 'v') {
     event.preventDefault();
 
@@ -140,11 +208,15 @@ function handleGlobalKeydown(event) {
     return;
   }
 
-  // Ctrl / Cmd + Backspace: 確認後クリア
+  /*
+    Ctrl / Cmd + Backspace:
+    確認後クリア
+  */
   if (isCommand && event.key === 'Backspace') {
     event.preventDefault();
 
     const confirmed = window.confirm('入力内容と解析結果をクリアします。よろしいですか？');
+
     if (confirmed) {
       clearAll();
     }
@@ -156,4 +228,16 @@ function activateTabByName(tabName) {
   if (!targetButton) return;
 
   switchTab(targetButton);
+}
+
+function isTypingInEditableField() {
+  const active = document.activeElement;
+  if (!active) return false;
+
+  const tagName = active.tagName ? active.tagName.toLowerCase() : '';
+
+  return tagName === 'input'
+    || tagName === 'textarea'
+    || tagName === 'select'
+    || active.isContentEditable;
 }
