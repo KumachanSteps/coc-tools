@@ -152,7 +152,7 @@ header p{
   justify-content:center;
 }
 
-/* CSS-drawn crescent moon */
+/* Crescent moon icon */
 .theme-switch-thumb-moon{
   position:absolute;
   left:50%;
@@ -162,34 +162,50 @@ header p{
   transform:translate(-50%,-50%) scale(.7);
   transform-origin:center;
   opacity:0;
-  font-size:0!important;
-  color:transparent!important;
+  font-size:0 !important;
+  color:transparent !important;
   display:block;
   overflow:visible;
 }
 
+/* White base circle */
 .theme-switch-thumb-moon::before{
   content:"";
   position:absolute;
   left:3px;
-  top:1px;
+  top:2px;
   width:18px;
-  height:24px;
-  border-radius:999px;
+  height:22px;
+  border-radius:50%;
   background:#fffdf7;
   z-index:1;
 }
 
+/* Blue cut-out circle to form crescent */
 .theme-switch-thumb-moon::after{
   content:"";
   position:absolute;
   left:10px;
-  top:0;
-  width:18px;
-  height:26px;
-  border-radius:999px;
+  top:1px;
+  width:16px;
+  height:22px;
+  border-radius:50%;
   background:#5f7ff0;
   z-index:2;
+}
+
+body.dark .theme-switch-thumb-sun{
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.7);
+}
+
+body.dark .theme-switch-thumb-moon{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+
+body.dark .theme-switch-thumb-moon::after{
+  background:#5f7ff0;
 }
 
 body.dark .theme-switch-track{
