@@ -16,7 +16,7 @@
   <!-- 共通アイコン -->
   <link rel="icon" href="../shared/assets/kuma_icon.ico" type="image/x-icon">
 
-  <title>Dice Stat Analyst</title>
+  <title>ダイス分析ツール</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/dice-stat-analyst.css">
@@ -25,18 +25,27 @@
 <body>
   <header>
     <div>
-      <h1>Dice Stat Analyst</h1>
-      <p>セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布を生成します。</p>
+    <h1>Dice Stat Analyst</h1>
+    <p>セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布を生成します。</p>
+    <p class="shortcut-tip">
+      Tip: <kbd>Ctrl/Cmd</kbd> + <kbd>Enter</kbd> で分析 ｜ 
+      <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> でスクショ表示 ｜ 
+      <kbd>?</kbd> でショートカット一覧
+    </p>  
     </div>
 
     <div class="header-actions">
+      <button id="shortcutHelpBtn" class="shortcut-help-button" type="button" aria-label="ショートカット一覧を開く">
+        ⌨ Shortcuts
+      </button>
+    
       <button id="themeToggleBtn" class="theme-switch" type="button" aria-label="ナイトモードに切替" aria-pressed="false" title="ナイトモードに切替">
         <span class="theme-switch-track">
           <span class="theme-switch-side theme-switch-side-sun">☀</span>
           <span class="theme-switch-side theme-switch-side-moon">☾</span>
           <span class="theme-switch-thumb">
             <span class="theme-switch-thumb-icon theme-switch-thumb-sun">☀</span>
-            <span class="theme-switch-thumb-icon theme-switch-thumb-moon">☾</span>
+            <span class="theme-switch-thumb-icon theme-switch-thumb-moon"></span>
           </span>
         </span>
       </button>
@@ -47,6 +56,97 @@
     <button id="screenshotExitBtn" class="screenshot-exit-button" type="button">通常表示に戻す</button>
   </div>
 
+  <div id="shortcutModal" class="shortcut-modal" aria-hidden="true">
+    <div class="shortcut-modal-backdrop" id="shortcutModalBackdrop"></div>
+  
+    <div class="shortcut-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="shortcutModalTitle">
+      <div class="shortcut-modal-header">
+        <div>
+          <p class="shortcut-modal-eyebrow">Keyboard Guide</p>
+          <h2 id="shortcutModalTitle">ショートカット一覧</h2>
+        </div>
+  
+        <button id="shortcutModalCloseBtn" class="shortcut-modal-close" type="button" aria-label="ショートカット一覧を閉じる">
+          ×
+        </button>
+      </div>
+  
+      <div class="shortcut-modal-body">
+        <div class="shortcut-list">
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>O</kbd></div>
+            <div class="shortcut-desc">ファイル選択</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Enter</kbd></div>
+            <div class="shortcut-desc">分析する</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>L</kbd></div>
+            <div class="shortcut-desc">入力欄にフォーカス</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>I</kbd></div>
+            <div class="shortcut-desc">入力パネル開閉</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>1</kbd></div>
+            <div class="shortcut-desc">キャラクター別サマリーへ移動</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>2</kbd></div>
+            <div class="shortcut-desc">分布チャートへ移動</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>3</kbd></div>
+            <div class="shortcut-desc">抽出ロールへ移動</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>C</kbd></div>
+            <div class="shortcut-desc">表示キャラ設定の開閉</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>M</kbd></div>
+            <div class="shortcut-desc">ナイトモード切替</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>V</kbd></div>
+            <div class="shortcut-desc">スクショ表示 / 通常表示</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Backspace</kbd></div>
+            <div class="shortcut-desc">確認後クリア</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>?</kbd></div>
+            <div class="shortcut-desc">このショートカット一覧を開く</div>
+          </div>
+  
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Esc</kbd></div>
+            <div class="shortcut-desc">モーダル / スクショ表示を閉じる</div>
+          </div>
+        </div>
+      </div>
+  
+      <p class="shortcut-modal-note">
+        ※ 一部ブラウザでは既定ショートカットが優先される場合があります。
+      </p>
+    </div>
+  </div>
+
+  
   <main id="appLayout">
     <section id="inputPanel">
       <div class="input-panel-top">
