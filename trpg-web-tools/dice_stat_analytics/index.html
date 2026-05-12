@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NJD5JZML31"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NJD5JZML31');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 共通アイコン -->
+  <link rel="icon" href="../shared/assets/kuma_icon.ico" type="image/x-icon">
+
+  <title>Dice Stat Analyst</title>
+
+  <link rel="stylesheet" href="./css/dice-stat-analyst.css">
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="back-link" href="../">← Tools Portal</a>
+
+      <div>
+        <p class="eyebrow">TRPG SESSION LOG ANALYZER</p>
+        <h1>Dice Stat Analyst</h1>
+        <p class="lead">
+          CCFOLIAなどのセッションログからダイスロールを解析し、探索者ごとの成功率・クリティカル・ファンブル・出目分布を確認するツールです。
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section class="panel input-panel">
+      <h2>Input Log</h2>
+
+      <div class="control-row">
+        <label class="file-button">
+          Choose File
+          <input id="fileInput" type="file" accept=".html,.txt,.log" hidden>
+        </label>
+
+        <button id="analyzeButton" type="button">Analyze</button>
+        <button id="clearButton" type="button">Clear</button>
+      </div>
+
+      <textarea
+        id="logInput"
+        placeholder="ここにセッションログを貼り付けるか、ログファイルを選択してください。"
+      ></textarea>
+    </section>
+
+    <section class="panel options-panel">
+      <h2>Options</h2>
+
+      <label>
+        <span>最低ロール数</span>
+        <input id="minRollsInput" type="number" min="0" value="15">
+      </label>
+
+      <label class="checkbox-label">
+        <input id="darkModeToggle" type="checkbox">
+        <span>Night Mode</span>
+      </label>
+    </section>
+
+    <section class="panel results-panel">
+      <h2>Results</h2>
+      <div id="resultsArea" class="results-empty">
+        解析結果がここに表示されます。
+      </div>
+    </section>
+  </main>
+
+  <script src="./js/utils.js" defer></script>
+  <script src="./js/parser.js" defer></script>
+  <script src="./js/analyzer.js" defer></script>
+  <script src="./js/renderer.js" defer></script>
+  <script src="./js/storage.js" defer></script>
+  <script src="./js/shortcuts.js" defer></script>
+  <script src="./js/main.js" defer></script>
+</body>
+</html>
