@@ -463,3 +463,133 @@ body.screenshot-mode .shortcut-help-button{
 #shortcutModal.shortcut-modal.open{
   display:flex;
 }
+
+/* =========================================================
+   Header Action Layout Fix
+   EN / Shortcuts buttons stacked beside theme switch
+   ========================================================= */
+
+.header-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+/* EN と Shortcuts を縦に並べるためのラッパー */
+.header-mini-actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:stretch;
+  justify-content:center;
+}
+
+/* ENボタン */
+.language-toggle-button{
+  width:112px;
+  min-width:112px;
+  height:34px;
+  margin:0;
+  padding:0 12px;
+  border-radius:14px;
+  background:var(--accent);
+  color:#fff;
+  border:1px solid var(--accent);
+  font-size:14px;
+  font-weight:900;
+  line-height:1;
+  box-shadow:0 6px 14px rgba(79,70,229,.18);
+}
+
+/* Shortcutsボタン */
+.shortcut-help-button{
+  width:112px;
+  min-width:112px;
+  height:34px;
+  margin:0;
+  padding:0 12px;
+  border-radius:14px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  border:1px solid rgba(79,70,229,.22);
+  font-size:12px;
+  font-weight:800;
+  line-height:1;
+  white-space:nowrap;
+  box-shadow:none;
+}
+
+/* テーマスイッチを少しだけコンパクトに */
+.theme-switch-track{
+  width:120px;
+  height:54px;
+  padding:0 16px;
+}
+
+.theme-switch-thumb{
+  width:46px;
+  height:46px;
+}
+
+body.dark .theme-switch-thumb{
+  transform:translateX(66px);
+}
+
+/* 月・太陽アイコン位置の微調整 */
+.theme-switch-thumb-icon{
+  width:26px;
+  height:26px;
+}
+
+.theme-switch-thumb-sun{
+  font-size:26px;
+}
+
+.theme-switch-thumb-moon::before{
+  left:4px;
+  top:2px;
+  width:19px;
+  height:23px;
+}
+
+.theme-switch-thumb-moon::after{
+  left:11px;
+  top:1px;
+  width:19px;
+  height:25px;
+}
+
+/* モバイルでは横幅をさらに抑える */
+@media(max-width:720px){
+  .header-actions{
+    gap:8px;
+  }
+
+  .header-mini-actions{
+    gap:6px;
+  }
+
+  .language-toggle-button,
+  .shortcut-help-button{
+    width:92px;
+    min-width:92px;
+    height:32px;
+    font-size:12px;
+  }
+
+  .theme-switch-track{
+    width:106px;
+    height:50px;
+    padding:0 14px;
+  }
+
+  .theme-switch-thumb{
+    width:42px;
+    height:42px;
+  }
+
+  body.dark .theme-switch-thumb{
+    transform:translateX(58px);
+  }
+}
