@@ -1,3 +1,13 @@
+/*
+  main.js
+  初期化・イベント登録・メイン操作
+
+  Translation-ready:
+  - languageToggleBtn が存在すれば言語切替に対応
+  - applyTranslations() が存在すれば初期化時・再描画時に適用
+  - getCurrentLanguage() / setLanguage() が存在すれば localStorage連動の言語切替が可能
+*/
+
 const state = {
   rolls: [],
   filteredLines: [],
@@ -9,10 +19,29 @@ const state = {
 };
 
 bindEvents();
-render();
+initializeApp();
+
+function initializeApp() {
+  syncThemeSwitch();
+  initializeLanguageUI();
+
+  if (typeof applyTranslations === 'function') {
+    applyTranslations();
+  }
+
+  render();
+}
 
 function bindEvents() {
-  $('themeToggleBtn').addEventListener('click', toggleTheme);
+  const themeToggleBtn = $('themeToggleBtn');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+  }
+
+  const languageToggleBtn = $('languageToggleBtn');
+  if (languageToggleBtn) {
+    languageToggleBtn.addEventListener('click', toggleLanguage);
+  }
 
   const shortcutHelpBtn = $('shortcutHelpBtn');
   const shortcutModalCloseBtn = $('shortcutModalCloseBtn');
@@ -38,21 +67,50 @@ function bindEvents() {
     button.addEventListener('click', () => toggleSort(button.dataset.sortKey));
   });
 
-  $('fileInput').addEventListener('change', handleFileInput);
-  $('inputToggleBtn').addEventListener('click', toggleInputPanel);
+  const fileInput = $('fileInput');
+  if (fileInput) {
+    fileInput.addEventListener('change', handleFileInput);
+  }
 
-  $('characterControlToggleBtn').addEventListener('click', () => {
-    state.showCharacterControls = !state.showCharacterControls;
-    renderCharacterControls();
-  });
+  const inputToggleBtn = $('inputToggleBtn');
+  if (inputToggleBtn) {
+    inputToggleBtn.addEventListener('click', toggleInputPanel);
+  }
 
-  $('summaryShotBtn').addEventListener('click', enterScreenshotMode);
-  $('screenshotExitBtn').addEventListener('click', exitScreenshotMode);
+  const characterControlToggleBtn = $('characterControlToggleBtn');
+  if (characterControlToggleBtn) {
+    characterControlToggleBtn.addEventListener('click', () => {
+      state.showCharacterControls = !state.showCharacterControls;
+      renderCharacterControls();
+    });
+  }
+
+  const summaryShotBtn = $('summaryShotBtn');
+  if (summaryShotBtn) {
+    summaryShotBtn.addEventListener('click', enterScreenshotMode);
+  }
+
+  const screenshotExitBtn = $('screenshotExitBtn');
+  if (screenshotExitBtn) {
+    screenshotExitBtn.addEventListener('click', exitScreenshotMode);
+  }
 
   document.addEventListener('keydown', handleGlobalKeydown);
 
-  $('analyzeBtn').addEventListener('click', analyze);
-  $('clearBtn').addEventListener('click', clearAll);
+  const analyzeBtn = $('analyzeBtn');
+  if (analyzeBtn) {
+    analyzeBtn.addEventListener('click', analyze);
+  }
+
+  const clearBtn = $('clearBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearAll);
+  }
+
+  document.addEventListener('languagechange', () => {
+    initializeLanguageUI();
+    render();
+  });
 }
 
 async function handleFileInput(event) {
@@ -90,9 +148,15 @@ function syncThemeSwitch() {
   document.body.classList.toggle('dark', state.dark);
 
   const button = $('themeToggleBtn');
+  if (!button) return;
+
+  const title = state.dark
+    ? tr('theme.switchToLight', 'ライトモードに切替')
+    : tr('theme.switchToDark', 'ナイトモードに切替');
+
   button.setAttribute('aria-pressed', state.dark ? 'true' : 'false');
-  button.setAttribute('title', state.dark ? 'ライトモードに切替' : 'ナイトモードに切替');
-  button.setAttribute('aria-label', state.dark ? 'ライトモードに切替' : 'ナイトモードに切替');
+  button.setAttribute('title', title);
+  button.setAttribute('aria-label', title);
 }
 
 function analyze() {
@@ -112,6 +176,61 @@ function analyze() {
   applyDefaultCharacterVisibility(rolls);
   render();
 }
+
+/* =========================================================
+   Language UI
+   ========================================================= */
+
+function initializeLanguageUI() {
+  updateLanguageToggleLabel();
+}
+
+function toggleLanguage() {
+  if (typeof getCurrentLanguage !== 'function' || typeof setLanguage !== 'function') {
+    console.warn('Language functions are not loaded yet.');
+    return;
+  }
+
+  const current = getCurrentLanguage();
+  const next = current === 'ja' ? 'en' : 'ja';
+
+  setLanguage(next);
+  updateLanguageToggleLabel();
+
+  if (typeof applyTranslations === 'function') {
+    applyTranslations();
+  }
+
+  render();
+
+  document.dispatchEvent(new CustomEvent('languagechange', {
+    detail: { language: next }
+  }));
+}
+
+function updateLanguageToggleLabel() {
+  const button = $('languageToggleBtn');
+  if (!button) return;
+
+  let current = 'ja';
+
+  if (typeof getCurrentLanguage === 'function') {
+    current = getCurrentLanguage();
+  }
+
+  button.textContent = current === 'ja' ? 'EN' : 'JP';
+
+  const label = current === 'ja'
+    ? tr('language.switchToEnglish', '英語表示に切替')
+    : tr('language.switchToJapanese', '日本語表示に切替');
+
+  button.setAttribute('title', label);
+  button.setAttribute('aria-label', label);
+}
+
+/* =========================================================
+   Shortcut Modal
+   ========================================================= */
 
 function openShortcutModal() {
   const modal = $('shortcutModal');
