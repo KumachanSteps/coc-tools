@@ -11,7 +11,7 @@ function exitScreenshotMode() {
 /*
   Keyboard Shortcuts / ショートカット設定
 
-  Ctrl / Cmd + O
+  Ctrl / Cmd + Shift + O
     → ファイル選択
 
   Ctrl / Cmd + Enter
@@ -107,10 +107,10 @@ function handleGlobalKeydown(event) {
   }
 
   /*
-    Ctrl / Cmd + O:
+    Ctrl / Cmd + Shift + O:
     ファイル選択
   */
-  if (isCommand && !event.shiftKey && key === 'o') {
+  if (isCommandShift && key === 'o') {
     event.preventDefault();
     $('fileInput').click();
     return;
