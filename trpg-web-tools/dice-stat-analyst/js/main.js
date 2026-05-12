@@ -1,4 +1,5 @@
 const $ = id => document.getElementById(id);
+
 const LF = String.fromCharCode(10);
 const CR = String.fromCharCode(13);
 const TAB = String.fromCharCode(9);
@@ -7,88 +8,80 @@ const state = {
   rolls: [],
   filteredLines: [],
   hiddenCharacters: new Set(),
-  sort: { key: 'index', direction: 'asc' },
+  sort: { key: "index", direction: "asc" },
   showCharacterControls: false,
-  inputPanelMode: 'auto',
+  inputPanelMode: "auto",
   dark: false
 };
 
 const diceCommands = [
-  'SRESB',
-  'RESB',
-  'SCCB',
-  'SCBR',
-  'SCC',
-  'CCB',
-  'CBR',
-  'CC',
-  'S1D100',
-  '1D100',
-  'SD100',
-  'D100',
-  'D％',
-  'D%'
+  "SRESB", "RESB", "SCCB", "SCBR", "SCC", "CCB", "CBR", "CC",
+  "S1D100", "1D100", "SD100", "D100", "D％", "D%"
 ];
 
-const includedTabs = ['main', 'メイン', 'ho'];
-const excludedTabs = ['雑談', 'other', 'info', 'おはらい', 'お祓い', '運試し'];
+const includedTabs = ["main", "メイン", "ho"];
+const excludedTabs = ["雑談", "other", "info", "おはらい", "お祓い", "運試し"];
 
-bindEvents();
-render();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+
+function init() {
+  bindEvents();
+  render();
+}
 
 function bindEvents() {
-  $('themeToggleBtn').addEventListener('click', toggleTheme);
-  document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', () => switchTab(button));
-  });
-  document.querySelectorAll('button[data-sort-key]').forEach(button => {
-    button.addEventListener('click', () => toggleSort(button.dataset.sortKey));
-  });
+  $("themeToggleBtn").addEventListener("click", toggleTheme);
+  document.querySelectorAll(".tab-button").forEach(b => b.addEventListener("click", () => switchTab(b)));
+  document.querySelectorAll("button[data-sort-key]").forEach(b => b.addEventListener("click", () => toggleSort(b.dataset.sortKey)));
 
-  $('fileInput').addEventListener('change', handleFileInput);
-  $('inputToggleBtn').addEventListener('click', toggleInputPanel);
-  $('characterControlToggleBtn').addEventListener('click', () => {
+  $("fileInput").addEventListener("change", handleFileInput);
+  $("inputToggleBtn").addEventListener("click", toggleInputPanel);
+  $("characterControlToggleBtn").addEventListener("click", () => {
     state.showCharacterControls = !state.showCharacterControls;
     renderCharacterControls();
   });
-  $('summaryShotBtn').addEventListener('click', enterScreenshotMode);
-  $('screenshotExitBtn').addEventListener('click', exitScreenshotMode);
-  document.addEventListener('keydown', handleGlobalKeydown);
-  $('analyzeBtn').addEventListener('click', analyze);
-  $('clearBtn').addEventListener('click', clearAll);
+
+  $("summaryShotBtn").addEventListener("click", enterScreenshotMode);
+  $("screenshotExitBtn").addEventListener("click", exitScreenshotMode);
+  document.addEventListener("keydown", handleGlobalKeydown);
+
+  $("analyzeBtn").addEventListener("click", analyze);
+  $("clearBtn").addEventListener("click", clearAll);
 }
 
-function switchTab(button) {
-  document.querySelectorAll('.tab-button').forEach(item => item.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(item => item.classList.remove('active'));
-
-  button.classList.add('active');
-  $(button.dataset.tab).classList.add('active');
+function switchTab(b) {
+  document.querySelectorAll(".tab-button").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(x => x.classList.remove("active"));
+  b.classList.add("active");
+  $(b.dataset.tab).classList.add("active");
 }
 
-async function handleFileInput(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
-
-  $('rawInput').value = await file.text();
-  state.inputPanelMode = 'auto';
+async function handleFileInput(e) {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  $("rawInput").value = await f.text();
+  state.inputPanelMode = "auto";
   analyze();
 }
 
 function toggleInputPanel() {
-  const collapsed = $('appLayout').classList.contains('input-collapsed');
-  state.inputPanelMode = collapsed ? 'open' : 'collapsed';
+  const collapsed = $("appLayout").classList.contains("input-collapsed");
+  state.inputPanelMode = collapsed ? "open" : "collapsed";
   applyInputPanelLayout();
 }
 
 function clearAll() {
-  $('fileInput').value = '';
-  $('rawInput').value = '';
+  $("fileInput").value = "";
+  $("rawInput").value = "";
   state.rolls = [];
   state.filteredLines = [];
   state.hiddenCharacters = new Set();
   state.showCharacterControls = false;
-  state.inputPanelMode = 'auto';
+  state.inputPanelMode = "auto";
   render();
 }
 
@@ -98,18 +91,17 @@ function toggleTheme() {
 }
 
 function syncThemeSwitch() {
-  document.body.classList.toggle('dark', state.dark);
-
-  const button = $('themeToggleBtn');
-  button.setAttribute('aria-pressed', state.dark ? 'true' : 'false');
-  button.setAttribute('title', state.dark ? 'ライトモードに切替' : 'ナイトモードに切替');
-  button.setAttribute('aria-label', state.dark ? 'ライトモードに切替' : 'ナイトモードに切替');
+  document.body.classList.toggle("dark", state.dark);
+  const btn = $("themeToggleBtn");
+  btn.setAttribute("aria-pressed", state.dark ? "true" : "false");
+  btn.setAttribute("title", state.dark ? "ライトモードに切替" : "ナイトモードに切替");
+  btn.setAttribute("aria-label", state.dark ? "ライトモードに切替" : "ナイトモードに切替");
 }
 
 function analyze() {
-  state.inputPanelMode = 'auto';
+  state.inputPanelMode = "auto";
 
-  const lines = normalizeNewlines(prepareText($('rawInput').value || ''))
+  const lines = normalizeNewlines(prepareText($("rawInput").value || ""))
     .split(LF)
     .map(cleanLine)
     .filter(Boolean);
@@ -119,45 +111,44 @@ function analyze() {
 
   state.filteredLines = filtered;
   state.rolls = rolls;
-
   applyDefaultCharacterVisibility(rolls);
   render();
 }
 
 function prepareText(raw) {
-  const source = String(raw || '');
-  if (!looksLikeHtml(source)) return source;
+  const s = String(raw || "");
+  if (!looksLikeHtml(s)) return s;
 
-  const doc = new DOMParser().parseFromString(source, 'text/html');
-  if (!doc.body) return source;
+  const doc = new DOMParser().parseFromString(s, "text/html");
+  if (!doc.body) return s;
 
   const lines = extractHtmlLogLines(doc);
-  return lines.length
-    ? lines.join(LF)
-    : decodeHtml(doc.body.innerText || doc.body.textContent || source);
+  return lines.length ? lines.join(LF) : decodeHtml(doc.body.innerText || doc.body.textContent || s);
 }
 
 function extractHtmlLogLines(doc) {
-  return Array.from(doc.body.querySelectorAll('p'))
+  return Array.from(doc.body.querySelectorAll("p"))
     .map(extractHtmlLogLine)
     .filter(Boolean);
 }
 
-function extractHtmlLogLine(paragraph) {
-  const spans = Array.from(paragraph.querySelectorAll('span'))
-    .map(span => cleanLine(decodeHtml(span.textContent || '')))
+function extractHtmlLogLine(p) {
+  const spans = Array.from(p.querySelectorAll("span"))
+    .map(s => cleanLine(decodeHtml(s.textContent || "")))
     .filter(Boolean);
 
-  return spans.length >= 3 && isTabLabel(spans[0])
-    ? `${spans[0]} ${spans[1]}：${spans.slice(2).join(' ')}`
-    : cleanLine(decodeHtml(paragraph.textContent || ''));
+  if (spans.length >= 3 && isTabLabel(spans[0])) {
+    return `${spans[0]} ${spans[1]}：${spans.slice(2).join(" ")}`;
+  }
+
+  return cleanLine(decodeHtml(p.textContent || ""));
 }
 
 function filterLines(lines) {
   return lines.filter(line => {
     if (isRuleExplanationLine(line)) return false;
-    if ($('dropTabs').checked && !shouldKeepTabLine(line)) return false;
-    if ($('onlyD100').checked && !looksLikeD100Roll(line)) return false;
+    if ($("dropTabs").checked && !shouldKeepTabLine(line)) return false;
+    if ($("onlyD100").checked && !looksLikeD100Roll(line)) return false;
     return true;
   });
 }
@@ -168,35 +159,35 @@ function shouldKeepTabLine(line) {
 }
 
 function isIncludedTab(tab) {
-  const normalized = normalizeTabName(tab);
-  if (!normalized) return true;
+  const n = normalizeTabName(tab);
+  if (!n) return true;
 
-  if (excludedTabs.some(word => normalized.includes(normalizeTabName(word)))) return false;
-  if (normalized === 'ho' || normalized.startsWith('ho')) return true;
+  if (excludedTabs.some(w => n.includes(normalizeTabName(w)))) return false;
+  if (n === "ho" || n.startsWith("ho")) return true;
 
-  return includedTabs.some(word => {
-    const item = normalizeTabName(word);
-    return normalized === item || normalized.startsWith(item) || normalized.includes(item);
+  return includedTabs.some(w => {
+    const x = normalizeTabName(w);
+    return n === x || n.startsWith(x) || n.includes(x);
   });
 }
 
 function extractRollData(lines) {
   const rolls = [];
-  let currentCharacter = '';
+  let current = "";
 
-  lines.forEach((line, index) => {
+  lines.forEach((line, i) => {
     const name = extractCharacterName(line);
     const usable = isUsableCharacterName(name);
     const values = extractRollsFromLine(line);
 
-    if (usable) currentCharacter = name;
+    if (usable) current = name;
 
     values.forEach(value => {
       rolls.push({
         value,
-        character: usable ? name : (currentCharacter || '不明'),
+        character: usable ? name : (current || "不明"),
         line,
-        lineNo: index + 1
+        lineNo: i + 1
       });
     });
   });
@@ -205,60 +196,84 @@ function extractRollData(lines) {
 }
 
 function extractCharacterName(line) {
-  const text = String(line || '').trim();
-  const diceIndex = findDiceCommandIndex(text);
-  if (diceIndex < 0) return '不明';
+  const text = String(line || "").trim();
+  const i = findDiceCommandIndex(text);
 
-  let before = text.slice(0, diceIndex).trim();
-  if (!before) return '不明';
+  if (i < 0) return "不明";
 
-  before = trimTrailingSeparators(trimTrailingRollPrefix(removeLeadingTab(before)));
+  let before = text.slice(0, i).trim();
+  if (!before) return "不明";
+
+  before = removeLeadingTab(before);
+  before = trimTrailingRollPrefix(before);
+  before = trimTrailingSeparators(before);
+
   return cleanCharacterName(before);
 }
 
 function extractRollsFromLine(line) {
-  const text = String(line || '');
-  const diceIndex = findDiceCommandIndex(text);
-  if (diceIndex < 0) return [];
+  if (isRuleExplanationLine(line)) return [];
 
-  const afterCommand = text.slice(diceIndex);
-  const numbers = extractNumbersAfterResultMarkers(afterCommand);
-  if (numbers.length) return [numbers[0]];
+  const text = String(line || "");
+  const i = findDiceCommandIndex(text);
+  if (i < 0) return [];
 
-  return extractNumbersAfterWords(afterCommand, ['出目']).slice(0, 1);
+  const afterCommand = text.slice(i);
+
+  if (!isLikelyActualRollText(afterCommand)) return [];
+
+  const nums = extractNumbersAfterResultMarkers(afterCommand);
+  if (nums.length) return [nums[0]];
+
+  return extractNumbersAfterWords(afterCommand, ["出目"]).slice(0, 1);
 }
 
 function findDiceCommandIndex(text) {
-  const upper = String(text || '').toUpperCase();
-  const indexes = [];
+  const upper = String(text || "").toUpperCase();
+  const idx = [];
 
-  diceCommands.forEach(command => {
+  diceCommands.forEach(cmd => {
     let from = 0;
 
     while (from < upper.length) {
-      const index = upper.indexOf(command, from);
-      if (index < 0) break;
+      const i = upper.indexOf(cmd, from);
+      if (i < 0) break;
 
-      const prev = index > 0 ? upper[index - 1] : '';
-      if (!prev || !isAsciiAlphaNumber(prev)) indexes.push(index);
+      const prev = i > 0 ? upper[i - 1] : "";
+      const next = upper[i + cmd.length] || "";
 
-      from = index + command.length;
+      const validPrev = !prev || !isAsciiAlphaNumber(prev);
+      const validNext = !next || !isAsciiAlphaNumber(next);
+
+      if (validPrev && validNext) idx.push(i);
+
+      from = i + cmd.length;
     }
   });
 
-  return indexes.length ? Math.min(...indexes) : -1;
+  return idx.length ? Math.min(...idx) : -1;
+}
+
+function isLikelyActualRollText(text) {
+  const s = String(text || "");
+
+  if (extractNumbersAfterResultMarkers(s).length > 0) return true;
+  if (/出目\s*\d{1,3}/.test(s)) return true;
+
+  return false;
 }
 
 function extractNumbersAfterResultMarkers(text) {
   const values = [];
-  const markers = ['＞', '>', '→'];
+  const markers = ["＞", ">", "→"];
 
   for (let i = 0; i < text.length; i++) {
     if (!markers.includes(text[i])) continue;
 
-    const number = readRollResultNumberFrom(text, i + 1);
-    if (number !== null && number >= 1 && number <= 100) {
-      values.push(number);
+    const n = readRollResultNumberFrom(text, i + 1);
+
+    if (n !== null && n >= 1 && n <= 100) {
+      values.push(n);
     }
   }
 
@@ -269,180 +284,167 @@ function readRollResultNumberFrom(text, start) {
   let i = start;
 
   while (i < text.length && isWhitespace(text[i])) i++;
-  if (i >= text.length || text[i] < '0' || text[i] > '9') return null;
 
-  let digits = '';
+  if (i >= text.length || text[i] < "0" || text[i] > "9") return null;
 
-  while (i < text.length && text[i] >= '0' && text[i] <= '9') {
-    digits += text[i++];
+  let d = "";
+
+  while (i < text.length && text[i] >= "0" && text[i] <= "9") {
+    d += text[i++];
   }
 
-  if (['d', 'D', 'Ｄ', 'ｄ'].includes(text[i] || '')) return null;
+  if (["d", "D", "Ｄ", "ｄ"].includes(text[i] || "")) return null;
 
-  return isValidRollResultTail(text.slice(i)) ? Number(digits) : null;
+  return isValidRollResultTail(text.slice(i)) ? Number(d) : null;
 }
 
 function isValidRollResultTail(tail) {
-  const text = String(tail || '').trim();
-  const lower = text.toLowerCase();
+  const t = String(tail || "").trim();
+  const l = t.toLowerCase();
 
-  return !text
-    || ['＞', '>', '→', '#'].some(marker => text.startsWith(marker))
-    || ['成功', '失敗', '決定的成功', '致命的失敗', 'クリティカル', 'ファンブル'].some(word => text.startsWith(word))
-    || lower.startsWith('success')
-    || lower.startsWith('fail');
+  if (!t) return true;
+  if (["＞", ">", "→", "#"].some(m => t.startsWith(m))) return true;
+
+  return [
+    "成功",
+    "失敗",
+    "決定的成功",
+    "致命的失敗",
+    "クリティカル",
+    "ファンブル"
+  ].some(w => t.startsWith(w)) || l.startsWith("success") || l.startsWith("fail");
 }
 
 function extractNumbersAfterWords(text, words) {
-  const lower = String(text || '').toLowerCase();
+  const lower = String(text || "").toLowerCase();
   const values = [];
 
-  words.forEach(word => {
-    const index = lower.indexOf(String(word).toLowerCase());
-    if (index < 0) return;
+  words.forEach(w => {
+    const i = lower.indexOf(String(w).toLowerCase());
+    if (i < 0) return;
 
-    const number = readNumberFrom(text, index + String(word).length);
-    if (number !== null && number >= 1 && number <= 100) {
-      values.push(number);
-    }
+    const n = readNumberFrom(text, i + String(w).length);
+    if (n !== null && n >= 1 && n <= 100) values.push(n);
   });
 
   return values;
 }
 
 function readNumberFrom(text, start) {
-  let digits = '';
+  let d = "";
 
   for (let i = start; i < text.length; i++) {
-    const character = text[i];
+    const c = text[i];
 
-    if (character >= '0' && character <= '9') {
-      digits += character;
-    } else if (digits) {
-      break;
-    }
+    if (c >= "0" && c <= "9") d += c;
+    else if (d) break;
   }
 
-  return digits ? Number(digits) : null;
+  return d ? Number(d) : null;
 }
 
 function extractTargetNumber(line) {
-  const text = String(line || '')
-    .replaceAll('＜=', '<=')
-    .replaceAll('≦', '<=')
-    .replaceAll('＝', '=')
+  const text = String(line || "")
+    .replaceAll("＜=", "<=")
+    .replaceAll("≦", "<=")
+    .replaceAll("＝", "=")
     .toUpperCase();
 
-  const diceIndex = findDiceCommandIndex(text);
-  if (diceIndex < 0) return null;
+  const i = findDiceCommandIndex(text);
+  if (i < 0) return null;
 
-  const part = text.slice(diceIndex, diceIndex + 120);
-  let operatorIndex = part.indexOf('<=');
+  const part = text.slice(i, i + 120);
+
+  let op = part.indexOf("<=");
   let offset = 2;
 
-  if (operatorIndex < 0) {
-    operatorIndex = part.indexOf('<');
+  if (op < 0) {
+    op = part.indexOf("<");
     offset = 1;
   }
 
-  if (operatorIndex < 0) return null;
+  if (op < 0) return null;
 
-  const value = readNumberFrom(part, operatorIndex + offset);
-  return Number.isInteger(value) && value >= 1 && value <= 100 ? value : null;
+  const v = readNumberFrom(part, op + offset);
+  return Number.isInteger(v) && v >= 1 && v <= 100 ? v : null;
 }
 
 function classify(value) {
-  const crit = clamp(Number($('critMax').value || 5), 1, 100);
-  const fumble = clamp(Number($('fumbleMin').value || 96), 1, 100);
+  const crit = clamp(Number($("critMax").value || 5), 1, 100);
+  const fum = clamp(Number($("fumbleMin").value || 96), 1, 100);
 
-  if (value <= crit) return 'Critical';
-  if (value >= fumble) return 'Fumble';
-  return 'Normal';
+  if (value <= crit) return "Critical";
+  if (value >= fum) return "Fumble";
+  return "Normal";
 }
 
 function classifyRoll(roll) {
   const base = classify(roll.value);
-  if (base === 'Critical' || base === 'Fumble') return base;
+  if (base === "Critical" || base === "Fumble") return base;
 
-  const line = String(roll.line || '');
+  const line = String(roll.line || "");
   const lower = line.toLowerCase();
 
-  const fail = line.includes('失敗')
-    || lower.includes('failure')
-    || lower.includes('fail');
+  const fail = line.includes("失敗") || lower.includes("failure") || lower.includes("fail");
+  const success =
+    line.includes("成功") ||
+    line.includes("スペシャル") ||
+    line.includes("イクストリーム") ||
+    line.includes("ハード") ||
+    line.includes("レギュラー") ||
+    lower.includes("success");
 
-  const success = line.includes('成功')
-    || line.includes('スペシャル')
-    || line.includes('イクストリーム')
-    || line.includes('ハード')
-    || line.includes('レギュラー')
-    || lower.includes('success');
-
-  if (fail) return 'Fail';
-  if (success) return 'Success';
+  if (fail) return "Fail";
+  if (success) return "Success";
 
   const target = extractTargetNumber(line);
-  return target !== null
-    ? roll.value <= target ? 'Success' : 'Fail'
-    : 'Normal';
+  return target !== null ? (roll.value <= target ? "Success" : "Fail") : "Normal";
 }
 
 function getOutcomeCounts(rolls) {
-  const counts = {
-    critical: 0,
-    fumble: 0,
-    success: 0,
-    fail: 0,
-    normal: 0
-  };
+  const c = { critical: 0, fumble: 0, success: 0, fail: 0, normal: 0 };
 
-  rolls.forEach(roll => {
-    const label = classifyRoll(roll);
+  rolls.forEach(r => {
+    const l = classifyRoll(r);
 
-    if (label === 'Critical') {
-      counts.critical++;
-      counts.success++;
-    } else if (label === 'Fumble') {
-      counts.fumble++;
-      counts.fail++;
-    } else if (label === 'Success') {
-      counts.success++;
-    } else if (label === 'Fail') {
-      counts.fail++;
+    if (l === "Critical") {
+      c.critical++;
+      c.success++;
+    } else if (l === "Fumble") {
+      c.fumble++;
+      c.fail++;
+    } else if (l === "Success") {
+      c.success++;
+    } else if (l === "Fail") {
+      c.fail++;
     } else {
-      counts.normal++;
+      c.normal++;
     }
   });
 
-  return counts;
+  return c;
 }
 
 function classificationOrder(label) {
-  return {
-    Critical: 1,
-    Success: 2,
-    Normal: 3,
-    Fail: 4,
-    Fumble: 5
-  }[label] || 99;
+  return { Critical: 1, Success: 2, Normal: 3, Fail: 4, Fumble: 5 }[label] || 99;
 }
 
 function applyDefaultCharacterVisibility(rolls) {
-  const characters = getDetectedCharactersFromRolls(rolls);
+  const chars = getDetectedCharactersFromRolls(rolls);
   const grouped = groupRollsByCharacter(rolls);
-  const threshold = clamp(Number($('autoHideMaxRolls').value || 15), 0, 999);
+  const threshold = clamp(Number($("autoHideMaxRolls").value || 15), 0, 999);
   const hidden = new Set();
 
-  characters.forEach(name => {
-    const count = grouped[name] ? grouped[name].length : 0;
-    if (count <= threshold) hidden.add(name);
+  chars.forEach(n => {
+    const count = grouped[n] ? grouped[n].length : 0;
+    if (count <= threshold) hidden.add(n);
   });
 
   state.hiddenCharacters = hidden;
 }
 
 function getVisibleRolls() {
-  return state.rolls.filter(roll => !state.hiddenCharacters.has(roll.character || '不明'));
+  return state.rolls.filter(r => !state.hiddenCharacters.has(r.character || "不明"));
 }
 
 function getDetectedCharacters() {
@@ -450,52 +452,46 @@ function getDetectedCharacters() {
 }
 
 function getDetectedCharactersFromRolls(rolls) {
-  return [...new Set(rolls.map(roll => roll.character || '不明'))]
-    .sort(compareCharacterNames);
+  return [...new Set(rolls.map(r => r.character || "不明"))].sort(compareCharacterNames);
 }
 
 function groupRollsByCharacter(rolls) {
-  return rolls.reduce((acc, roll) => {
-    const name = roll.character || '不明';
-    (acc[name] ||= []).push(roll);
+  return rolls.reduce((acc, r) => {
+    const n = r.character || "不明";
+    (acc[n] ||= []).push(r);
     return acc;
   }, {});
 }
 
 function compareCharacterNames(a, b) {
-  if (a === '不明') return 1;
-  if (b === '不明') return -1;
-  return String(a).localeCompare(String(b), 'ja');
+  if (a === "不明") return 1;
+  if (b === "不明") return -1;
+  return String(a).localeCompare(String(b), "ja");
 }
 
 function toggleSort(key) {
   if (state.sort.key === key) {
-    state.sort.direction = state.sort.direction === 'asc' ? 'desc' : 'asc';
+    state.sort.direction = state.sort.direction === "asc" ? "desc" : "asc";
   } else {
-    state.sort = { key, direction: 'asc' };
+    state.sort = { key, direction: "asc" };
   }
 
   renderTable();
 }
 
 function getSortedVisibleRolls() {
-  const direction = state.sort.direction === 'desc' ? -1 : 1;
-  const rolls = getVisibleRolls().map((roll, index) => ({
-    ...roll,
-    originalIndex: index
-  }));
+  const dir = state.sort.direction === "desc" ? -1 : 1;
+  const rolls = getVisibleRolls().map((r, i) => ({ ...r, originalIndex: i }));
 
   rolls.sort((a, b) => {
-    let result = state.sort.key === 'character'
-      ? compareCharacterNames(a.character || '不明', b.character || '不明')
-      : state.sort.key === 'value'
-        ? a.value - b.value
-        : state.sort.key === 'classification'
-          ? classificationOrder(classifyRoll(a)) - classificationOrder(classifyRoll(b))
-          : a.originalIndex - b.originalIndex;
+    let res =
+      state.sort.key === "character" ? compareCharacterNames(a.character || "不明", b.character || "不明") :
+      state.sort.key === "value" ? a.value - b.value :
+      state.sort.key === "classification" ? classificationOrder(classifyRoll(a)) - classificationOrder(classifyRoll(b)) :
+      a.originalIndex - b.originalIndex;
 
-    if (result === 0) result = a.originalIndex - b.originalIndex;
-    return result * direction;
+    if (res === 0) res = a.originalIndex - b.originalIndex;
+    return res * dir;
   });
 
   return rolls;
@@ -513,241 +509,187 @@ function render() {
 function renderSummary() {
   const rolls = getVisibleRolls();
   const total = rolls.length;
-  const values = rolls.map(roll => roll.value);
-  const outcome = getOutcomeCounts(rolls);
-  const average = total
-    ? values.reduce((a, b) => a + b, 0) / total
-    : null;
+  const values = rolls.map(r => r.value);
+  const out = getOutcomeCounts(rolls);
+  const avg = total ? values.reduce((a, b) => a + b, 0) / total : null;
 
-  $('totalRolls').textContent = total;
-  $('successFailCount').textContent = `${outcome.success} / ${outcome.fail}`;
-  $('successFailRate').textContent = `${rate(outcome.success, total)}% / ${rate(outcome.fail, total)}%`;
-  $('critFumbleCount').textContent = `${outcome.critical} / ${outcome.fumble}`;
-  $('critFumbleRate').textContent = `${rate(outcome.critical, total)}% / ${rate(outcome.fumble, total)}%`;
-  $('averageRoll').textContent = average === null ? '-' : average.toFixed(2);
+  $("totalRolls").textContent = total;
+  $("successFailCount").textContent = `${out.success} / ${out.fail}`;
+  $("successFailRate").textContent = `${rate(out.success, total)}% / ${rate(out.fail, total)}%`;
+  $("critFumbleCount").textContent = `${out.critical} / ${out.fumble}`;
+  $("critFumbleRate").textContent = `${rate(out.critical, total)}% / ${rate(out.fumble, total)}%`;
+  $("averageRoll").textContent = avg === null ? "-" : avg.toFixed(2);
 
   if (!total) {
-    $('summaryMemo').textContent = state.rolls.length
-      ? '表示対象のロールがありません。キャラクターのチェックを戻してください。'
-      : 'ログデータを選択ください。';
+    $("summaryMemo").textContent = state.rolls.length
+      ? "表示対象のロールがありません。キャラクターのチェックを戻してください。"
+      : "ログデータを選択ください。";
     return;
   }
 
   const all = state.rolls.length;
   const hidden = all - total;
-  const characters = getDetectedCharacters().length;
+  const chars = getDetectedCharacters().length;
 
-  $('summaryMemo').textContent =
-    `検出した${all}件のd100ロールのうち、表示対象${total}件を集計しました。`
-    + `検出キャラクター数は${characters}です。`
-    + `非表示ロール数は${hidden}件です。`
-    + `総ロール数${$('autoHideMaxRolls').value}以下のキャラクターは初期状態で非表示です。`
-    + `クリティカル判定は${$('critMax').value}以下、ファンブル判定は${$('fumbleMin').value}以上です。`;
+  $("summaryMemo").textContent =
+    `検出した${all}件のd100ロールのうち、表示対象${total}件を集計しました。` +
+    `検出キャラクター数は${chars}です。非表示ロール数は${hidden}件です。` +
+    `総ロール数${$("autoHideMaxRolls").value}以下のキャラクターは初期状態で非表示です。` +
+    `クリティカル判定は${$("critMax").value}以下、ファンブル判定は${$("fumbleMin").value}以上です。`;
 }
 
 function renderCharacterControls() {
-  const box = $('characterControls');
-  const button = $('characterControlToggleBtn');
-  const characters = getDetectedCharacters();
+  const box = $("characterControls");
+  const btn = $("characterControlToggleBtn");
+  const chars = getDetectedCharacters();
 
   if (!box) return;
 
-  box.classList.toggle('visible', state.showCharacterControls);
+  box.classList.toggle("visible", state.showCharacterControls);
 
-  if (button) {
-    button.textContent = state.showCharacterControls
-      ? '表示キャラ設定を隠す'
-      : '表示キャラ設定を開く';
+  if (btn) {
+    btn.textContent = state.showCharacterControls ? "表示キャラ設定を隠す" : "表示キャラ設定を開く";
   }
 
-  if (!characters.length) {
-    box.innerHTML = '';
-    if (button) button.style.display = 'none';
+  if (!chars.length) {
+    box.innerHTML = "";
+    if (btn) btn.style.display = "none";
     return;
   }
 
-  if (button) button.style.display = 'inline-flex';
+  if (btn) btn.style.display = "inline-flex";
 
-  box.innerHTML = characters.map(name => {
-    const checked = state.hiddenCharacters.has(name) ? '' : 'checked';
-    const count = state.rolls.filter(roll => (roll.character || '不明') === name).length;
+  box.innerHTML = chars.map(name => {
+    const checked = state.hiddenCharacters.has(name) ? "" : "checked";
+    const count = state.rolls.filter(r => (r.character || "不明") === name).length;
 
     return `<label class="character-toggle"><input type="checkbox" data-character="${escapeAttribute(name)}" ${checked}>${escapeHtml(name)} (${count})</label>`;
-  }).join('');
+  }).join("");
 
-  box.querySelectorAll('input[data-character]').forEach(input => {
-    input.addEventListener('change', () => {
-      const name = input.getAttribute('data-character') || '不明';
-
-      if (input.checked) {
-        state.hiddenCharacters.delete(name);
-      } else {
-        state.hiddenCharacters.add(name);
-      }
-
-      state.inputPanelMode = state.inputPanelMode === 'open' ? 'open' : 'auto';
+  box.querySelectorAll("input[data-character]").forEach(input => {
+    input.addEventListener("change", () => {
+      const name = input.getAttribute("data-character") || "不明";
+      input.checked ? state.hiddenCharacters.delete(name) : state.hiddenCharacters.add(name);
+      state.inputPanelMode = state.inputPanelMode === "open" ? "open" : "auto";
       render();
     });
   });
 }
 
 function renderCharacterSummary() {
-  const box = $('characterSummary');
+  const box = $("characterSummary");
   if (!box) return;
 
   const grouped = groupRollsByCharacter(getVisibleRolls());
   const names = Object.keys(grouped).sort(compareCharacterNames);
 
   box.innerHTML = names.length
-    ? names.map(name => renderCharacterCard(name, grouped[name])).join('')
-    : '<div class="card"><p class="note">表示対象のキャラクターがありません。キャラクターのチェックを戻してください。</p></div>';
+    ? names.map(n => renderCharacterCard(n, grouped[n])).join("")
+    : `<div class="card"><p class="note">表示対象のキャラクターがありません。キャラクターのチェックを戻してください。</p></div>`;
 }
 
 function renderCharacterCard(name, rolls) {
-  const values = rolls.map(roll => roll.value);
+  const values = rolls.map(r => r.value);
   const total = values.length;
-  const outcome = getOutcomeCounts(rolls);
-  const average = total
-    ? values.reduce((a, b) => a + b, 0) / total
-    : 0;
+  const out = getOutcomeCounts(rolls);
+  const avg = total ? values.reduce((a, b) => a + b, 0) / total : 0;
 
   return `
     <div class="card character-card">
       <h3>${escapeHtml(name)}</h3>
       <div class="mini-stats">
-        <div class="mini-stat">
-          <div class="label">総ロール</div>
-          <div class="value">${total}</div>
-        </div>
-        <div class="mini-stat">
-          <div class="label">平均出目</div>
-          <div class="value">${average.toFixed(2)}</div>
-        </div>
-        <div class="mini-stat">
-          <div class="label">成功 / 失敗</div>
-          <div class="value">${outcome.success} / ${outcome.fail}</div>
-          <div class="label">${rate(outcome.success, total)}% / ${rate(outcome.fail, total)}%</div>
-        </div>
-        <div class="mini-stat">
-          <div class="label">クリティカル / ファンブル</div>
-          <div class="value">${outcome.critical} / ${outcome.fumble}</div>
-          <div class="label">${rate(outcome.critical, total)}% / ${rate(outcome.fumble, total)}%</div>
-        </div>
+        <div class="mini-stat"><div class="label">総ロール</div><div class="value">${total}</div></div>
+        <div class="mini-stat"><div class="label">平均出目</div><div class="value">${avg.toFixed(2)}</div></div>
+        <div class="mini-stat"><div class="label">成功 / 失敗</div><div class="value">${out.success} / ${out.fail}</div><div class="label">${rate(out.success, total)}% / ${rate(out.fail, total)}%</div></div>
+        <div class="mini-stat"><div class="label">クリティカル / ファンブル</div><div class="value">${out.critical} / ${out.fumble}</div><div class="label">${rate(out.critical, total)}% / ${rate(out.fumble, total)}%</div></div>
       </div>
       ${renderBins(values)}
-    </div>
-  `;
+    </div>`;
 }
 
 function renderChart() {
-  const box = $('barChart');
+  const box = $("barChart");
   if (!box) return;
 
   const grouped = groupRollsByCharacter(getVisibleRolls());
   const names = Object.keys(grouped).sort(compareCharacterNames);
 
   box.innerHTML = names.length
-    ? names.map(name => `
-      <div class="card" style="margin-bottom:12px;">
-        <h3>${escapeHtml(name)}</h3>
-        ${renderBins(grouped[name].map(roll => roll.value))}
-      </div>
-    `).join('')
-    : '<p class="note">表示対象のロールがありません。</p>';
+    ? names.map(n => `<div class="card" style="margin-bottom:12px;"><h3>${escapeHtml(n)}</h3>${renderBins(grouped[n].map(r => r.value))}</div>`).join("")
+    : `<p class="note">表示対象のロールがありません。</p>`;
 }
 
 function renderBins(values) {
-  const bins = Array.from({ length: 10 }, (_, index) => ({
-    label: `${index * 10 + 1}-${index * 10 + 10}`,
-    count: 0
-  }));
+  const bins = Array.from({ length: 10 }, (_, i) => ({ label: `${i * 10 + 1}-${i * 10 + 10}`, count: 0 }));
 
-  values.forEach(value => {
-    bins[Math.min(9, Math.floor((value - 1) / 10))].count++;
+  values.forEach(v => {
+    bins[Math.min(9, Math.floor((v - 1) / 10))].count++;
   });
 
-  const max = Math.max(1, ...bins.map(bin => bin.count));
+  const max = Math.max(1, ...bins.map(b => b.count));
   const total = values.length;
 
-  return bins.map(bin => `
+  return bins.map(b => `
     <div class="chart-row">
-      <div>${bin.label}</div>
-      <div class="bar-wrap">
-        <div class="bar" style="width:${(bin.count / max) * 100}%"></div>
-      </div>
-      <div>${bin.count}件 / ${rate(bin.count, total)}%</div>
+      <div>${b.label}</div>
+      <div class="bar-wrap"><div class="bar" style="width:${(b.count / max) * 100}%"></div></div>
+      <div>${b.count}件 / ${rate(b.count, total)}%</div>
     </div>
-  `).join('');
+  `).join("");
 }
 
 function renderTable() {
-  $('rollTableBody').innerHTML = getSortedVisibleRolls().map((roll, index) => {
-    const label = classifyRoll(roll);
-    const pill = label === 'Critical'
-      ? 'crit'
-      : label === 'Fumble'
-        ? 'fumble'
-        : label === 'Success'
-          ? 'success'
-          : label === 'Fail'
-            ? 'fail'
-            : 'normal';
+  $("rollTableBody").innerHTML = getSortedVisibleRolls().map((r, i) => {
+    const label = classifyRoll(r);
+    const pill =
+      label === "Critical" ? "crit" :
+      label === "Fumble" ? "fumble" :
+      label === "Success" ? "success" :
+      label === "Fail" ? "fail" :
+      "normal";
 
     return `
       <tr>
-        <td>${index + 1}</td>
-        <td>${escapeHtml(roll.character || '不明')}</td>
-        <td><strong>${roll.value}</strong></td>
+        <td>${i + 1}</td>
+        <td>${escapeHtml(r.character || "不明")}</td>
+        <td><strong>${r.value}</strong></td>
         <td><span class="pill ${pill}">${label}</span></td>
-        <td>${escapeHtml(roll.line)}</td>
-      </tr>
-    `;
-  }).join('');
+        <td>${escapeHtml(r.line)}</td>
+      </tr>`;
+  }).join("");
 }
 
 function applyInputPanelLayout() {
-  const layout = $('appLayout');
-  const button = $('inputToggleBtn');
+  const layout = $("appLayout");
+  const btn = $("inputToggleBtn");
 
-  if (!layout || !button) return;
+  if (!layout || !btn) return;
 
-  const count = Object.keys(groupRollsByCharacter(getVisibleRolls()))
-    .filter(name => name !== '不明')
-    .length;
+  const count = Object.keys(groupRollsByCharacter(getVisibleRolls())).filter(n => n !== "不明").length;
+  const collapse = state.inputPanelMode === "collapsed" || (state.inputPanelMode === "auto" && count >= 4);
 
-  const collapse = state.inputPanelMode === 'collapsed'
-    || (state.inputPanelMode === 'auto' && count >= 4);
-
-  layout.classList.toggle('input-collapsed', collapse);
-  button.textContent = collapse ? '⇥' : '⇤';
-  button.title = collapse ? '入力パネルを開く' : '入力パネルを畳む';
+  layout.classList.toggle("input-collapsed", collapse);
+  btn.textContent = collapse ? "⇥" : "⇤";
+  btn.title = collapse ? "入力パネルを開く" : "入力パネルを畳む";
 }
 
 function enterScreenshotMode() {
-  document.body.classList.add('screenshot-mode');
+  document.body.classList.add("screenshot-mode");
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 }
 
 function exitScreenshotMode() {
-  document.body.classList.remove('screenshot-mode');
+  document.body.classList.remove("screenshot-mode");
 }
 
-/*
-  Keyboard Shortcuts / ショートカット設定
-
-  Alt + O / Ctrl + Shift + O / Cmd + Shift + O : Choose File
-  Alt + T / Ctrl + Shift + T / Cmd + Shift + T : Theme Toggle
-  Alt + S / Ctrl + Shift + S / Cmd + Shift + S : Screenshot View
-  Esc                                         : Exit Screenshot View
-*/
 function handleGlobalKeydown(event) {
-  const key = String(event.key || '').toLowerCase();
+  const key = String(event.key || "").toLowerCase();
   const altOnly = event.altKey && !event.ctrlKey && !event.metaKey;
   const commandShift = (event.ctrlKey || event.metaKey) && event.shiftKey;
-  const isScreenshotMode = document.body.classList.contains('screenshot-mode');
+  const isScreenshotMode = document.body.classList.contains("screenshot-mode");
 
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     event.preventDefault();
 
     if (isScreenshotMode) {
@@ -759,235 +701,207 @@ function handleGlobalKeydown(event) {
     return;
   }
 
-  if ((altOnly || commandShift) && key === 'o') {
+  if ((altOnly || commandShift) && key === "o") {
     event.preventDefault();
-    $('fileInput').click();
+    $("fileInput").click();
     return;
   }
 
-  if ((altOnly || commandShift) && key === 't') {
+  if ((altOnly || commandShift) && key === "t") {
     event.preventDefault();
     toggleTheme();
     return;
   }
 
-  if ((altOnly || commandShift) && key === 's') {
+  if ((altOnly || commandShift) && key === "s") {
     event.preventDefault();
-
-    if (isScreenshotMode) {
-      exitScreenshotMode();
-    } else {
-      enterScreenshotMode();
-    }
+    isScreenshotMode ? exitScreenshotMode() : enterScreenshotMode();
   }
 }
 
-function looksLikeHtml(value) {
-  const source = String(value || '').toLowerCase();
-  return ['<html', '<body', '<p', '<span', '<div', '<br', '&lt;', '&gt;']
-    .some(token => source.includes(token));
-}
-
-function looksLikeD100Roll(line) {
-  if (isRuleExplanationLine(line)) return false;
-  if (findDiceCommandIndex(line) >= 0 && hasRollResultMarker(line)) return true;
-
-  return hasAnyText(line, [
-    '出目',
-    '決定的成功',
-    '致命的失敗',
-    'ファンブル',
-    'クリティカル'
-  ]);
-}
-
-function hasRollResultMarker(line) {
-  const text = String(line || '');
-  const diceIndex = findDiceCommandIndex(text);
-
-  if (diceIndex < 0) return false;
-
-  return extractNumbersAfterResultMarkers(text.slice(diceIndex)).length > 0;
-}
-
 function isRuleExplanationLine(line) {
-  const text = String(line || '').trim();
+  const text = String(line || "").trim();
   const tab = normalizeTabName(extractLeadingTab(text));
   const body = removeLeadingTab(text).trim();
   const compact = normalizeTabName(body);
 
-  if (tab === 'info' || tab.includes('info')) return true;
-  if (tab.includes('ルール')) return true;
-  if (body.startsWith('ルール説明：') || body.startsWith('ルール説明:')) return true;
-  if (body.startsWith('【7版ルール】') || body.startsWith('[7版ルール]')) return true;
-  if (compact.startsWith('7版ルール')) return true;
+  if (tab === "info" || tab.includes("info")) return true;
+  if (tab.includes("ルール")) return true;
+  if (body.startsWith("ルール説明：") || body.startsWith("ルール説明:")) return true;
+  if (body.startsWith("【7版ルール】") || body.startsWith("[7版ルール]")) return true;
+  if (compact.startsWith("ルール説明")) return true;
+  if (compact.startsWith("7版ルール")) return true;
+  if (compact.startsWith("◆7版ルール")) return true;
 
   return false;
 }
 
-function normalizeNewlines(value) {
-  return String(value || '')
-    .replaceAll(CR + LF, LF)
-    .replaceAll(CR, LF);
+function looksLikeHtml(v) {
+  const s = String(v || "").toLowerCase();
+  return ["<html", "<body", "<p", "<span", "<div", "<br", "&lt;", "&gt;"].some(t => s.includes(t));
+}
+
+function looksLikeD100Roll(line) {
+  if (isRuleExplanationLine(line)) return false;
+
+  const hasDiceCommand = findDiceCommandIndex(line) >= 0;
+  const hasResult = hasRollResultMarker(line);
+
+  if (hasDiceCommand && hasResult) return true;
+
+  return hasAnyText(line, ["出目", "決定的成功", "致命的失敗", "ファンブル", "クリティカル"]);
+}
+
+function hasRollResultMarker(line) {
+  const text = String(line || "");
+  const i = findDiceCommandIndex(text);
+
+  if (i < 0) return false;
+
+  return extractNumbersAfterResultMarkers(text.slice(i)).length > 0;
+}
+
+function normalizeNewlines(v) {
+  return String(v || "").replaceAll(CR + LF, LF).replaceAll(CR, LF);
 }
 
 function cleanLine(line) {
-  let source = String(line || '');
+  let s = String(line || "");
 
   [
     String.fromCharCode(8203),
     String.fromCharCode(8204),
     String.fromCharCode(8205),
     String.fromCharCode(65279)
-  ].forEach(character => {
-    source = source.replaceAll(character, '');
+  ].forEach(ch => {
+    s = s.replaceAll(ch, "");
   });
 
-  source = source
-    .replaceAll('&nbsp;', ' ')
-    .replaceAll('│', '|')
-    .replaceAll('┃', '|')
-    .replaceAll('｜', '|')
-    .replaceAll('　', ' ')
-    .replaceAll(TAB, ' ');
+  s = s
+    .replaceAll("&nbsp;", " ")
+    .replaceAll("│", "|")
+    .replaceAll("┃", "|")
+    .replaceAll("｜", "|")
+    .replaceAll("　", " ")
+    .replaceAll(TAB, " ");
 
-  while (source.includes('  ')) {
-    source = source.replaceAll('  ', ' ');
-  }
+  while (s.includes("  ")) s = s.replaceAll("  ", " ");
 
-  return source.trim();
+  return s.trim();
 }
 
 function decodeHtml(text) {
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = text;
-  return textarea.value;
+  const t = document.createElement("textarea");
+  t.innerHTML = text;
+  return t.value;
 }
 
-function isTabLabel(value) {
-  const source = String(value || '').trim();
-  return source.startsWith('[') && source.endsWith(']');
+function isTabLabel(v) {
+  const s = String(v || "").trim();
+  return s.startsWith("[") && s.endsWith("]");
 }
 
 function extractLeadingTab(line) {
-  const source = String(line || '').trim();
+  const s = String(line || "").trim();
+  if (!s.startsWith("[")) return "";
 
-  if (!source.startsWith('[')) return '';
-
-  const end = source.indexOf(']');
-  return end >= 0 ? source.slice(1, end) : '';
+  const end = s.indexOf("]");
+  return end >= 0 ? s.slice(1, end) : "";
 }
 
 function normalizeTabName(tab) {
-  return String(tab || '')
+  return String(tab || "")
     .trim()
     .toLowerCase()
-    .replaceAll(' ', '')
-    .replaceAll('　', '')
-    .replaceAll(TAB, '');
+    .replaceAll(" ", "")
+    .replaceAll("　", "")
+    .replaceAll(TAB, "");
 }
 
-function removeLeadingTab(value) {
-  const source = String(value || '').trim();
+function removeLeadingTab(v) {
+  const s = String(v || "").trim();
+  if (!s.startsWith("[")) return s;
 
-  if (!source.startsWith('[')) return source;
-
-  const end = source.indexOf(']');
-  return end >= 0 ? source.slice(end + 1).trim() : source;
+  const end = s.indexOf("]");
+  return end >= 0 ? s.slice(end + 1).trim() : s;
 }
 
-function trimTrailingSeparators(value) {
-  let source = String(value || '').trim();
-  const separators = [':', '：', '-', '―', '＞', '>', '(', '（'];
+function trimTrailingSeparators(v) {
+  let s = String(v || "").trim();
+  const sep = [":", "：", "-", "―", "＞", ">", "(", "（"];
 
-  while (source && separators.includes(source[source.length - 1])) {
-    source = source.slice(0, -1).trim();
+  while (s && sep.includes(s[s.length - 1])) {
+    s = s.slice(0, -1).trim();
   }
 
-  return source;
+  return s;
 }
 
-function trimTrailingRollPrefix(value) {
-  let source = String(value || '')
+function trimTrailingRollPrefix(v) {
+  let s = String(v || "")
     .trim()
-    .replaceAll('×', 'x')
-    .replaceAll('Ｘ', 'x')
-    .replaceAll('ｘ', 'x');
+    .replaceAll("×", "x")
+    .replaceAll("Ｘ", "x")
+    .replaceAll("ｘ", "x");
 
-  const lower = source.toLowerCase();
-  const index = lower.lastIndexOf('x');
+  const lower = s.toLowerCase();
+  const i = lower.lastIndexOf("x");
 
-  if (index < 0) return source;
+  if (i < 0) return s;
 
-  const tail = lower.slice(index + 1).trim();
+  const tail = lower.slice(i + 1).trim();
+  if (!tail || tail.split("").some(c => c < "0" || c > "9")) return s;
 
-  if (!tail || tail.split('').some(character => character < '0' || character > '9')) {
-    return source;
-  }
-
-  return trimTrailingSeparators(source.slice(0, index).trim()) || source;
+  return trimTrailingSeparators(s.slice(0, i).trim()) || s;
 }
 
 function cleanCharacterName(name) {
-  let source = String(name || '');
-
-  ['[', ']', '「', '」', '『', '』', '【', '】'].forEach(character => {
-    source = source.replaceAll(character, '');
-  });
-
-  return source.trim() || '不明';
+  return String(name || "")
+    .replace(/[「」『』【】]/g, "")
+    .replace(/^\[|\]$/g, "")
+    .trim() || "不明";
 }
 
 function isUsableCharacterName(name) {
-  const source = String(name || '').trim();
+  const s = String(name || "").trim();
 
-  if (!source || source === '不明') return false;
-  if (['(', ')', '（', '）'].includes(source)) return false;
-
-  return source
-    .replaceAll('(', '')
-    .replaceAll(')', '')
-    .replaceAll('（', '')
-    .replaceAll('）', '')
-    .trim() !== '';
+  return !!s &&
+    s !== "不明" &&
+    !["(", ")", "（", "）"].includes(s) &&
+    s.replace(/[()（）]/g, "").trim() !== "";
 }
 
-function isAsciiAlphaNumber(character) {
-  return (character >= 'A' && character <= 'Z')
-    || (character >= '0' && character <= '9');
+function isAsciiAlphaNumber(c) {
+  return (c >= "A" && c <= "Z") || (c >= "0" && c <= "9");
 }
 
-function isWhitespace(character) {
-  return character === ' '
-    || character === '　'
-    || character === TAB
-    || character === LF
-    || character === CR;
+function isWhitespace(c) {
+  return c === " " || c === "　" || c === TAB || c === LF || c === CR;
 }
 
-function hasAnyText(value, terms) {
-  const source = String(value || '').toLowerCase();
-  return terms.some(term => source.includes(String(term).toLowerCase()));
+function hasAnyText(v, terms) {
+  const s = String(v || "").toLowerCase();
+  return terms.some(t => s.includes(String(t).toLowerCase()));
 }
 
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
 }
 
 function rate(count, total) {
-  return total ? ((count / total) * 100).toFixed(2) : '0.00';
+  return total ? ((count / total) * 100).toFixed(2) : "0.00";
 }
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, match => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  }[match]));
+function escapeHtml(v) {
+  return String(v).replace(/[&<>"']/g, m => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#039;"
+  }[m]));
 }
 
-function escapeAttribute(value) {
-  return escapeHtml(value).replaceAll('`', '&#096;');
+function escapeAttribute(v) {
+  return escapeHtml(v).replaceAll("`", "&#096;");
 }
