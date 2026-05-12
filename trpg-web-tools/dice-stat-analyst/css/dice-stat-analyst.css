@@ -95,18 +95,7 @@ header p{margin:6px 0 0;color:var(--muted);font-size:13px}
   z-index:1;
 }
 
-/* 右側を切り取って三日月化する円 */
-.theme-switch-thumb-moon::after{
-  content:"";
-  position:absolute;
-  left:10px;
-  top:0px;
-  width:18px;
-  height:26px;
-  border-radius:999px;
-  background:#5f7ff0;
-  z-index:2;
-}
+
 
 /* ダークモード時 */
 body.dark .theme-switch-thumb-sun{
