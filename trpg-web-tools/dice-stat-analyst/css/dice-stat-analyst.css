@@ -1170,7 +1170,7 @@ body.screenshot-mode .shortcut-help-button{
     padding:12px 18px 16px;
   }
 
-  /* =========================================================
+ /* =========================================================
    Header Action Visual Alignment
    EN + Shortcuts stack height matches theme switch height
    ========================================================= */
@@ -1180,9 +1180,9 @@ body.screenshot-mode .shortcut-help-button{
   align-items:center;
   justify-content:flex-end;
   gap:14px;
+  flex:0 0 auto;
 }
 
-/* ナイトモードトグルの高さ 54px に合わせる */
 .header-mini-actions{
   display:flex;
   flex-direction:column;
@@ -1192,7 +1192,6 @@ body.screenshot-mode .shortcut-help-button{
   height:54px;
 }
 
-/* 2ボタン + gap 6px = 54px */
 .language-toggle-button,
 .shortcut-help-button{
   width:112px;
@@ -1211,7 +1210,6 @@ body.screenshot-mode .shortcut-help-button{
   white-space:nowrap;
 }
 
-/* ENボタン */
 .language-toggle-button{
   background:var(--accent);
   color:#fff;
@@ -1219,7 +1217,6 @@ body.screenshot-mode .shortcut-help-button{
   box-shadow:0 5px 12px rgba(79,70,229,.16);
 }
 
-/* Shortcutsボタン */
 .shortcut-help-button{
   background:var(--accent-soft);
   color:var(--accent);
@@ -1227,18 +1224,15 @@ body.screenshot-mode .shortcut-help-button{
   box-shadow:none;
 }
 
-/* トグル側の高さも明示して統一 */
 .theme-switch-track{
   width:120px;
   height:54px;
 }
 
-/* ダークモード時 */
 body.dark .shortcut-help-button{
   border-color:rgba(129,140,248,.28);
 }
 
-/* Mobile */
 @media(max-width:720px){
   .header-actions{
     gap:10px;
@@ -1264,5 +1258,4 @@ body.dark .shortcut-help-button{
     width:106px;
     height:50px;
   }
-}
 }
