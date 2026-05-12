@@ -152,7 +152,7 @@ header p{
   justify-content:center;
 }
 
-/* Crescent moon icon */
+/* CSS-drawn crescent moon */
 .theme-switch-thumb-moon{
   position:absolute;
   left:50%;
@@ -162,8 +162,8 @@ header p{
   transform:translate(-50%,-50%) scale(.7);
   transform-origin:center;
   opacity:0;
-  font-size:0 !important;
-  color:transparent !important;
+  font-size:0!important;
+  color:transparent!important;
   display:block;
   overflow:visible;
 }
@@ -192,20 +192,6 @@ header p{
   border-radius:50%;
   background:#5f7ff0;
   z-index:2;
-}
-
-body.dark .theme-switch-thumb-sun{
-  opacity:0;
-  transform:translate(-50%,-50%) scale(.7);
-}
-
-body.dark .theme-switch-thumb-moon{
-  opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-}
-
-body.dark .theme-switch-thumb-moon::after{
-  background:#5f7ff0;
 }
 
 body.dark .theme-switch-track{
@@ -1134,6 +1120,20 @@ body.screenshot-mode .shortcut-help-button{
 
   body.dark .theme-switch-thumb{
     transform:translateX(58px);
+  }
+
+  .theme-switch-thumb-moon::before{
+    left:3px;
+    top:2px;
+    width:17px;
+    height:22px;
+  }
+
+  .theme-switch-thumb-moon::after{
+    left:10px;
+    top:1px;
+    width:15px;
+    height:22px;
   }
 
   .shortcut-tip{
