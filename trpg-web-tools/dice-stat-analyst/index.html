@@ -18,72 +18,188 @@
 
   <title>Dice Stat Analyst</title>
 
+  <!-- CSS -->
   <link rel="stylesheet" href="./css/dice-stat-analyst.css">
 </head>
 
 <body>
-  <header class="app-header">
-    <div class="header-inner">
-      <a class="back-link" href="../">← Tools Portal</a>
+  <header>
+    <div>
+      <h1>Dice Stat Analyst</h1>
+      <p>セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布を生成します。</p>
+    </div>
 
-      <div>
-        <p class="eyebrow">TRPG SESSION LOG ANALYZER</p>
-        <h1>Dice Stat Analyst</h1>
-        <p class="lead">
-          CCFOLIAなどのセッションログからダイスロールを解析し、探索者ごとの成功率・クリティカル・ファンブル・出目分布を確認するツールです。
-        </p>
-      </div>
+    <div class="header-actions">
+      <button id="themeToggleBtn" class="theme-switch" type="button" aria-label="ナイトモードに切替" aria-pressed="false" title="ナイトモードに切替">
+        <span class="theme-switch-track">
+          <span class="theme-switch-side theme-switch-side-sun">☀</span>
+          <span class="theme-switch-side theme-switch-side-moon">☾</span>
+          <span class="theme-switch-thumb">
+            <span class="theme-switch-thumb-icon theme-switch-thumb-sun">☀</span>
+            <span class="theme-switch-thumb-icon theme-switch-thumb-moon">☾</span>
+          </span>
+        </span>
+      </button>
     </div>
   </header>
 
-  <main class="app-main">
-    <section class="panel input-panel">
-      <h2>Input Log</h2>
+  <div id="screenshotActionBar" class="screenshot-action-bar">
+    <button id="screenshotExitBtn" class="screenshot-exit-button" type="button">通常表示に戻す</button>
+  </div>
 
-      <div class="control-row">
-        <label class="file-button">
-          Choose File
-          <input id="fileInput" type="file" accept=".html,.txt,.log" hidden>
-        </label>
-
-        <button id="analyzeButton" type="button">Analyze</button>
-        <button id="clearButton" type="button">Clear</button>
+  <main id="appLayout">
+    <section id="inputPanel">
+      <div class="input-panel-top">
+        <h2>入力</h2>
+        <button id="inputToggleBtn" class="input-toggle-button" type="button">⇤</button>
       </div>
 
-      <textarea
-        id="logInput"
-        placeholder="ここにセッションログを貼り付けるか、ログファイルを選択してください。"
-      ></textarea>
+      <div class="input-content">
+        <label>
+          セッションログHTMLファイル
+          <input id="fileInput" type="file" accept=".html,.htm,.txt" />
+        </label>
+
+        <label>
+          またはログ本文を貼り付け
+          <textarea id="rawInput" placeholder="HTMLまたはテキストログを貼り付け"></textarea>
+        </label>
+
+        <h3>判定範囲</h3>
+        <div class="row">
+          <label>
+            クリティカル上限
+            <input id="critMax" type="number" min="1" max="100" value="5" />
+          </label>
+
+          <label>
+            ファンブル下限
+            <input id="fumbleMin" type="number" min="1" max="100" value="96" />
+          </label>
+        </div>
+
+        <h3>ダイスログ解析チェックリスト</h3>
+
+        <label class="checkline">
+          <input id="dropTabs" type="checkbox" checked />
+          [雑談] / [other] / [info] 系の行を除外する
+        </label>
+
+        <label class="checkline">
+          <input id="onlyD100" type="checkbox" checked />
+          d100系ロールのみ抽出する
+        </label>
+
+        <label>
+          自動非表示にする総ロール数
+          <input id="autoHideMaxRolls" type="number" min="0" max="999" value="15" />
+        </label>
+
+        <button id="analyzeBtn">分析する</button>
+        <button id="clearBtn" class="secondary">クリア</button>
+
+        <p class="note">
+          対応例：CCB&lt;=80、CC&lt;=60、RESB(10-16)、1d100&lt;=55、s1d100、D100、判定結果の「出目 03 / 100 / ＞ 96」など。<br>
+          キャラクター名は「名前：CC」「名前：CCB」「[main] 名前：CC」「[main] 名前：CCB」形式などから自動検出します。検出されたキャラクターはチェックを外すことで非表示にできます。<br>
+          タブ除外ONの場合、[main] / [メイン] / [HO系] / [ルール] / [メモ] は解析対象、[雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] は除外対象になります。<br>
+          総ロール数が指定値以下のキャラクターはNPC想定として、分析直後は自動で非表示になります。
+        </p>
+      </div>
     </section>
 
-    <section class="panel options-panel">
-      <h2>Options</h2>
+    <section>
+      <div class="tabs">
+        <button class="tab-button active" data-tab="summary">キャラクター別サマリー</button>
+        <button class="tab-button" data-tab="chart">分布チャート</button>
+        <button class="tab-button" data-tab="rolls">抽出ロール</button>
+        <button id="summaryShotBtn" class="summary-shot-button" type="button">📷 スクショ表示</button>
+      </div>
 
-      <label>
-        <span>最低ロール数</span>
-        <input id="minRollsInput" type="number" min="0" value="15">
-      </label>
+      <div id="summary" class="tab-panel active">
+        <h2>キャラクター別サマリー</h2>
 
-      <label class="checkbox-label">
-        <input id="darkModeToggle" type="checkbox">
-        <span>Night Mode</span>
-      </label>
-    </section>
+        <div class="character-control-bar">
+          <button id="characterControlToggleBtn" class="character-control-toggle" type="button">表示キャラ設定を開く</button>
+        </div>
 
-    <section class="panel results-panel">
-      <h2>Results</h2>
-      <div id="resultsArea" class="results-empty">
-        解析結果がここに表示されます。
+        <div id="characterControls" class="character-controls"></div>
+        <div id="characterSummary" class="character-summary-grid"></div>
+
+        <h2>全体サマリー</h2>
+
+        <div class="grid-results">
+          <div class="card">
+            <div class="label">総ロール数</div>
+            <div id="totalRolls" class="value">0</div>
+            <div class="sub">d100として抽出された件数</div>
+          </div>
+
+          <div class="card">
+            <div class="label">成功 / 失敗</div>
+            <div id="successFailCount" class="value">0 / 0</div>
+            <div id="successFailRate" class="sub">0.00% / 0.00%</div>
+          </div>
+
+          <div class="card">
+            <div class="label">クリティカル / ファンブル</div>
+            <div id="critFumbleCount" class="value">0 / 0</div>
+            <div id="critFumbleRate" class="sub">0.00% / 0.00%</div>
+          </div>
+
+          <div class="card">
+            <div class="label">平均出目</div>
+            <div id="averageRoll" class="value">-</div>
+            <div class="sub">抽出値の平均</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>メモ</h3>
+          <p id="summaryMemo" class="note">ログを入力して「分析する」を押してください。</p>
+        </div>
+      </div>
+
+      <div id="chart" class="tab-panel">
+        <h2>出目分布：10刻み</h2>
+        <div id="barChart"></div>
+      </div>
+
+      <div id="rolls" class="tab-panel">
+        <h2>抽出ロール一覧</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>
+                <span class="sortable-header">
+                  キャラクター
+                  <button class="sort-button" data-sort-key="character">↕</button>
+                </span>
+              </th>
+              <th>
+                <span class="sortable-header">
+                  出目
+                  <button class="sort-button" data-sort-key="value">↕</button>
+                </span>
+              </th>
+              <th>
+                <span class="sortable-header">
+                  分類
+                  <button class="sort-button" data-sort-key="classification">↕</button>
+                </span>
+              </th>
+              <th>元ログ行</th>
+            </tr>
+          </thead>
+
+          <tbody id="rollTableBody"></tbody>
+        </table>
       </div>
     </section>
   </main>
 
-  <script src="./js/utils.js" defer></script>
-  <script src="./js/parser.js" defer></script>
-  <script src="./js/analyzer.js" defer></script>
-  <script src="./js/renderer.js" defer></script>
-  <script src="./js/storage.js" defer></script>
-  <script src="./js/shortcuts.js" defer></script>
+  <!-- JavaScript -->
   <script src="./js/main.js" defer></script>
 </body>
 </html>
