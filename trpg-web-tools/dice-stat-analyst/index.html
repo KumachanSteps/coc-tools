@@ -16,7 +16,7 @@
   <!-- 共通アイコン -->
   <link rel="icon" href="../shared/assets/kuma_icon.ico" type="image/x-icon">
 
-  <title>ダイス分析ツール</title>
+  <title>Dice Stat Analyst</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/dice-stat-analyst.css">
@@ -25,13 +25,17 @@
 <body>
   <header>
     <div>
-    <h1>Dice Stat Analyst</h1>
-    <p>セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布を生成します。</p>
-    <p class="shortcut-tip">
-      Tip: <kbd>Ctrl/Cmd</kbd> + <kbd>Enter</kbd> で分析 ｜ 
-      <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> でスクショ表示 ｜ 
-      <kbd>?</kbd> でショートカット一覧
-    </p>  
+      <h1 data-i18n="app.title">Dice Stat Analyst</h1>
+
+      <p data-i18n="app.description">
+        セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布を生成します。
+      </p>
+
+      <p class="shortcut-tip" data-i18n-html="app.tip">
+        Tip: <kbd>Ctrl/Cmd</kbd> + <kbd>Enter</kbd> で分析 ｜ 
+        <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> でスクショ表示 ｜ 
+        <kbd>?</kbd> でショートカット一覧
+      </p>
     </div>
 
     <div class="header-actions">
@@ -39,12 +43,18 @@
         <button id="languageToggleBtn" class="language-toggle-button" type="button" aria-label="英語表示に切替">
           EN
         </button>
-    
-        <button id="shortcutHelpBtn" class="shortcut-help-button" type="button" aria-label="ショートカット一覧を開く">
+
+        <button
+          id="shortcutHelpBtn"
+          class="shortcut-help-button"
+          type="button"
+          aria-label="ショートカット一覧を開く"
+          data-i18n="button.shortcuts"
+        >
           ⌨ Shortcuts
         </button>
       </div>
-    
+
       <button id="themeToggleBtn" class="theme-switch" type="button" aria-label="ナイトモードに切替" aria-pressed="false" title="ナイトモードに切替">
         <span class="theme-switch-track">
           <span class="theme-switch-side theme-switch-side-sun">☀</span>
@@ -58,156 +68,188 @@
     </div>
   </header>
 
-  <div id="screenshotActionBar" class="screenshot-action-bar">
-    <button id="screenshotExitBtn" class="screenshot-exit-button" type="button">通常表示に戻す</button>
-  </div>
-
   <div id="shortcutModal" class="shortcut-modal" aria-hidden="true">
     <div class="shortcut-modal-backdrop" id="shortcutModalBackdrop"></div>
-  
+
     <div class="shortcut-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="shortcutModalTitle">
       <div class="shortcut-modal-header">
         <div>
-          <p class="shortcut-modal-eyebrow">Keyboard Guide</p>
-          <h2 id="shortcutModalTitle">ショートカット一覧</h2>
+          <p class="shortcut-modal-eyebrow" data-i18n="shortcut.eyebrow">Keyboard Guide</p>
+          <h2 id="shortcutModalTitle" data-i18n="shortcut.title">ショートカット一覧</h2>
         </div>
-  
+
         <button id="shortcutModalCloseBtn" class="shortcut-modal-close" type="button" aria-label="ショートカット一覧を閉じる">
           ×
         </button>
       </div>
-  
+
       <div class="shortcut-modal-body">
         <div class="shortcut-list">
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>O</kbd></div>
-            <div class="shortcut-desc">ファイル選択</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>O</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.file">ファイル選択</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Enter</kbd></div>
-            <div class="shortcut-desc">分析する</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Enter</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.analyze">分析する</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>L</kbd></div>
-            <div class="shortcut-desc">入力欄にフォーカス</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>L</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.focusInput">入力欄にフォーカス</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>I</kbd></div>
-            <div class="shortcut-desc">入力パネル開閉</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>I</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.toggleInput">入力パネル開閉</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>1</kbd></div>
-            <div class="shortcut-desc">キャラクター別サマリーへ移動</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>1</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.summaryTab">キャラクター別サマリーへ移動</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>2</kbd></div>
-            <div class="shortcut-desc">分布チャートへ移動</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>2</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.chartTab">分布チャートへ移動</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>3</kbd></div>
-            <div class="shortcut-desc">抽出ロールへ移動</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>3</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.rollsTab">抽出ロールへ移動</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>C</kbd></div>
-            <div class="shortcut-desc">表示キャラ設定の開閉</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>C</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.characterSettings">表示キャラ設定の開閉</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>T</kbd></div>
-            <div class="shortcut-desc">ナイトモード切替</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>T</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.theme">ナイトモード切替</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>V</kbd></div>
-            <div class="shortcut-desc">スクショ表示 / 通常表示</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>V</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.screenshot">スクショ表示 / 通常表示</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Backspace</kbd></div>
-            <div class="shortcut-desc">確認後クリア</div>
+            <div class="shortcut-keys">
+              <kbd>Ctrl/Cmd</kbd><span>+</span><kbd>Backspace</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.clear">確認後クリア</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>?</kbd></div>
-            <div class="shortcut-desc">このショートカット一覧を開く</div>
+            <div class="shortcut-keys">
+              <kbd>?</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.openHelp">このショートカット一覧を開く</div>
           </div>
-  
+
           <div class="shortcut-item">
-            <div class="shortcut-keys"><kbd>Esc</kbd></div>
-            <div class="shortcut-desc">モーダル / スクショ表示を閉じる。通常時は確認後クリア</div>
+            <div class="shortcut-keys">
+              <kbd>Esc</kbd>
+            </div>
+            <div class="shortcut-desc" data-i18n="shortcut.esc">モーダル / スクショ表示を閉じる。通常時は確認後クリア</div>
           </div>
         </div>
       </div>
-  
-      <p class="shortcut-modal-note">
+
+      <p class="shortcut-modal-note" data-i18n="shortcut.note">
         ※ 一部ブラウザでは既定ショートカットが優先される場合があります。
       </p>
     </div>
   </div>
 
-  
+  <div id="screenshotActionBar" class="screenshot-action-bar">
+    <button id="screenshotExitBtn" class="screenshot-exit-button" type="button" data-i18n="button.exitScreenshot">
+      通常表示に戻す
+    </button>
+  </div>
+
   <main id="appLayout">
     <section id="inputPanel">
       <div class="input-panel-top">
-        <h2>入力</h2>
+        <h2 data-i18n="input.title">入力</h2>
         <button id="inputToggleBtn" class="input-toggle-button" type="button">⇤</button>
       </div>
 
       <div class="input-content">
         <label>
-          セッションログHTMLファイル
+          <span data-i18n="input.fileLabel">セッションログHTMLファイル</span>
           <input id="fileInput" type="file" accept=".html,.htm,.txt" />
         </label>
 
         <label>
-          またはログ本文を貼り付け
-          <textarea id="rawInput" placeholder="HTMLまたはテキストログを貼り付け"></textarea>
+          <span data-i18n="input.pasteLabel">またはログ本文を貼り付け</span>
+          <textarea
+            id="rawInput"
+            placeholder="HTMLまたはテキストログを貼り付け"
+            data-i18n-placeholder="input.placeholder"
+          ></textarea>
         </label>
 
-        <h3>判定範囲</h3>
+        <h3 data-i18n="input.thresholdTitle">判定範囲</h3>
+
         <div class="row">
           <label>
-            クリティカル上限
+            <span data-i18n="input.critMax">クリティカル上限</span>
             <input id="critMax" type="number" min="1" max="100" value="5" />
           </label>
 
           <label>
-            ファンブル下限
+            <span data-i18n="input.fumbleMin">ファンブル下限</span>
             <input id="fumbleMin" type="number" min="1" max="100" value="96" />
           </label>
         </div>
 
-        <h3>ダイスログ解析チェックリスト</h3>
+        <h3 data-i18n="input.checklistTitle">ダイスログ解析チェックリスト</h3>
 
         <label class="checkline">
           <input id="dropTabs" type="checkbox" checked />
-          [雑談] / [other] / [info] 系の行を除外する
+          <span data-i18n="input.dropTabs">[雑談] / [other] / [info] 系の行を除外する</span>
         </label>
 
         <label class="checkline">
           <input id="onlyD100" type="checkbox" checked />
-          d100系ロールのみ抽出する
+          <span data-i18n="input.onlyD100">d100系ロールのみ抽出する</span>
         </label>
 
         <label>
-          自動非表示にする総ロール数
+          <span data-i18n="input.autoHideMaxRolls">自動非表示にする総ロール数</span>
           <input id="autoHideMaxRolls" type="number" min="0" max="999" value="15" />
         </label>
 
-        <button id="analyzeBtn">分析する</button>
-        <button id="clearBtn" class="secondary">クリア</button>
+        <button id="analyzeBtn" data-i18n="button.analyze">分析する</button>
+        <button id="clearBtn" class="secondary" data-i18n="button.clear">クリア</button>
 
-        <p class="note">
+        <p class="note" data-i18n-html="input.note">
           対応例：CCB&lt;=80、CC&lt;=60、RESB(10-16)、1d100&lt;=55、s1d100、D100、判定結果の「出目 03 / 100 / ＞ 96」など。<br>
           キャラクター名は「名前：CC」「名前：CCB」「[main] 名前：CC」「[main] 名前：CCB」形式などから自動検出します。検出されたキャラクターはチェックを外すことで非表示にできます。<br>
-          タブ除外ONの場合、[main] / [メイン] / [HO系] は解析対象、[雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] は除外対象になります。<br>
+          タブ除外ONの場合、[main] / [メイン] / [HO系] / [ルール] / [メモ] は解析対象、[雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] は除外対象になります。<br>
           総ロール数が指定値以下のキャラクターはNPC想定として、分析直後は自動で非表示になります。
         </p>
       </div>
@@ -215,87 +257,89 @@
 
     <section>
       <div class="tabs">
-        <button class="tab-button active" data-tab="summary">キャラクター別サマリー</button>
-        <button class="tab-button" data-tab="chart">分布チャート</button>
-        <button class="tab-button" data-tab="rolls">抽出ロール</button>
-        <button id="summaryShotBtn" class="summary-shot-button" type="button">📷 スクショ表示</button>
+        <button class="tab-button active" data-tab="summary" data-i18n="tab.summary">キャラクター別サマリー</button>
+        <button class="tab-button" data-tab="chart" data-i18n="tab.chart">分布チャート</button>
+        <button class="tab-button" data-tab="rolls" data-i18n="tab.rolls">抽出ロール</button>
+        <button id="summaryShotBtn" class="summary-shot-button" type="button" data-i18n="button.screenshot">📷 スクショ表示</button>
       </div>
 
       <div id="summary" class="tab-panel active">
-        <h2>キャラクター別サマリー</h2>
+        <h2 data-i18n="summary.characterTitle">キャラクター別サマリー</h2>
 
         <div class="character-control-bar">
-          <button id="characterControlToggleBtn" class="character-control-toggle" type="button">表示キャラ設定を開く</button>
+          <button id="characterControlToggleBtn" class="character-control-toggle" type="button" data-i18n="button.showCharacterControls">
+            表示キャラ設定を開く
+          </button>
         </div>
 
         <div id="characterControls" class="character-controls"></div>
         <div id="characterSummary" class="character-summary-grid"></div>
 
-        <h2>全体サマリー</h2>
+        <h2 data-i18n="summary.overallTitle">全体サマリー</h2>
 
         <div class="grid-results">
           <div class="card">
-            <div class="label">総ロール数</div>
+            <div class="label" data-i18n="card.totalRolls">総ロール数</div>
             <div id="totalRolls" class="value">0</div>
-            <div class="sub">d100として抽出された件数</div>
+            <div class="sub" data-i18n="card.totalRollsSub">d100として抽出された件数</div>
           </div>
 
           <div class="card">
-            <div class="label">成功 / 失敗</div>
+            <div class="label" data-i18n="card.successFail">成功 / 失敗</div>
             <div id="successFailCount" class="value">0 / 0</div>
             <div id="successFailRate" class="sub">0.00% / 0.00%</div>
           </div>
 
           <div class="card">
-            <div class="label">クリティカル / ファンブル</div>
+            <div class="label" data-i18n="card.critFumble">クリティカル / ファンブル</div>
             <div id="critFumbleCount" class="value">0 / 0</div>
             <div id="critFumbleRate" class="sub">0.00% / 0.00%</div>
           </div>
 
           <div class="card">
-            <div class="label">平均出目</div>
+            <div class="label" data-i18n="card.averageRoll">平均出目</div>
             <div id="averageRoll" class="value">-</div>
-            <div class="sub">抽出値の平均</div>
+            <div class="sub" data-i18n="card.averageRollSub">抽出値の平均</div>
           </div>
         </div>
 
         <div class="card">
-          <h3>メモ</h3>
-          <p id="summaryMemo" class="note">ログを入力して「分析する」を押してください。</p>
+          <h3 data-i18n="summary.memoTitle">メモ</h3>
+          <p id="summaryMemo" class="note" data-i18n="summary.selectLog">ログデータを選択ください。</p>
         </div>
       </div>
 
       <div id="chart" class="tab-panel">
-        <h2>出目分布：10刻み</h2>
+        <h2 data-i18n="chart.title">出目分布：10刻み</h2>
         <div id="barChart"></div>
       </div>
 
       <div id="rolls" class="tab-panel">
-        <h2>抽出ロール一覧</h2>
+        <h2 data-i18n="rolls.title">抽出ロール一覧</h2>
 
         <table>
           <thead>
             <tr>
-              <th>#</th>
+              <th data-i18n="rolls.index">#</th>
               <th>
                 <span class="sortable-header">
-                  キャラクター
+                  <span data-i18n="rolls.character">キャラクター</span>
                   <button class="sort-button" data-sort-key="character">↕</button>
                 </span>
               </th>
               <th>
                 <span class="sortable-header">
-                  出目
+                  <span data-i18n="rolls.value">出目</span>
                   <button class="sort-button" data-sort-key="value">↕</button>
                 </span>
               </th>
               <th>
                 <span class="sortable-header">
-                  分類
+                  <span data-i18n="rolls.classification">分類</span>
                   <button class="sort-button" data-sort-key="classification">↕</button>
                 </span>
               </th>
-              <th>元ログ行</th>
+              <th data-i18n="rolls.sourceLine">元ログ行</th>
             </tr>
           </thead>
 
