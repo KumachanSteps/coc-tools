@@ -48,7 +48,7 @@ function exitScreenshotMode() {
     → ショートカット一覧を開く
 
   Esc
-    → ショートカット一覧 / スクショ表示を閉じる
+    → ショートカット一覧を閉じる / スクショ表示を閉じる / 通常時は確認後クリア
 */
 
 function handleGlobalKeydown(event) {
@@ -62,19 +62,24 @@ function handleGlobalKeydown(event) {
     Esc:
     1. ショートカットモーダルが開いていれば閉じる
     2. スクショ表示中なら通常表示へ戻す
-    3. 通常時は何もしない
+    3. 通常時は確認後クリア
   */
   if (event.key === 'Escape') {
+    event.preventDefault();
+
     if (isModalOpen) {
-      event.preventDefault();
       closeShortcutModal();
       return;
     }
 
     if (isScreenshotMode) {
-      event.preventDefault();
       exitScreenshotMode();
       return;
+    }
+
+    const confirmed = window.confirm('入力内容と解析結果をクリアします。よろしいですか？');
+    if (confirmed) {
+      clearAll();
     }
 
     return;
