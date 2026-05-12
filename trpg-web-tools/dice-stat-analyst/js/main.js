@@ -96,3 +96,24 @@ function analyze() {
   applyDefaultCharacterVisibility(rolls);
   render();
 }
+
+function openShortcutModal() {
+  const modal = $('shortcutModal');
+  if (!modal) return;
+
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeShortcutModal() {
+  const modal = $('shortcutModal');
+  if (!modal) return;
+
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function isShortcutModalOpen() {
+  const modal = $('shortcutModal');
+  return !!modal && modal.classList.contains('open');
+}
