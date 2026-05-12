@@ -23,7 +23,7 @@ const I18N = {
     "input.dropTabs": "[雑談] / [other] / [info] 系の行を除外する",
     "input.onlyD100": "d100系ロールのみ抽出する",
     "input.autoHideMaxRolls": "自動非表示にする総ロール数",
-    "input.note": "対応例：CCB&lt;=80、CC&lt;=60、RESB(10-16)、1d100&lt;=55、s1d100、D100、判定結果の「出目 03 / 100 / ＞ 96」など。<br>キャラクター名は「名前：CC」「名前：CCB」「[main] 名前：CC」「[main] 名前：CCB」形式などから自動検出します。検出されたキャラクターはチェックを外すことで非表示にできます。<br>タブ除外ONの場合、[main] / [メイン] / [HO系] / [ルール] / [メモ] は解析対象、[雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] は除外対象になります。<br>総ロール数が指定値以下のキャラクターはNPC想定として、分析直後は自動で非表示になります。",
+    "input.note": "対応例：CCB&lt;=80、CC&lt;=60、RESB(10-16)、1d100&lt;=55、s1d100、D100、判定結果の「出目 03 / 100 / ＞ 96」など。<br>キャラクター名は「名前：CC」「名前：CCB」「[main] 名前：CC」「[main] 名前：CCB」形式などから自動検出します。検出されたキャラクターはチェックを外すことで非表示にできます。<br>タブ除外ONの場合、[main] / [メイン] / [HO系] は解析対象、[雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] は除外対象になります。<br>総ロール数が指定値以下のキャラクターはNPC想定として、分析直後は自動で非表示になります。",
 
     "button.analyze": "分析する",
     "button.clear": "クリア",
@@ -120,7 +120,7 @@ const I18N = {
     "input.dropTabs": "Exclude [雑談] / [other] / [info] style lines",
     "input.onlyD100": "Extract d100-style rolls only",
     "input.autoHideMaxRolls": "Auto-hide characters with rolls up to",
-    "input.note": "Supported examples: CCB&lt;=80, CC&lt;=60, RESB(10-16), 1d100&lt;=55, s1d100, D100, and result lines such as “出目 03 / 100 / ＞ 96”.<br>Character names are automatically detected from formats such as “Name: CC”, “Name: CCB”, “[main] Name: CC”, and “[main] Name: CCB”. Detected characters can be hidden or shown from the character settings.<br>When tab filtering is enabled, [main] / [メイン] / [HO] / [ルール] / [メモ] are included, while [雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] are excluded.<br>Characters with total rolls at or below the specified number are treated as likely NPCs and hidden by default after analysis.",
+    "input.note": "Supported examples: CCB&lt;=80, CC&lt;=60, RESB(10-16), 1d100&lt;=55, s1d100, D100, and result lines such as “出目 03 / 100 / ＞ 96”.<br>Character names are automatically detected from formats such as “Name: CC”, “Name: CCB”, “[main] Name: CC”, and “[main] Name: CCB”. Detected characters can be hidden or shown from the character settings.<br>When tab filtering is enabled, [main] / [メイン] / [HO] are included, while [雑談] / [other] / [info] / [おはらい] / [お祓い] / [運試し] are excluded.<br>Characters with total rolls at or below the specified number are treated as likely NPCs and hidden by default after analysis.",
 
     "button.analyze": "Analyze",
     "button.clear": "Clear",
