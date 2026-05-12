@@ -14,6 +14,22 @@ render();
 function bindEvents() {
   $('themeToggleBtn').addEventListener('click', toggleTheme);
 
+  const shortcutHelpBtn = $('shortcutHelpBtn');
+  const shortcutModalCloseBtn = $('shortcutModalCloseBtn');
+  const shortcutModalBackdrop = $('shortcutModalBackdrop');
+
+  if (shortcutHelpBtn) {
+    shortcutHelpBtn.addEventListener('click', openShortcutModal);
+  }
+
+  if (shortcutModalCloseBtn) {
+    shortcutModalCloseBtn.addEventListener('click', closeShortcutModal);
+  }
+
+  if (shortcutModalBackdrop) {
+    shortcutModalBackdrop.addEventListener('click', closeShortcutModal);
+  }
+
   document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', () => switchTab(button));
   });
