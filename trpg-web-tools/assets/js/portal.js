@@ -113,6 +113,8 @@ const modeToggle = document.getElementById("modeToggle");
 const modeIcon = document.getElementById("modeIcon");
 const modeText = document.getElementById("modeText");
 
+const storageKey = "trpgPortalThemeV2";
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -235,11 +237,11 @@ function setMode(mode) {
     isDawnMode ? "Switch to deep space mode" : "Switch to dawn mode"
   );
 
-  localStorage.setItem("trpgPortalMode", isDawnMode ? "dawn" : "deep-space");
+  localStorage.setItem(storageKey, isDawnMode ? "dawn" : "deep-space");
 }
 
 function initMode() {
-  const savedMode = localStorage.getItem("trpgPortalMode");
+  const savedMode = localStorage.getItem(storageKey);
 
   if (savedMode === "deep-space") {
     setMode("deep-space");
