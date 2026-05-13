@@ -4,9 +4,9 @@ window.TRPG_PORTAL_I18N = {
   ui: {
     ja: {
       meta: {
-        title: "TRPG WEBツール",
+        title: "TRPG WEBツール観測所",
         description:
-          "TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのWebツール集です。",
+          "TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのWebツール観測所です。",
       },
       header: {
         eyebrow: "TRPG セッション支援ツール",
@@ -14,7 +14,7 @@ window.TRPG_PORTAL_I18N = {
       },
       hero: {
         label: "自作TRPG Webツール集",
-        title: "TRPG WEBツール",
+        title: "TRPG WEBツール観測所",
         lead:
           "TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのポータルページです。星図のように並んだツール群から、使用したいツールを選択してください。",
       },
@@ -50,15 +50,15 @@ window.TRPG_PORTAL_I18N = {
         text: "検索キーワードまたはカテゴリ条件に一致するツールが見つかりませんでした。",
       },
       footer: {
-        copy: "© TRPG WEBツール / Created for TRPG Session Support",
+        copy: "© TRPG WEBツール観測所 / Created for TRPG Session Support",
       },
     },
 
     en: {
       meta: {
-        title: "TRPG Web Tools",
+        title: "TRPG Web Tools Observatory",
         description:
-          "A portal page for TRPG session preparation, log analysis, session report creation, and scenario information organization.",
+          "A tool observatory for TRPG session preparation, log analysis, session report creation, and scenario information organization.",
       },
       header: {
         eyebrow: "TRPG SESSION SUPPORT TOOLS",
@@ -66,7 +66,7 @@ window.TRPG_PORTAL_I18N = {
       },
       hero: {
         label: "Custom TRPG Web Tool Suite",
-        title: "TRPG Web Tools",
+        title: "TRPG Web Tools Observatory",
         lead:
           "A portal page for TRPG session preparation, log analysis, session report creation, and scenario information organization. Choose a tool from the constellation-like tool list below.",
       },
@@ -102,7 +102,7 @@ window.TRPG_PORTAL_I18N = {
         text: "Search keyword or category filter did not match any tool.",
       },
       footer: {
-        copy: "© TRPG Web Tools / Created for TRPG Session Support",
+        copy: "© TRPG Web Tools Observatory / Created for TRPG Session Support",
       },
     },
   },
@@ -273,6 +273,5 @@ window.TRPG_PORTAL_I18N = {
         en: "A GM/KP support concept for viewing and managing multiple character sheets on one screen.",
       },
     },
-
   ],
 };
