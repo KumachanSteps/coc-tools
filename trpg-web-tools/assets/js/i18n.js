@@ -16,7 +16,7 @@ window.TRPG_PORTAL_I18N = {
         label: "自作TRPG Webツール集",
         title: "TRPG WEBツール観測所",
         lead:
-          "TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのポータルページです。星図のように並んだツール群から、使用したいツールを選択してください。",
+  "TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を支援するポータルページです。星図のように並ぶツール群から、目的に合うものを選択してください。",
       },
       search: {
         placeholder: "ツールを検索...",
@@ -69,7 +69,7 @@ window.TRPG_PORTAL_I18N = {
         label: "Custom TRPG Web Tool Suite",
         title: "TRPG Web Tools Observatory",
         lead:
-          "A portal page for TRPG session preparation, log analysis, session report creation, and scenario information organization. Choose a tool from the constellation-like tool list below.",
+  "A portal for TRPG session prep, log analysis, session reports, and scenario organization. Choose the tool that fits your purpose from the constellation below.",
       },
       search: {
         placeholder: "Search tools...",

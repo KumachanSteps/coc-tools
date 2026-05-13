@@ -31,206 +31,6 @@ const el = {
   excludeParams: document.getElementById("excludeParams")
 };
 
-const commandToken = "(?:s?CCB?|s?RESB|s?CBRB|CBRB|RESB|CCB|CC)";
-const diceCommandRegex = new RegExp("\\b" + commandToken + "\\b", "i");
-const rollNumberRegex = /(?:^|[^\d])(?:1D100|D100|d100|1d100)\s*(?:<=\s*\d+)?[^\d]*(\d{1,3})/i;
-const simpleArrowNumberRegex = /[＞>]\s*(\d{1,3})\s*[＞>]/;
-
-const paramSkillSet = new Set([
-  "アイデア", "知識", "幸運", "STR", "CON", "POW", "DEX", "APP", "SIZ", "INT", "EDU",
-  "STR×5", "CON×5", "POW×5", "DEX×5", "APP×5", "SIZ×5", "INT×5", "EDU×5",
-  "STR*5", "CON*5", "POW*5", "DEX*5", "APP*5", "SIZ*5", "INT*5", "EDU*5",
-  "STR x 5", "CON x 5", "POW x 5", "DEX x 5", "APP x 5", "SIZ x 5", "INT x 5", "EDU x 5",
-  "IDEA", "KNOW", "KNOWLEDGE", "LUCK"
-]);
-
-function stripHtml(input) {
-  if (!input) return "";
-
-  let text = input
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>|<\/div>|<\/li>|<\/tr>/gi, "\n")
-    .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replace(/<style[\s\S]*?<\/style>/gi, "")
-    .replace(/<[^>]+>/g, " ");
-
-  const parser = new DOMParser();
-  text = parser.parseFromString(text, "text/html").documentElement.textContent || text;
-
-  return text.replace(/\u00a0/g, " ").replace(/[ \t]+/g, " ");
-}
-
-function normalizeLine(line) {
-  return String(line || "")
-    .replace(/[：]/g, ":")
-    .replace(/[＜]/g, "<")
-    .replace(/[＝]/g, "=")
-    .replace(/[（]/g, "(")
-    .replace(/[）]/g, ")")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function splitPotentialRollLines(text) {
-  const cleaned = stripHtml(text);
-  const baseLines = cleaned.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-  const expanded = [];
-
-  for (const line of baseLines) {
-    const parts = line.split(/(?=\[(?:main|メイン|HO\d+|ルール|メモ|info|other|雑談)\]\s*[^\[]+?:)/i);
-
-    for (const part of parts) {
-      const trimmed = part.trim();
-      if (trimmed) expanded.push(trimmed);
-    }
-  }
-
-  return expanded;
-}
-
-function detectCharacter(line) {
-  const normalized = normalizeLine(line);
-  const cmdMatch = normalized.match(diceCommandRegex);
-
-  if (!cmdMatch) return null;
-
-  const beforeCmd = normalized.slice(0, cmdMatch.index).trim();
-  const colonIndex = beforeCmd.lastIndexOf(":");
-
-  if (colonIndex < 0) return null;
-
-  let speaker = beforeCmd.slice(0, colonIndex).trim();
-  speaker = speaker.replace(/^\[[^\]]+\]\s*/, "").trim();
-  speaker = speaker.replace(/^[\s\-–—・]+/, "").trim();
-
-  if (!speaker || speaker.length > 80) return null;
-  if (/^(成功|失敗|クリティカル|ファンブル|ルール|メモ|system|info)$/i.test(speaker)) return null;
-
-  return speaker;
-}
-
-function detectSkill(line) {
-  const bracketMatches = [...line.matchAll(/【([^】]+)】/g)]
-    .map(m => m[1].trim())
-    .filter(Boolean);
-
-  if (bracketMatches.length) {
-    return cleanSkillName(bracketMatches[bracketMatches.length - 1]);
-  }
-
-  const normalized = normalizeLine(line);
-  const cmdMatch = normalized.match(diceCommandRegex);
-
-  if (!cmdMatch) return inferSkillFromText(line) || "未設定技能";
-
-  const afterCmd = normalized.slice(cmdMatch.index + cmdMatch[0].length);
-
-  const skillLike = afterCmd
-    .replace(/^\s*(?:\([^)]*\)|<=\s*\d+|[\d+\-*/×x\s]+)*/, "")
-    .split(/[＞>]/)[0]
-    .replace(/#\d+.*$/, "")
-    .trim();
-
-  return cleanSkillName(skillLike || inferSkillFromText(line) || "未設定技能");
-}
-
-function cleanSkillName(skill) {
-  return String(skill || "")
-    .replace(/[:：].*$/, "")
-    .replace(/\s+/g, " ")
-    .replace(/^[\[\]【】\s]+|[\[\]【】\s]+$/g, "")
-    .trim() || "未設定技能";
-}
-
-function inferSkillFromText(line) {
-  if (/SAN|正気度|正気度ロール/i.test(line)) return "正気度ロール";
-  if (/アイデア/i.test(line)) return "アイデア";
-  if (/知識|KNOW/i.test(line)) return "知識";
-  if (/幸運|LUCK/i.test(line)) return "幸運";
-  return "";
-}
-
-function detectRollValue(line) {
-  const m1 = line.match(rollNumberRegex);
-  if (m1) return Number(m1[1]);
-
-  const m2 = line.match(simpleArrowNumberRegex);
-  if (m2) return Number(m2[1]);
-
-  const numsAfterArrow = [...line.matchAll(/[＞>]\s*(\d{1,3})/g)]
-    .map(m => Number(m[1]))
-    .filter(n => n >= 1 && n <= 100);
-
-  return numsAfterArrow.length ? numsAfterArrow[0] : null;
-}
-
-function detectResult(line, rollValue) {
-  const upper = line.toUpperCase();
-
-  if (/決定的成功|クリティカル|CRITICAL|C決定的/.test(line) || /\bC\b/.test(upper)) return "critical";
-  if (/致命的失敗|ファンブル|FUMBLE/.test(line) || /\bF\b/.test(upper)) return "fumble";
-  if (/スペシャル|SPECIAL/.test(line)) return "special";
-  if (/成功|SUCCESS/.test(line)) return "success";
-  if (/失敗|FAILURE|FAILED/.test(line)) return "failure";
-
-  if (rollValue !== null) {
-    if (rollValue <= 5) return "critical";
-    if (rollValue >= 96) return "fumble";
-  }
-
-  return "unknown";
-}
-
-function isSanSkill(skill, line) {
-  return /SAN|SANC|正気度|正気度ロール|SAN値|SANチェック/i.test(skill + " " + line);
-}
-
-function isParameterSkill(skill) {
-  const normalized = String(skill || "").toUpperCase().replace(/\s+/g, " ").trim();
-  const jp = String(skill || "").trim();
-
-  if (paramSkillSet.has(jp) || paramSkillSet.has(normalized)) return true;
-  if (/^(STR|CON|POW|DEX|APP|SIZ|INT|EDU)(?:\s*[×X*]\s*\d+)?$/i.test(normalized)) return true;
-  if (/^(アイデア|知識|幸運)$/.test(jp)) return true;
-
-  return false;
-}
-
-function parseRolls(rawInput) {
-  const lines = splitPotentialRollLines(rawInput);
-  const rolls = [];
-
-  lines.forEach((line, idx) => {
-    const normalized = normalizeLine(line);
-
-    if (!diceCommandRegex.test(normalized) && !/1D100|D100|1d100|d100/.test(normalized)) return;
-
-    const character = detectCharacter(normalized);
-    if (!character) return;
-
-    const skill = detectSkill(normalized);
-    const rollValue = detectRollValue(normalized);
-    const result = detectResult(normalized, rollValue);
-
-    if (!["critical", "fumble", "special", "success", "failure"].includes(result)) return;
-
-    rolls.push({
-      id: `${idx}-${rolls.length}`,
-      lineNo: idx + 1,
-      character,
-      skill,
-      rollValue,
-      result,
-      raw: normalized,
-      isSan: isSanSkill(skill, normalized),
-      isParam: isParameterSkill(skill),
-      isLuckCritical: result === "critical" && /幸運|LUCK/i.test(skill)
-    });
-  });
-
-  return rolls;
-}
-
 function getCurrentRule() {
   return document.querySelector('input[name="growthRule"]:checked')?.value || "rulebook";
 }
@@ -251,7 +51,11 @@ function groupCharacters(rolls) {
 
   for (const roll of rolls) {
     if (!map.has(roll.character)) {
-      map.set(roll.character, { name: roll.character, rolls: [], growth: [] });
+      map.set(roll.character, {
+        name: roll.character,
+        rolls: [],
+        growth: []
+      });
     }
 
     map.get(roll.character).rolls.push(roll);
@@ -270,7 +74,10 @@ function buildGrowthCandidates(charRolls, rule) {
     const isFumble = roll.result === "fumble";
 
     if (roll.isLuckCritical) {
-      candidates.push({ ...roll, note: "Chance to grow <POW>" });
+      candidates.push({
+        ...roll,
+        note: "Chance to grow <POW>"
+      });
       continue;
     }
 
@@ -283,7 +90,9 @@ function buildGrowthCandidates(charRolls, rule) {
     }
 
     if (rule === "critFumble") {
-      if (isCritical || isFumble) candidates.push(roll);
+      if (isCritical || isFumble) {
+        candidates.push(roll);
+      }
       continue;
     }
 
@@ -323,7 +132,7 @@ function sortCharacters(chars, minRolls) {
 
 function analyze() {
   state.rawInput = el.inputLog.value;
-  state.rolls = parseRolls(state.rawInput);
+  state.rolls = CocDiceParser.parse(state.rawInput);
   renderAll(true);
 }
 
@@ -341,9 +150,15 @@ function renderAll(resetVisible = false) {
   const sorted = sortCharacters(state.characters, minRolls);
 
   if (resetVisible) {
-    state.visibleCharacters = new Set(sorted.filter(c => c.rolls.length >= minRolls).map(c => c.name));
+    state.visibleCharacters = new Set(
+      sorted
+        .filter(c => c.rolls.length >= minRolls)
+        .map(c => c.name)
+    );
   } else {
-    const remainingVisible = [...state.visibleCharacters].filter(name => state.characters.has(name));
+    const remainingVisible = [...state.visibleCharacters]
+      .filter(name => state.characters.has(name));
+
     state.visibleCharacters = new Set(remainingVisible);
   }
 
@@ -353,10 +168,10 @@ function renderAll(resetVisible = false) {
 }
 
 function renderSummary(chars, filteredRolls) {
-  const totalCandidates = chars.reduce((sum, c) => sum + c.growth.length, 0);
-  const shownChars = chars.filter(c => state.visibleCharacters.has(c.name)).length;
-  const crits = filteredRolls.filter(r => r.result === "critical").length;
-  const fumbles = filteredRolls.filter(r => r.result === "fumble").length;
+  const totalCandidates = chars.reduce((sum, char) => sum + char.growth.length, 0);
+  const shownChars = chars.filter(char => state.visibleCharacters.has(char.name)).length;
+  const crits = filteredRolls.filter(roll => roll.result === "critical").length;
+  const fumbles = filteredRolls.filter(roll => roll.result === "fumble").length;
 
   el.summary.innerHTML = `
     <div class="stat"><b>${chars.length}</b><span>検出キャラクター</span></div>
@@ -392,8 +207,11 @@ function renderCharacterFilter(chars, minRolls) {
     box.addEventListener("change", event => {
       const name = event.currentTarget.dataset.char;
 
-      if (event.currentTarget.checked) state.visibleCharacters.add(name);
-      else state.visibleCharacters.delete(name);
+      if (event.currentTarget.checked) {
+        state.visibleCharacters.add(name);
+      } else {
+        state.visibleCharacters.delete(name);
+      }
 
       const minRolls = Number(el.minRolls.value || 0);
       const sorted = sortCharacters(state.characters, minRolls);
@@ -419,7 +237,7 @@ function renderResults(chars, minRolls) {
     return;
   }
 
-  const visible = chars.filter(c => state.visibleCharacters.has(c.name));
+  const visible = chars.filter(char => state.visibleCharacters.has(char.name));
 
   if (!visible.length) {
     el.results.className = "empty";
@@ -429,7 +247,10 @@ function renderResults(chars, minRolls) {
   }
 
   el.results.className = "";
-  el.results.innerHTML = visible.map(char => renderCharacterCard(char, minRolls)).join("");
+  el.results.innerHTML = visible
+    .map(char => renderCharacterCard(char, minRolls))
+    .join("");
+
   state.lastTextOutput = buildTextOutput(visible);
 }
 
@@ -506,7 +327,9 @@ function renderResultTag(result) {
     unknown: "UNKNOWN"
   }[result] || result;
 
-  const cls = ["critical", "fumble", "special", "success"].includes(result) ? result : "";
+  const cls = ["critical", "fumble", "special", "success"].includes(result)
+    ? result
+    : "";
 
   return `<span class="tag ${cls}">${label}</span>`;
 }
@@ -655,8 +478,8 @@ el.thresholdCharsBtn.addEventListener("click", () => {
 
   state.visibleCharacters = new Set(
     [...state.characters.values()]
-      .filter(c => c.rolls.length >= minRolls)
-      .map(c => c.name)
+      .filter(char => char.rolls.length >= minRolls)
+      .map(char => char.name)
   );
 
   renderAll(false);
@@ -673,8 +496,8 @@ el.minRolls.addEventListener("change", () => {
 
   state.visibleCharacters = new Set(
     [...state.characters.values()]
-      .filter(c => c.rolls.length >= minRolls)
-      .map(c => c.name)
+      .filter(char => char.rolls.length >= minRolls)
+      .map(char => char.name)
   );
 
   renderAll(false);
