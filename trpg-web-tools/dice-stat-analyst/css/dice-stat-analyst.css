@@ -2003,3 +2003,189 @@ body.dark textarea::-webkit-scrollbar-thumb{
     flex-wrap:wrap;
   }
 }
+
+/* =========================================================
+   Light Mode Button Tone Adjustment
+   通常モードのボタン色を少し明るく調整
+   ========================================================= */
+
+/* タブボタン：キャラ別サマリー / 分布チャート / 抽出ロール */
+.tab-button{
+  background:rgba(255,255,255,.78);
+  color:#334155;
+  border-color:rgba(29,155,240,.16);
+}
+
+.tab-button:hover{
+  background:rgba(255,255,255,.92);
+  color:#0f172a;
+  border-color:rgba(29,155,240,.28);
+}
+
+.tab-button.active{
+  background:#7dd3fc;
+  color:#082f49;
+  border-color:#7dd3fc;
+  box-shadow:0 10px 24px rgba(14,165,233,.18);
+}
+
+/* スクショ表示ボタン */
+.summary-shot-button{
+  background:#7dd3fc;
+  color:#082f49;
+  border-color:#7dd3fc;
+  box-shadow:0 10px 24px rgba(14,165,233,.16);
+}
+
+.summary-shot-button:hover{
+  background:#bae6fd;
+  color:#082f49;
+}
+
+/* 表示キャラ設定ボタン */
+.character-control-toggle{
+  background:rgba(224,242,254,.72);
+  color:#075985;
+  border-color:rgba(14,165,233,.22);
+}
+
+.character-control-toggle:hover{
+  background:rgba(224,242,254,.95);
+  color:#075985;
+}
+
+/* 入力パネル開閉ボタン */
+.input-toggle-button{
+  background:rgba(224,242,254,.72);
+  color:#075985;
+  border-color:rgba(14,165,233,.22);
+}
+
+.input-toggle-button:hover{
+  background:rgba(224,242,254,.95);
+  color:#075985;
+}
+
+/* ソートボタン */
+.sort-button{
+  background:rgba(224,242,254,.72);
+  color:#075985;
+  border-color:rgba(14,165,233,.22);
+}
+
+.sort-button:hover{
+  background:rgba(224,242,254,.95);
+  color:#075985;
+}
+
+/* Analyzeボタン */
+#analyzeBtn{
+  background:#7dd3fc;
+  color:#082f49;
+  box-shadow:0 10px 24px rgba(14,165,233,.16);
+}
+
+#analyzeBtn:hover{
+  background:#bae6fd;
+}
+
+/* Clearボタン */
+#clearBtn{
+  background:rgba(255,255,255,.68);
+  color:#334155;
+  border:1px solid rgba(15,23,42,.10);
+}
+
+#clearBtn:hover{
+  background:rgba(255,255,255,.88);
+  color:#0f172a;
+}
+
+/* ダークモードでは元の濃い配色を維持 */
+body.dark .tab-button{
+  background:var(--tab);
+  color:var(--text-soft);
+  border-color:var(--border-soft);
+}
+
+body.dark .tab-button:hover{
+  background:rgba(255,255,255,.10);
+  color:#ffffff;
+}
+
+body.dark .tab-button.active{
+  background:#22d3ee;
+  color:#020617;
+  border-color:#22d3ee;
+  box-shadow:0 14px 34px rgba(34,211,238,.22);
+}
+
+body.dark .summary-shot-button,
+body.dark #analyzeBtn{
+  background:var(--cyan);
+  color:#020617;
+}
+
+body.dark .summary-shot-button:hover,
+body.dark #analyzeBtn:hover{
+  background:#a5f3fc;
+}
+
+body.dark .character-control-toggle,
+body.dark .input-toggle-button,
+body.dark .sort-button{
+  background:var(--cyan-bg);
+  color:#cffafe;
+  border-color:var(--border-cyan);
+}
+
+body.dark .character-control-toggle:hover,
+body.dark .input-toggle-button:hover,
+body.dark .sort-button:hover{
+  background:rgba(103,232,249,.24);
+  color:#ecfeff;
+}
+
+body.dark #clearBtn{
+  background:rgba(255,255,255,.10);
+  color:#ffffff;
+  border-color:var(--border-soft);
+}
+
+body.dark #clearBtn:hover{
+  background:rgba(255,255,255,.16);
+}
+
+/* =========================================================
+   Light Mode Active Tab Color Match
+   キャラクター別サマリーなどのアクティブタブをスクショ表示ボタンと統一
+   ========================================================= */
+
+/* 通常モード：アクティブタブ */
+body:not(.dark) .tab-button.active{
+  background:#7dd3fc;
+  color:#082f49;
+  border-color:#7dd3fc;
+  box-shadow:0 10px 24px rgba(14,165,233,.16);
+}
+
+/* 通常モード：アクティブタブ hover */
+body:not(.dark) .tab-button.active:hover{
+  background:#bae6fd;
+  color:#082f49;
+  border-color:#bae6fd;
+}
+
+/* 通常モード：スクショ表示ボタンと明示的に同じ色へ */
+body:not(.dark) .summary-shot-button{
+  background:#7dd3fc;
+  color:#082f49;
+  border-color:#7dd3fc;
+  box-shadow:0 10px 24px rgba(14,165,233,.16);
+}
+
+body:not(.dark) .summary-shot-button:hover{
+  background:#bae6fd;
+  color:#082f49;
+  border-color:#bae6fd;
+}
