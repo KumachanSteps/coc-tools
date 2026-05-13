@@ -976,3 +976,74 @@ aside.flex.flex-col {
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   Layout Fixes for Hashtag Searcher
+   Add this at the END of css/hash_tag_style.css
+   ========================================================= */
+
+/* ブラー効果を完全に解除 */
+.blur-\[2px\] {
+  filter: none !important;
+}
+
+.opacity-70 {
+  opacity: 1 !important;
+}
+
+section[aria-hidden="true"] {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* 2列グリッド */
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* 通常時のプリセットカードは1列 */
+.md\:grid-cols-2,
+.xl\:grid-cols-3 {
+  grid-template-columns: 1fr;
+}
+
+/* メインエリアは通常1列 */
+.lg\:grid-cols-\[280px_minmax\(0\,1fr\)\] {
+  grid-template-columns: 1fr;
+}
+
+/* Composer + Right panel も通常1列 */
+.xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
+  grid-template-columns: 1fr;
+}
+
+/* tablet以上：Preset Cardsを2列 */
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* desktop以上：左サイドバー + メイン本文 */
+@media (min-width: 1024px) {
+  .lg\:grid-cols-\[280px_minmax\(0\,1fr\)\] {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+}
+
+/* large desktop以上：Composer + Scenario/Daily panel */
+@media (min-width: 1280px) {
+  .xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  }
+
+  .xl\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* mobileではDaily Patrolを1列に戻す */
+@media (max-width: 720px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
