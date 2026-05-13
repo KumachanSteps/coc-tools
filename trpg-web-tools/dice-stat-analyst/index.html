@@ -305,10 +305,25 @@
 
     <section>
       <div class="tabs">
-        <button class="tab-button active" data-tab="summary" data-i18n="tab.summary">キャラクター別サマリー</button>
-        <button class="tab-button" data-tab="chart" data-i18n="tab.chart">分布チャート</button>
-        <button class="tab-button" data-tab="rolls" data-i18n="tab.rolls">抽出ロール</button>
-        <button id="summaryShotBtn" class="summary-shot-button" type="button" data-i18n="button.screenshot">📷 スクショ表示</button>
+        <div class="tabs-left">
+          <button class="tab-button active" data-tab="summary" data-i18n="tab.summary">キャラクター別サマリー</button>
+          <button class="tab-button" data-tab="chart" data-i18n="tab.chart">分布チャート</button>
+          <button class="tab-button" data-tab="rolls" data-i18n="tab.rolls">抽出ロール</button>
+        </div>
+
+        <div class="tabs-right">
+          <button id="summaryShotBtn" class="summary-shot-button" type="button" data-i18n="button.screenshot">
+            📷 スクショ表示
+          </button>
+
+          <a
+            class="growth-checker-link-button"
+            href="https://kumachansteps.github.io/coc-tools/trpg-web-tools/coc-growth-checker/"
+            data-i18n="button.growthChecker"
+          >
+            成長チェックツール →
+          </a>
+        </div>
       </div>
 
       <div id="summary" class="tab-panel active">

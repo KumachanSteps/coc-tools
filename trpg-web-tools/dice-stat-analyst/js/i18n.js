@@ -38,6 +38,8 @@ const I18N = {
     "button.shortcuts": "⌨ Shortcuts",
     "button.screenshot": "📷 スクショ表示",
     "button.exitScreenshot": "通常表示に戻す",
+    "button.growthChecker": "成長チェックツール →",
+    
 
     "tab.summary": "キャラクター別サマリー",
     "tab.chart": "分布チャート",
@@ -140,6 +142,7 @@ const I18N = {
     "button.shortcuts": "⌨ Shortcuts",
     "button.screenshot": "📷 Screenshot View",
     "button.exitScreenshot": "Exit Screenshot View",
+    "button.growthChecker": "Growth Checker →",
 
     "tab.summary": "Character Summary",
     "tab.chart": "Distribution Chart",

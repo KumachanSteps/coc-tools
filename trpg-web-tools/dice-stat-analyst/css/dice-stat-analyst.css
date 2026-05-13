@@ -2036,3 +2036,106 @@ body.dark textarea::-webkit-scrollbar-thumb{
     flex-wrap:wrap;
   }
 }
+/* =========================================================
+   Tabs Right Action Area
+   Screenshot + Growth Checker link
+   ========================================================= */
+
+.tabs{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.tabs-left,
+.tabs-right{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.tabs-left{
+  min-width:0;
+}
+
+.tabs-right{
+  margin-left:auto;
+  justify-content:flex-end;
+}
+
+.growth-checker-link-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:auto;
+  min-height:34px;
+  margin:0;
+  padding:8px 15px;
+  border-radius:999px;
+  border:1px solid rgba(217,119,6,.28);
+  background:rgba(217,119,6,.10);
+  color:#b45309;
+  font-size:12px;
+  font-weight:850;
+  line-height:1;
+  white-space:nowrap;
+  text-decoration:none;
+  box-shadow:0 10px 24px rgba(217,119,6,.10);
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.growth-checker-link-button:hover{
+  transform:translateY(-1px);
+  background:rgba(217,119,6,.16);
+  border-color:rgba(217,119,6,.38);
+  color:#92400e;
+  box-shadow:0 14px 28px rgba(217,119,6,.14);
+}
+
+body.dark .growth-checker-link-button{
+  border-color:rgba(252,211,77,.30);
+  background:rgba(252,211,77,.10);
+  color:#fef3c7;
+  box-shadow:none;
+}
+
+body.dark .growth-checker-link-button:hover{
+  background:rgba(252,211,77,.16);
+  border-color:rgba(252,211,77,.42);
+  color:#fffbeb;
+  box-shadow:0 14px 28px rgba(252,211,77,.10);
+}
+
+@media(max-width:980px){
+  .tabs{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .tabs-right{
+    width:100%;
+    margin-left:0;
+    justify-content:flex-start;
+  }
+}
+
+@media(max-width:460px){
+  .tabs-left,
+  .tabs-right{
+    width:100%;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .growth-checker-link-button{
+    width:100%;
+  }
+}
