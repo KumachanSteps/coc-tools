@@ -27,7 +27,7 @@ const tools = [
       "KP・PL・PC情報を入力し、X/Twitter向けの卓報告文を生成・編集・プレビューします。",
   },
   {
-    name: "Scenario Info Snippet Builder",
+    name: "Scenario Info Snippetter",
     icon: "✂️",
     status: "In Production",
     category: "Scenario Prep",
@@ -123,13 +123,10 @@ function escapeHtml(value) {
 }
 
 function updateStatusCounts() {
-  const counts = tools.reduce(
-    (acc, tool) => {
-      acc[tool.status] = (acc[tool.status] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
+  const counts = tools.reduce((acc, tool) => {
+    acc[tool.status] = (acc[tool.status] || 0) + 1;
+    return acc;
+  }, {});
 
   availableCount.textContent = counts.Available || 0;
   productionCount.textContent = counts["In Production"] || 0;
@@ -163,17 +160,13 @@ function createToolCard(tool, index) {
   const meta = statusMeta[tool.status] || statusMeta.Idea;
   const isDisabled = tool.status === "Idea" || !tool.href;
   const tagName = isDisabled ? "article" : "a";
-  const safeName = escapeHtml(tool.name);
-  const safeDescription = escapeHtml(tool.description);
-  const safeCategory = escapeHtml(tool.category);
-  const safeHref = escapeHtml(tool.href);
 
   const card = document.createElement(tagName);
   card.className = `tool-card${isDisabled ? " is-disabled" : ""}`;
   card.style.animationDelay = `${index * 0.045}s`;
 
   if (!isDisabled) {
-    card.href = safeHref;
+    card.href = tool.href;
     card.setAttribute("aria-label", `Open ${tool.name}`);
   } else {
     card.setAttribute("aria-label", `${tool.name}, coming soon`);
@@ -182,15 +175,15 @@ function createToolCard(tool, index) {
   card.innerHTML = `
     <div class="tool-card-top">
       <div class="tool-icon" aria-hidden="true">${escapeHtml(tool.icon)}</div>
-      <span class="status-badge ${meta.className}">
+      <span class="status-badge ${escapeHtml(meta.className)}">
         <span aria-hidden="true">${escapeHtml(meta.icon)}</span>
         ${escapeHtml(meta.label)}
       </span>
     </div>
 
-    <p class="tool-category">${safeCategory}</p>
-    <h2>${safeName}</h2>
-    <p class="tool-description">${safeDescription}</p>
+    <p class="tool-category">${escapeHtml(tool.category)}</p>
+    <h2>${escapeHtml(tool.name)}</h2>
+    <p class="tool-description">${escapeHtml(tool.description)}</p>
 
     <div class="open-text">
       ${isDisabled ? "Coming Soon" : "Open Tool →"}
@@ -230,19 +223,19 @@ function updateCategoryButtons() {
 }
 
 function setMode(mode) {
-  const isLightMode = mode === "light";
+  const isDawnMode = mode === "dawn";
 
-  document.body.classList.toggle("theme-light", isLightMode);
+  document.body.classList.toggle("theme-dawn", isDawnMode);
 
-  modeIcon.textContent = isLightMode ? "☾" : "☀";
-  modeText.textContent = isLightMode ? "Deep Space" : "Light Mode";
+  modeIcon.textContent = isDawnMode ? "☾" : "☀";
+  modeText.textContent = isDawnMode ? "Deep Space" : "Dawn";
 
   modeToggle.setAttribute(
     "aria-label",
-    isLightMode ? "Switch to deep space mode" : "Switch to light mode"
+    isDawnMode ? "Switch to deep space mode" : "Switch to dawn mode"
   );
 
-  localStorage.setItem("trpgPortalMode", isLightMode ? "light" : "deep-space");
+  localStorage.setItem("trpgPortalMode", isDawnMode ? "dawn" : "deep-space");
 }
 
 function initMode() {
@@ -253,13 +246,8 @@ function initMode() {
     return;
   }
 
-  setMode("light");
+  setMode("dawn");
 }
-
-modeToggle.addEventListener("click", () => {
-  const isLightMode = document.body.classList.contains("theme-light");
-  setMode(isLightMode ? "deep-space" : "light");
-});
 
 searchInput.addEventListener("input", (event) => {
   currentQuery = event.target.value;
@@ -276,6 +264,11 @@ categoryButtons.addEventListener("click", (event) => {
   currentCategory = button.dataset.category || "All";
   updateCategoryButtons();
   renderTools();
+});
+
+modeToggle.addEventListener("click", () => {
+  const isDawnMode = document.body.classList.contains("theme-dawn");
+  setMode(isDawnMode ? "deep-space" : "dawn");
 });
 
 updateStatusCounts();
