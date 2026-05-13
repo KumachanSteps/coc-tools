@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NJD5JZML31"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NJD5JZML31');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="kuma_icon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="rep_generator_style.css" />
+  <title>卓報告ジェネレーター</title>
+</head>
+<body>
+  <header class="hero">
+    <div class="header-top">
+      <span class="eyebrow">TRPG Web Tools</span>
+      <div class="hero-tags">
+        <span class="chip">卓報告</span>
+        <span class="chip">X Preview</span>
+        <span class="chip">Copy Ready</span>
+      </div>
+    </div>
+    <h1>卓報告ジェネレーター</h1>
+    <p>SNSの卓報告パターンをもとに、複数スタイルのX向け報告文を生成できます。</p>
+  </header>
+
+  <main class="main-shell">
+    <section class="container input-panel">
+      <h2>入力</h2>
+
+      <div class="section">
+        <div class="grid-2">
+          <div>
+            <label for="reportStyle">卓報告サンプルリスト</label>
+            <select id="reportStyle">
+              <option value="classic">クラシック：標準・読みやすい</option>
+              <option value="minimal">ミニマル：短文シンプル</option>
+              <option value="frame">✦フレーム：✦ ┈┈┈┈┈┈ ✦</option>
+              <option value="asterisk-frame">✼フレーム：✼••┈┈••✼••┈┈••✼</option>
+              <option value="fancy">⟡フレーム：⟡.·*.············⟡.·*.</option>
+              <option value="block">▮ ブロック：▮ システム名 ▮</option>
+              <option value="ho-focus">HO一覧スタイル：HO一覧重視</option>
+              <option value="kpc-pair">KPCタイマン：| ᴋᴘᴄ・ᴋᴘ ＆ | ᴘᴄ・ᴘʟ</option>
+              <option value="emoklore">✧上下囲み：✧　　　　　　　　✧</option>
+              <option value="wide-title">◤タイトル◢ スタイル</option>
+              <option value="zigzag">◢◤ 見出し スタイル</option>
+              <option value="corner-frame">◤￣￣ スタイル</option>
+              <option value="triangle-heading">▸ 見出しスタイル</option>
+            </select>
+            <p class="hint">SNS実例の構造だけを参考にしたテンプレートです。</p>
+          </div>
+          <div>
+            <label for="fontVariant">文字スタイル</label>
+            <select id="fontVariant">
+              <option value="sansBoldItalic">𝘼 ボールド + イタリック（サンセリフ）</option>
+              <option value="sansBold">𝗔 ボールド（サンセリフ）</option>
+              <option value="sansItalic">𝘈 イタリック（サンセリフ）</option>
+              <option value="serifBoldItalic">𝑨 ボールド + イタリック（セリフ）</option>
+              <option value="serifBold">𝐀 ボールド（セリフ）</option>
+              <option value="serifItalic">𝐴 イタリック（セリフ）</option>
+              <option value="smallCaps">ᴀ スモールキャップ</option>
+              <option value="typewriter">𝙰 タイプライタースタイル（モノスペース セリフ）</option>
+              <option value="modernSans">𝖠 モダンスタイル（サンセリフ）</option>
+              <option value="plain">A 変換なし</option>
+            </select>
+            <p class="hint">英数字のみ変換します。日本語・記号・装飾はそのままです。</p>
+          </div>
+        </div>
+
+        <div class="grid-2 compact-row">
+          <div>
+            <label for="systemSelect">システム</label>
+            <select id="systemSelect">
+              <option value="call_of_cthulhu">Call of Cthulhu</option>
+              <option value="coc">CoC</option>
+              <option value="coc6">CoC6</option>
+              <option value="coc7">CoC7</option>
+              <option value="new_coc">新クトゥルフ神話TRPG</option>
+              <option value="emoklore_en">emoklore-trpg</option>
+              <option value="emoklore_ja">エモクロアTRPG</option>
+              <option value="madamisu">マーダーミステリー</option>
+            </select>
+          </div>
+          <div>
+            <label for="authorText">作者 / 作</label>
+            <input id="authorText" placeholder="例：〇〇様 / 〇〇 様" />
+          </div>
+        </div>
+
+        <div class="grid-2 compact-row">
+          <div>
+            <label for="scenarioTitle">シナリオ名</label>
+            <input id="scenarioTitle" placeholder="例：黒き嵐が来る前に" />
+          </div>
+          <div>
+            <label for="resultText">通過 / END / 結果</label>
+            <input id="resultText" placeholder="例：END A 両生還 / 全生還" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <label>GM / KP / DL / その他</label>
+          <div class="suffix-checks" aria-label="敬称">
+            <span>敬称</span>
+            <label><input type="checkbox" name="suffixChoice" value="none" checked />なし</label>
+            <label><input type="checkbox" name="suffixChoice" value="様" />〇〇様</label>
+            <label><input type="checkbox" name="suffixChoice" value="さん" />〇〇さん</label>
+          </div>
+        </div>
+        <div id="gmContainer"></div>
+        <p class="hint">緑の＋で進行役を追加できます。KPC/KP型では、名前欄に「KPC名 / KP名」のように入れると綺麗です。</p>
+      </div>
+
+      <div class="section">
+        <div class="grid-2">
+          <div>
+            <label>HO / PC / PL</label>
+            <p class="hint">HO、PC名、PL名を1行で入力します。HO補足は通常未入力でOKです。</p>
+          </div>
+          <div>
+            <label for="nameInputOrder">PC名・PL名の入力順</label>
+            <select id="nameInputOrder">
+              <option value="pcpl">PC名 → PL名</option>
+              <option value="plpc">PL名 → PC名</option>
+            </select>
+          </div>
+        </div>
+        <div id="playerContainer" class="player-container"></div>
+        <div class="btns"><button id="addPlayerButton" type="button">＋ 参加者を追加</button></div>
+        <p class="hint">1行目が PC1 なら PC2, PC3、HO1 なら HO2, HO3 のように自動で続きます。</p>
+      </div>
+
+      <div class="section">
+        <div class="grid-2">
+          <div>
+            <label for="dateText">日付</label>
+            <input id="dateText" placeholder="今日の日付" />
+          </div>
+          <div>
+            <label for="quoteText">セリフ / 一言</label>
+            <input id="quoteText" placeholder="例：「やったー！両生還！！」" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <label for="hashtagText">ハッシュタグ</label>
+        <input id="hashtagText" placeholder="例：#卓報告 #クトゥルフ神話TRPG" />
+      </div>
+
+      <div class="section">
+        <label for="freeComment">感想 / コメント</label>
+        <textarea id="freeComment" placeholder="例：本当に最高の旅でした。二人の選択が忘れられません。"></textarea>
+      </div>
+    </section>
+
+    <section class="container preview-panel">
+      <h2>X風プレビュー / 編集</h2>
+      <div class="tweet-card">
+        <div class="tweet-head">
+          <div class="avatar"></div>
+          <div class="account"><strong>Session Report</strong><span>@taku_houkoku</span></div>
+        </div>
+        <textarea id="tweetPreview" placeholder="ここに生成結果が表示されます。直接編集もできます。"></textarea>
+        <div class="count-line"><span id="charCount">0 / 280</span><span id="limitStatus" class="count-ok">OK</span></div>
+        <div class="tweet-actions">
+          <button id="copyButton" type="button" class="primary">コピー</button>
+          <button id="newlineButton" type="button">改行を追加</button>
+          <button id="spaceButton" type="button">空白を追加</button>
+          <button id="clearPreviewButton" type="button" class="danger">消去</button>
+        </div>
+      </div>
+      <p class="hint preview-hint">文字数は簡易カウントです。URL短縮や絵文字幅など、X本体の厳密な仕様とは異なる場合があります。</p>
+      <div class="section decoration-panel">
+        <label>アスキーアート / 装飾</label>
+        <div class="btns">
+          <button type="button" data-decoration="✦   ┈┈┈┈┈┈┈┈┈┈┈┈   ✦">✦ line</button>
+          <button type="button" data-decoration="⟡.· ⎯⎯⎯⎯⎯⎯⎯⎯ ⟡.·">⟡ line</button>
+          <button type="button" data-decoration="✤─────✤─────✤">✤ line</button>
+          <button type="button" data-decoration="○●————————————————-●○">○● line</button>
+          <button type="button" data-decoration="──────────────────">plain line</button>
+          <button id="endDecorationButton" type="button">END deco</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="bottom-actions" aria-label="生成操作">
+    <button id="generateButton" type="button" class="primary bottom-action-button">卓報告を生成</button>
+    <button id="clearAllButton" type="button" class="subtle bottom-action-button">入力をクリア</button>
+  </div>
+
+  <script src="rep_generator.js"></script>
+</body>
+</html>
