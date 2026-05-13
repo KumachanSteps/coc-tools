@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoC 6版 / 7版：チャットパレット整形ツール</title>
+  <link rel="stylesheet" href="palette_formatter_style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <div class="eyebrow">
+        <span class="portal-link-wrap">
+          <a
+            class="portal-link"
+            href="https://kumachansteps.github.io/coc-tools/trpg-web-tools/index.html"
+            aria-label="Return to TRPG Web Tools Portal"
+          >TRPG Web Tools</a>
+        </span>
+        <span>｜チャットパレット整形</span>
+      </div>
+
+      <div class="hero-tags">
+        <span class="chip">テキスト入力</span>
+        <span class="chip">キャラクターJSON</span>
+        <span class="chip">CoC 6版 / 7版</span>
+        <span class="chip">出力後に編集可能</span>
+      </div>
+    </div>
+
+    <h1>CoC 6版 / 7版 チャットパレット整形ツール</h1>
+    <p>
+      チャットパレット本文、またはJSON形式のキャラクター駒データを貼り付けて、CoC 6版 / 7版向けに見やすく整形します。<br />
+      入力欄にデータを貼り付け、「分類して出力」ボタンで整形結果を表示します。
+    </p>
+  </header>
+
+  <div class="mock-note" id="statusMessage">
+    元のチャットパレット、またはキャラクター駒JSONを貼り付けてください。形式とCoC 6版 / 7版は自動判定します。
+  </div>
+
+  <div class="main">
+    <div class="container input-panel">
+      <h2>入力欄</h2>
+
+      <div class="text-area-wrap">
+        <textarea
+          id="input"
+          placeholder="元のチャットパレット、またはキャラクター駒JSONデータをコピー＆ペーストしてください"
+          oninput="handleInputChange()"
+        ></textarea>
+      </div>
+
+      <div class="input-action-row">
+        <div class="edition-control" aria-label="CoC版指定">
+          <span class="edition-label">版指定</span>
+          <div class="edition-toggle">
+            <button type="button" class="active" data-edition="auto" onclick="setEditionMode('auto')">自動</button>
+            <button type="button" data-edition="6e" onclick="setEditionMode('6e')">6版</button>
+            <button type="button" data-edition="7e" onclick="setEditionMode('7e')">7版</button>
+          </div>
+        </div>
+
+        <button type="button" onclick="formatPalette()">分類して出力</button>
+      </div>
+    </div>
+
+    <div class="container output-panel">
+      <h2>出力欄</h2>
+
+      <div class="text-area-wrap">
+        <textarea
+          id="output"
+          placeholder="整形後のテキストがここに表示されます（手動編集も可能です）"
+        ></textarea>
+      </div>
+
+      <div class="action-row">
+        <button type="button" onclick="copyOutput()">コピー</button>
+        <button type="button" class="btn-clear" onclick="clearAll()">クリア</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Last Update: 12May2026<br />
+    当ツールは「Chaosium Inc.」「株式会社アークライト」「株式会社KADOKAWA」が<br />
+    権利を有する『クトゥルフ神話TRPG』の二次創作物です。<br />
+    ©Chaosium Inc.／アークライト／KADOKAWA
+  </footer>
+
+  <script src="palette_formatter_style.js"></script>
+</body>
+</html>
