@@ -16,7 +16,7 @@ window.TRPG_PORTAL_I18N = {
         label: "自作TRPG Webツール集",
         title: "TRPG WEBツール観測所",
         lead:
-  "TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を支援するポータルページです。星図のように並ぶツール群から、目的に合うものを選択してください。",
+          "TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を支援するポータルページです。星図のように並ぶツール群から、目的に合うものを選択してください。",
       },
       search: {
         placeholder: "ツールを検索...",
@@ -69,7 +69,7 @@ window.TRPG_PORTAL_I18N = {
         label: "Custom TRPG Web Tool Suite",
         title: "TRPG Web Tools Observatory",
         lead:
-  "A portal for TRPG session prep, log analysis, session reports, and scenario organization. Choose the tool that fits your purpose from the constellation below.",
+          "A portal for TRPG session prep, log analysis, session reports, and scenario organization. Choose the tool that fits your purpose from the constellation below.",
       },
       search: {
         placeholder: "Search tools...",
@@ -140,6 +140,7 @@ window.TRPG_PORTAL_I18N = {
         en: "Analyze session logs and review each character’s success rate, criticals, fumbles, and dice roll distribution.",
       },
     },
+
     {
       id: "coc-growth-checker",
       icon: "🌱",
@@ -186,65 +187,66 @@ window.TRPG_PORTAL_I18N = {
       },
     },
     {
+      id: "trpg-hashtag-searcher",
+      icon: "#️⃣",
+      status: "production",
+      category: "haishinTracking",
+      href: "./trpg-hashtag-searcher/",
+      name: {
+        ja: "使えるハッシュタグ検索",
+        en: "Usable Hashtag Finder",
+      },
+      description: {
+        ja: "TRPG配信や卓報告に使えるハッシュタグを、シナリオ名・配信名・関連語句から探しやすくする検索支援ツールです。",
+        en: "A hashtag search support tool for finding usable hashtags for TRPG livestreams, session reports, scenarios, and related keywords.",
+      },
+    },
+
+    {
       id: "chat-palette-formatter",
       icon: "💬",
-      status: "production",
+      status: "idea",
       category: "characterUtility",
-      href: "./chat-palette-formatter/",
+      href: "",
       name: {
-        ja: "Chat Palette Formatter",
+        ja: "チャットパレット整形ツール",
         en: "Chat Palette Formatter",
       },
       description: {
-        ja: "CoC 6版・7版のチャットパレットを判定し、読みやすい形式へ整形します。",
-        en: "Format CoC 6e/7e chat palettes into a cleaner and more readable structure.",
+        ja: "CoC 6版・7版のチャットパレットを判定し、読みやすい形式へ整形するツール構想です。",
+        en: "A tool concept for formatting CoC 6e/7e chat palettes into a cleaner and more readable structure.",
       },
     },
     {
       id: "charamemo-generator",
       icon: "📋",
-      status: "production",
+      status: "idea",
       category: "characterUtility",
-      href: "./iachara-charamemo-creator/",
+      href: "",
       name: {
-        ja: "Charamemo Generator",
+        ja: "キャラメモ抽出ツール",
         en: "Charamemo Generator",
       },
       description: {
-        ja: "いあきゃらのキャラクター情報から、キャラメモやコマ用データを生成します。",
-        en: "Generate character memo and token-ready data from Iachara character information.",
+        ja: "いあきゃらのキャラクター情報から、キャラメモやコマ用データを生成するツール構想です。",
+        en: "A tool concept for generating character memo and token-ready data from Iachara character information.",
       },
     },
     {
       id: "trpg-haishin-observatory",
       icon: "🔭",
-      status: "production",
+      status: "idea",
       category: "haishinTracking",
-      href: "./trpg-haishin-observatory/",
+      href: "",
       name: {
-        ja: "TRPG Haishin Observatory",
+        ja: "TRPG配信観測所",
         en: "TRPG Haishin Observatory",
       },
       description: {
-        ja: "YouTubeのTRPG配信予定を整理し、シナリオ・チャンネル・GM/KP/PL・ハッシュタグから検索、Fav管理できる観測ツールです。",
-        en: "Track TRPG livestream schedules and filter by scenario, channel, GM/KP/PL, hashtag, and favorites.",
+        ja: "YouTubeのTRPG配信予定を整理し、シナリオ・チャンネル・GM/KP/PL・ハッシュタグから検索、Fav管理する観測ツール構想です。",
+        en: "A future observatory tool for tracking TRPG livestream schedules and filtering by scenario, channel, GM/KP/PL, hashtag, and favorites.",
       },
     },
-    {
-        id: "trpg-hashtag-searcher",
-        icon: "#️⃣",
-        status: "production",
-        category: "haishinTracking",
-        href: "./trpg-hashtag-searcher/",
-        name: {
-            ja: "使えるハッシュタグ検索",
-            en: "Usable Hashtag Finder",
-        },
-        description: {
-            ja: "TRPG配信や卓報告に使えるハッシュタグを、シナリオ名・配信名・関連語句から探しやすくする検索支援ツールです。",
-            en: "A hashtag search support tool for finding usable hashtags for TRPG livestreams, session reports, scenarios, and related keywords.",
-        },
-        },
     {
       id: "trpg-scenario-organizer",
       icon: "🗂️",
