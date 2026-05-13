@@ -1,106 +1,8 @@
-const tools = [
-  {
-    name: "Dice Stat Analyst",
-    icon: "📊",
-    status: "Available",
-    category: "Log Analysis",
-    href: "./dice-stat-analyst/",
-    description:
-      "セッションログHTML / テキストから、探索者ごとの成功率・クリティカル・ファンブル・出目分布を解析します。",
-  },
-  {
-    name: "CoC 6e/7e Growth Checker",
-    icon: "🌱",
-    status: "In Production",
-    category: "Log Analysis",
-    href: "./coc-growth-checker/",
-    description:
-      "セッションログから、CoC 6版・7版の成長チェック対象技能をハウスルール別に抽出・整理します。",
-  },
-  {
-    name: "Session Report Generator",
-    icon: "📝",
-    status: "In Production",
-    category: "Report Writing",
-    href: "./session-report-generator/",
-    description:
-      "KP・PL・PC情報を入力し、X/Twitter向けの卓報告文を生成・編集・プレビューします。",
-  },
-  {
-    name: "Scenario Info Snippetter",
-    icon: "✂️",
-    status: "In Production",
-    category: "Scenario Prep",
-    href: "./scenario-snippet-builder/",
-    description:
-      "シナリオ情報、探索箇所、資料、技能成功情報などをCCFOLIA / Discord向けに整形します。",
-  },
-  {
-    name: "Chat Palette Formatter",
-    icon: "💬",
-    status: "In Production",
-    category: "Character Utility",
-    href: "./chat-palette-formatter/",
-    description:
-      "CoC 6版・7版のチャットパレットを判定し、読みやすい形式へ整形します。",
-  },
-  {
-    name: "Charamemo Generator",
-    icon: "📋",
-    status: "In Production",
-    category: "Character Utility",
-    href: "./iachara-charamemo-creator/",
-    description:
-      "いあきゃらのキャラクター情報から、キャラメモやコマ用データを生成します。",
-  },
-  {
-    name: "TRPG Haishin Observatory",
-    icon: "🔭",
-    status: "In Production",
-    category: "Haishin Tracking",
-    href: "./trpg-haishin-observatory/",
-    description:
-      "YouTubeのTRPG配信予定を整理し、シナリオ・チャンネル・GM/KP/PL・ハッシュタグから検索、Fav管理できる観測ツールです。",
-  },
-  {
-    name: "TRPG Scenario Organizer",
-    icon: "🗂️",
-    status: "Idea",
-    category: "Scenario Prep",
-    href: "",
-    description:
-      "BOOTHやPixivなどで見つけたTRPGシナリオを、システム・人数・時間・秘匿有無・テーマ・お気に入り数などで整理、検索するデータベース構想です。",
-  },
-  {
-    name: "GM Charashi Viewer",
-    icon: "👥",
-    status: "Idea",
-    category: "GM Support",
-    href: "",
-    description:
-      "KP / GM向けに、複数のキャラクターシートを一画面で確認・管理するビューア構想です。",
-  },
-];
+const portalI18n = window.TRPG_PORTAL_I18N;
+const tools = portalI18n.tools;
+const statusMeta = portalI18n.statuses;
 
-const statusMeta = {
-  Available: {
-    label: "Available",
-    icon: "✓",
-    className: "status-available",
-  },
-  "In Production": {
-    label: "In Production",
-    icon: "⚗",
-    className: "status-production",
-  },
-  Idea: {
-    label: "Idea",
-    icon: "✦",
-    className: "status-idea",
-  },
-};
-
-let currentCategory = "All";
+let currentCategory = "all";
 let currentQuery = "";
 
 const toolsGrid = document.getElementById("toolsGrid");
@@ -113,7 +15,7 @@ const modeToggle = document.getElementById("modeToggle");
 const modeIcon = document.getElementById("modeIcon");
 const modeText = document.getElementById("modeText");
 
-const storageKey = "trpgPortalThemeV2";
+const themeStorageKey = "trpgPortalThemeV2";
 
 function escapeHtml(value) {
   return String(value)
@@ -124,15 +26,45 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function getLanguage() {
+  if (window.TRPGLanguage && typeof window.TRPGLanguage.getLanguage === "function") {
+    return window.TRPGLanguage.getLanguage();
+  }
+
+  return portalI18n.defaultLanguage || "ja";
+}
+
+function t(path) {
+  if (window.TRPGLanguage && typeof window.TRPGLanguage.t === "function") {
+    return window.TRPGLanguage.t(path);
+  }
+
+  return path;
+}
+
+function getLocalizedValue(value) {
+  const language = getLanguage();
+
+  if (window.TRPGLanguage && typeof window.TRPGLanguage.getLocalizedValue === "function") {
+    return window.TRPGLanguage.getLocalizedValue(value, language);
+  }
+
+  if (value && typeof value === "object") {
+    return value[language] || value.ja || value.en || "";
+  }
+
+  return value || "";
+}
+
 function updateStatusCounts() {
   const counts = tools.reduce((acc, tool) => {
     acc[tool.status] = (acc[tool.status] || 0) + 1;
     return acc;
   }, {});
 
-  availableCount.textContent = counts.Available || 0;
-  productionCount.textContent = counts["In Production"] || 0;
-  ideaCount.textContent = counts.Idea || 0;
+  availableCount.textContent = counts.available || 0;
+  productionCount.textContent = counts.production || 0;
+  ideaCount.textContent = counts.idea || 0;
 }
 
 function getFilteredTools() {
@@ -140,11 +72,14 @@ function getFilteredTools() {
 
   return tools.filter((tool) => {
     const matchesCategory =
-      currentCategory === "All" || tool.category === currentCategory;
+      currentCategory === "all" || tool.category === currentCategory;
 
     const searchableText = [
-      tool.name,
-      tool.description,
+      getLocalizedValue(tool.name),
+      getLocalizedValue(tool.description),
+      t(`categories.${tool.category}`),
+      t(`status.${tool.status}`),
+      tool.id,
       tool.category,
       tool.status,
     ]
@@ -159,9 +94,14 @@ function getFilteredTools() {
 }
 
 function createToolCard(tool, index) {
-  const meta = statusMeta[tool.status] || statusMeta.Idea;
-  const isDisabled = tool.status === "Idea" || !tool.href;
+  const meta = statusMeta[tool.status] || statusMeta.idea;
+  const isDisabled = tool.status === "idea" || !tool.href;
   const tagName = isDisabled ? "article" : "a";
+
+  const toolName = getLocalizedValue(tool.name);
+  const toolDescription = getLocalizedValue(tool.description);
+  const toolCategory = t(`categories.${tool.category}`);
+  const statusLabel = t(`status.${tool.status}`);
 
   const card = document.createElement(tagName);
   card.className = `tool-card${isDisabled ? " is-disabled" : ""}`;
@@ -169,9 +109,9 @@ function createToolCard(tool, index) {
 
   if (!isDisabled) {
     card.href = tool.href;
-    card.setAttribute("aria-label", `Open ${tool.name}`);
+    card.setAttribute("aria-label", `${t("toolAction.open")} ${toolName}`);
   } else {
-    card.setAttribute("aria-label", `${tool.name}, coming soon`);
+    card.setAttribute("aria-label", `${toolName}, ${t("toolAction.comingSoon")}`);
   }
 
   card.innerHTML = `
@@ -179,16 +119,16 @@ function createToolCard(tool, index) {
       <div class="tool-icon" aria-hidden="true">${escapeHtml(tool.icon)}</div>
       <span class="status-badge ${escapeHtml(meta.className)}">
         <span aria-hidden="true">${escapeHtml(meta.icon)}</span>
-        ${escapeHtml(meta.label)}
+        ${escapeHtml(statusLabel)}
       </span>
     </div>
 
-    <p class="tool-category">${escapeHtml(tool.category)}</p>
-    <h2>${escapeHtml(tool.name)}</h2>
-    <p class="tool-description">${escapeHtml(tool.description)}</p>
+    <p class="tool-category">${escapeHtml(toolCategory)}</p>
+    <h2>${escapeHtml(toolName)}</h2>
+    <p class="tool-description">${escapeHtml(toolDescription)}</p>
 
     <div class="open-text">
-      ${isDisabled ? "Coming Soon" : "Open Tool →"}
+      ${isDisabled ? escapeHtml(t("toolAction.comingSoon")) : escapeHtml(t("toolAction.open"))}
     </div>
   `;
 
@@ -202,8 +142,8 @@ function renderTools() {
   if (filteredTools.length === 0) {
     toolsGrid.innerHTML = `
       <div class="empty-state">
-        <p class="empty-title">No tools found</p>
-        <p class="empty-text">Search keyword or category filter did not match any tool.</p>
+        <p class="empty-title">${escapeHtml(t("empty.title"))}</p>
+        <p class="empty-text">${escapeHtml(t("empty.text"))}</p>
       </div>
     `;
     return;
@@ -230,18 +170,24 @@ function setMode(mode) {
   document.body.classList.toggle("theme-dawn", isDawnMode);
 
   modeIcon.textContent = isDawnMode ? "☾" : "☀";
-  modeText.textContent = isDawnMode ? "Deep Space" : "Dawn";
+  modeText.textContent = isDawnMode
+    ? t("mode.switchToDeepSpace")
+    : t("mode.switchToDawn");
 
   modeToggle.setAttribute(
     "aria-label",
-    isDawnMode ? "Switch to deep space mode" : "Switch to dawn mode"
+    isDawnMode ? t("mode.ariaToDeepSpace") : t("mode.ariaToDawn")
   );
 
-  localStorage.setItem(storageKey, isDawnMode ? "dawn" : "deep-space");
+  localStorage.setItem(themeStorageKey, isDawnMode ? "dawn" : "deep-space");
+}
+
+function getCurrentMode() {
+  return document.body.classList.contains("theme-dawn") ? "dawn" : "deep-space";
 }
 
 function initMode() {
-  const savedMode = localStorage.getItem(storageKey);
+  const savedMode = localStorage.getItem(themeStorageKey);
 
   if (savedMode === "deep-space") {
     setMode("deep-space");
@@ -263,15 +209,24 @@ categoryButtons.addEventListener("click", (event) => {
     return;
   }
 
-  currentCategory = button.dataset.category || "All";
+  currentCategory = button.dataset.category || "all";
   updateCategoryButtons();
   renderTools();
 });
 
 modeToggle.addEventListener("click", () => {
-  const isDawnMode = document.body.classList.contains("theme-dawn");
-  setMode(isDawnMode ? "deep-space" : "dawn");
+  const currentMode = getCurrentMode();
+  setMode(currentMode === "dawn" ? "deep-space" : "dawn");
 });
+
+if (window.TRPGLanguage && typeof window.TRPGLanguage.onChange === "function") {
+  window.TRPGLanguage.onChange(() => {
+    updateStatusCounts();
+    updateCategoryButtons();
+    setMode(getCurrentMode());
+    renderTools();
+  });
+}
 
 updateStatusCounts();
 updateCategoryButtons();
