@@ -1,0 +1,978 @@
+/* =========================================================
+   使えるハッシュタグ検索
+   style.css
+   GitHub Pages / Static HTML Preview Version
+   ========================================================= */
+
+/* ---------- Base ---------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: #020617;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #020617;
+  color: #f1f5f9;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans JP",
+    "Hiragino Sans",
+    "Yu Gothic",
+    sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  border: 0;
+  cursor: default;
+  font: inherit;
+}
+
+svg {
+  display: block;
+}
+
+[aria-hidden="true"] button,
+.pointer-events-none button {
+  cursor: default;
+}
+
+/* =========================================================
+   Tailwind-like Utility Classes Used in Current HTML
+   ========================================================= */
+
+/* ---------- Position / Display ---------- */
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.inset-0 {
+  inset: 0;
+}
+
+.left-12 {
+  left: 3rem;
+}
+
+.top-16 {
+  top: 4rem;
+}
+
+.right-20 {
+  right: 5rem;
+}
+
+.top-40 {
+  top: 10rem;
+}
+
+.bottom-10 {
+  bottom: 2.5rem;
+}
+
+.left-1\/3 {
+  left: 33.333333%;
+}
+
+.left-1\/2 {
+  left: 50%;
+}
+
+.top-full {
+  top: 100%;
+}
+
+.-right-1 {
+  right: -0.25rem;
+}
+
+.-top-1 {
+  top: -0.25rem;
+}
+
+.-bottom-1 {
+  bottom: -0.25rem;
+}
+
+.z-20 {
+  z-index: 20;
+}
+
+.flex {
+  display: flex;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.grid {
+  display: grid;
+}
+
+.block {
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ---------- Size ---------- */
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.h-64 {
+  height: 16rem;
+}
+
+.w-64 {
+  width: 16rem;
+}
+
+.h-72 {
+  height: 18rem;
+}
+
+.w-72 {
+  width: 18rem;
+}
+
+.h-12 {
+  height: 3rem;
+}
+
+.w-12 {
+  width: 3rem;
+}
+
+.h-7 {
+  height: 1.75rem;
+}
+
+.w-7 {
+  width: 1.75rem;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.h-3\.5 {
+  height: 0.875rem;
+}
+
+.w-3\.5 {
+  width: 0.875rem;
+}
+
+.max-w-7xl {
+  max-width: 80rem;
+}
+
+.max-w-2xl {
+  max-width: 42rem;
+}
+
+.w-max {
+  width: max-content;
+}
+
+.shrink-0 {
+  flex-shrink: 0;
+}
+
+/* ---------- Layout ---------- */
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-5 {
+  margin-top: 1.25rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-5 {
+  gap: 1.25rem;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.break-words {
+  overflow-wrap: break-word;
+}
+
+.break-all {
+  word-break: break-all;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* ---------- Padding ---------- */
+
+.p-3 {
+  padding: 0.75rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.p-5 {
+  padding: 1.25rem;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.py-0\.5 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+}
+
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.py-1\.5 {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.py-5 {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+/* ---------- Border Radius ---------- */
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.rounded-3xl {
+  border-radius: 1.5rem;
+}
+
+/* ---------- Border ---------- */
+
+.border {
+  border-width: 1px;
+  border-style: solid;
+}
+
+.border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.border-white\/15 {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.border-cyan-200\/50 {
+  border-color: rgba(165, 243, 252, 0.5);
+}
+
+.border-cyan-300\/20 {
+  border-color: rgba(103, 232, 249, 0.2);
+}
+
+.border-cyan-300\/30 {
+  border-color: rgba(103, 232, 249, 0.3);
+}
+
+.border-cyan-300\/40 {
+  border-color: rgba(103, 232, 249, 0.4);
+}
+
+.border-violet-300\/30 {
+  border-color: rgba(196, 181, 253, 0.3);
+}
+
+.border-violet-300\/40 {
+  border-color: rgba(196, 181, 253, 0.4);
+}
+
+.border-amber-300\/30 {
+  border-color: rgba(252, 211, 77, 0.3);
+}
+
+.border-rose-300\/40 {
+  border-color: rgba(253, 164, 175, 0.4);
+}
+
+/* ---------- Background ---------- */
+
+.bg-slate-950 {
+  background-color: #020617;
+}
+
+.bg-slate-950\/80 {
+  background-color: rgba(2, 6, 23, 0.8);
+}
+
+.bg-slate-950\/95 {
+  background-color: rgba(2, 6, 23, 0.95);
+}
+
+.bg-slate-900\/70 {
+  background-color: rgba(15, 23, 42, 0.7);
+}
+
+.bg-slate-900\/80 {
+  background-color: rgba(15, 23, 42, 0.8);
+}
+
+.bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-cyan-300 {
+  background-color: #67e8f9;
+}
+
+.bg-cyan-300\/10 {
+  background-color: rgba(103, 232, 249, 0.1);
+}
+
+.bg-cyan-300\/15 {
+  background-color: rgba(103, 232, 249, 0.15);
+}
+
+.bg-cyan-300\/20 {
+  background-color: rgba(103, 232, 249, 0.2);
+}
+
+.bg-cyan-400 {
+  background-color: #22d3ee;
+}
+
+.bg-cyan-400\/10 {
+  background-color: rgba(34, 211, 238, 0.1);
+}
+
+.bg-violet-300\/10 {
+  background-color: rgba(196, 181, 253, 0.1);
+}
+
+.bg-violet-300\/20 {
+  background-color: rgba(196, 181, 253, 0.2);
+}
+
+.bg-amber-300\/10 {
+  background-color: rgba(252, 211, 77, 0.1);
+}
+
+.bg-rose-300\/20 {
+  background-color: rgba(253, 164, 175, 0.2);
+}
+
+.bg-indigo-500\/20 {
+  background-color: rgba(99, 102, 241, 0.2);
+}
+
+.bg-fuchsia-500\/10 {
+  background-color: rgba(217, 70, 239, 0.1);
+}
+
+/* Star field background */
+.bg-\[radial-gradient\(circle_at_20\%_20\%\,rgba\(255\,255\,255\,0\.14\)_1px\,transparent_1px\)\,radial-gradient\(circle_at_80\%_30\%\,rgba\(255\,255\,255\,0\.1\)_1px\,transparent_1px\)\,radial-gradient\(circle_at_40\%_70\%\,rgba\(255\,255\,255\,0\.08\)_1px\,transparent_1px\)\] {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+.bg-\[length\:90px_90px\] {
+  background-size: 90px 90px;
+}
+
+/* ---------- Text ---------- */
+
+.text-left {
+  text-align: left;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.text-slate-100 {
+  color: #f1f5f9;
+}
+
+.text-slate-200 {
+  color: #e2e8f0;
+}
+
+.text-slate-300 {
+  color: #cbd5e1;
+}
+
+.text-slate-400 {
+  color: #94a3b8;
+}
+
+.text-slate-500 {
+  color: #64748b;
+}
+
+.text-slate-950 {
+  color: #020617;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-cyan-50 {
+  color: #ecfeff;
+}
+
+.text-cyan-100 {
+  color: #cffafe;
+}
+
+.text-cyan-200 {
+  color: #a5f3fc;
+}
+
+.text-cyan-300 {
+  color: #67e8f9;
+}
+
+.text-violet-100 {
+  color: #ede9fe;
+}
+
+.text-amber-100 {
+  color: #fef3c7;
+}
+
+.text-rose-50 {
+  color: #fff1f2;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.tracking-wide {
+  letter-spacing: 0.025em;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.leading-5 {
+  line-height: 1.25rem;
+}
+
+.leading-6 {
+  line-height: 1.5rem;
+}
+
+/* ---------- Effects ---------- */
+
+.shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.shadow-xl {
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+}
+
+.shadow-2xl {
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.38);
+}
+
+.shadow-cyan-500\/10 {
+  box-shadow: 0 12px 28px rgba(6, 182, 212, 0.1);
+}
+
+.shadow-cyan-500\/20 {
+  box-shadow: 0 14px 32px rgba(6, 182, 212, 0.2);
+}
+
+.shadow-cyan-400\/20 {
+  box-shadow: 0 14px 32px rgba(34, 211, 238, 0.2);
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.blur-3xl {
+  filter: blur(64px);
+}
+
+.blur-\[2px\] {
+  filter: blur(2px);
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-70 {
+  opacity: 0.7;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.select-none {
+  user-select: none;
+}
+
+.transition {
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.-translate-x-1\/2 {
+  transform: translateX(-50%);
+}
+
+.hover\:-translate-y-0\.5:hover {
+  transform: translateY(-0.125rem);
+}
+
+.hover\:-translate-y-1:hover {
+  transform: translateY(-0.25rem);
+}
+
+.hover\:border-cyan-200\/50:hover {
+  border-color: rgba(165, 243, 252, 0.5);
+}
+
+.hover\:bg-cyan-300\/15:hover {
+  background-color: rgba(103, 232, 249, 0.15);
+}
+
+.hover\:bg-white\/10:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hover\:text-white:hover {
+  color: #ffffff;
+}
+
+.hover\:text-cyan-50:hover {
+  color: #ecfeff;
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+}
+
+.hover\:shadow-xl:hover {
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.36);
+}
+
+.hover\:shadow-cyan-400\/20:hover {
+  box-shadow: 0 14px 32px rgba(34, 211, 238, 0.2);
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* ---------- Animation ---------- */
+
+.animate-pulse {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* =========================================================
+   Custom Improvements for This Page
+   ========================================================= */
+
+/* Whole page */
+.min-h-screen.bg-slate-950.text-slate-100 {
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Header glass panel */
+header.rounded-3xl {
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06)),
+    rgba(15, 23, 42, 0.65);
+}
+
+/* Portal tooltip slight movement */
+.group:hover .group-hover\:opacity-100 {
+  transform: translateX(-50%) translateY(2px);
+}
+
+/* Header icon enhancement */
+.relative.flex.h-12.w-12.shrink-0.items-center.justify-center.rounded-2xl {
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 70% 25%, rgba(103, 232, 249, 0.12), transparent 30%),
+    rgba(15, 23, 42, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 28px rgba(34, 211, 238, 0.1);
+}
+
+.relative.flex.h-12.w-12.shrink-0.items-center.justify-center.rounded-2xl:hover {
+  transform: translateY(-2px);
+  border-color: rgba(165, 243, 252, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 16px 34px rgba(34, 211, 238, 0.2);
+}
+
+/* Icon star glow */
+.absolute.-right-1.-top-1.text-sm.text-cyan-200 {
+  text-shadow:
+    0 0 8px rgba(103, 232, 249, 0.8),
+    0 0 16px rgba(103, 232, 249, 0.35);
+}
+
+/* Magnifier glow */
+.absolute.-bottom-1.-right-1.flex.h-5.w-5.items-center.justify-center.rounded-full {
+  box-shadow:
+    0 8px 18px rgba(34, 211, 238, 0.18),
+    0 0 14px rgba(103, 232, 249, 0.16);
+}
+
+/* Blurred preview area */
+section[aria-hidden="true"] {
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+/* Keep header readable */
+header {
+  filter: none;
+  opacity: 1;
+}
+
+/* Prevent disabled preview from feeling clickable */
+section[aria-hidden="true"] a,
+section[aria-hidden="true"] button {
+  pointer-events: none;
+}
+
+/* =========================================================
+   Responsive Classes
+   ========================================================= */
+
+@media (min-width: 640px) {
+  .sm\:flex-row {
+    flex-direction: row;
+  }
+
+  .sm\:items-start {
+    align-items: flex-start;
+  }
+
+  .sm\:items-end {
+    align-items: flex-end;
+  }
+
+  .sm\:justify-between {
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-\[280px_minmax\(0\,1fr\)\] {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  }
+
+  .xl\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* =========================================================
+   Layout Defaults
+   ========================================================= */
+
+main.relative.mx-auto {
+  width: min(100% - 48px, 1280px);
+}
+
+section.grid.flex-1 {
+  grid-template-columns: 1fr;
+}
+
+aside.flex.flex-col {
+  min-width: 0;
+}
+
+.grid.gap-5.xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
+  grid-template-columns: 1fr;
+}
+
+.mt-5.grid.gap-4.md\:grid-cols-2.xl\:grid-cols-3 {
+  grid-template-columns: 1fr;
+}
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 720px) {
+  main.relative.mx-auto {
+    width: min(100% - 24px, 1280px);
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  header.rounded-3xl,
+  section.rounded-3xl,
+  .rounded-3xl {
+    border-radius: 22px;
+  }
+
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .py-6 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .text-3xl {
+    font-size: 1.55rem;
+    line-height: 2rem;
+  }
+
+  .h-12 {
+    height: 2.75rem;
+  }
+
+  .w-12 {
+    width: 2.75rem;
+  }
+
+  .h-7 {
+    height: 1.55rem;
+  }
+
+  .w-7 {
+    width: 1.55rem;
+  }
+
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
