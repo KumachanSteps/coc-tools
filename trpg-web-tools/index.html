@@ -13,7 +13,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>TRPG Web Tools</title>
+  <title>TRPG WEBツール</title>
   <meta
     name="description"
     content="TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのWebツール集です。"
@@ -38,29 +38,34 @@
         <div class="brand-mark" aria-hidden="true">✦</div>
 
         <div>
-          <p class="eyebrow">TRPG SESSION SUPPORT TOOLS</p>
-          <p class="topbar-subtitle">Starlit Portal / Tool Observatory</p>
+          <p class="eyebrow" data-i18n="header.eyebrow">TRPG セッション支援ツール</p>
+          <p class="topbar-subtitle" data-i18n="header.subtitle">星明かりのポータル / ツール観測所</p>
         </div>
       </div>
 
-      <button id="modeToggle" class="mode-button" type="button" aria-label="Switch to deep space mode">
-        <span id="modeIcon" aria-hidden="true">☾</span>
-        <span id="modeText">Deep Space</span>
-      </button>
+      <div class="topbar-actions">
+        <div id="languageButtons" class="language-buttons" aria-label="Language selection">
+          <button class="language-button is-active" type="button" data-lang="ja" aria-pressed="true">JP</button>
+          <button class="language-button" type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+
+        <button id="modeToggle" class="mode-button" type="button" aria-label="Switch to deep space mode">
+          <span id="modeIcon" aria-hidden="true">☾</span>
+          <span id="modeText">Deep Space</span>
+        </button>
+      </div>
     </header>
 
     <section class="hero-grid">
       <div class="hero-copy">
         <div class="hero-label">
           <span aria-hidden="true">✧</span>
-          自作TRPG Webツール集
+          <span data-i18n="hero.label">自作TRPG Webツール集</span>
         </div>
 
-        <h1>
-          TRPG <span class="title-accent">Web</span> Tools
-        </h1>
+        <h1 data-i18n="hero.title">TRPG WEBツール</h1>
 
-        <p class="lead">
+        <p class="lead" data-i18n="hero.lead">
           TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのポータルページです。
           星図のように並んだツール群から、使用したいツールを選択してください。
         </p>
@@ -70,17 +75,17 @@
         <div class="summary-grid">
           <div class="summary-item">
             <p id="availableCount" class="summary-number">0</p>
-            <p class="summary-label">Available</p>
+            <p class="summary-label" data-i18n="status.available">使用可能</p>
           </div>
 
           <div class="summary-item">
             <p id="productionCount" class="summary-number">0</p>
-            <p class="summary-label">Production</p>
+            <p class="summary-label" data-i18n="status.production">制作中</p>
           </div>
 
           <div class="summary-item">
             <p id="ideaCount" class="summary-number">0</p>
-            <p class="summary-label">Idea</p>
+            <p class="summary-label" data-i18n="status.idea">アイデア</p>
           </div>
         </div>
       </aside>
@@ -94,20 +99,21 @@
             id="searchInput"
             class="search-input"
             type="search"
-            placeholder="Search tools..."
+            placeholder="ツールを検索..."
+            data-i18n-placeholder="search.placeholder"
             aria-label="Search tools"
             autocomplete="off"
           />
         </div>
 
         <div id="categoryButtons" class="category-buttons" aria-label="Tool categories">
-          <button class="category-button is-active" type="button" data-category="All" aria-pressed="true">All</button>
-          <button class="category-button" type="button" data-category="Log Analysis" aria-pressed="false">Log Analysis</button>
-          <button class="category-button" type="button" data-category="Report Writing" aria-pressed="false">Report Writing</button>
-          <button class="category-button" type="button" data-category="Scenario Prep" aria-pressed="false">Scenario Prep</button>
-          <button class="category-button" type="button" data-category="Character Utility" aria-pressed="false">Character Utility</button>
-          <button class="category-button" type="button" data-category="Haishin Tracking" aria-pressed="false">Haishin Tracking</button>
-          <button class="category-button" type="button" data-category="GM Support" aria-pressed="false">GM Support</button>
+          <button class="category-button is-active" type="button" data-category="all" data-i18n="categories.all" aria-pressed="true">すべて</button>
+          <button class="category-button" type="button" data-category="logAnalysis" data-i18n="categories.logAnalysis" aria-pressed="false">ログ解析</button>
+          <button class="category-button" type="button" data-category="reportWriting" data-i18n="categories.reportWriting" aria-pressed="false">卓報告</button>
+          <button class="category-button" type="button" data-category="scenarioPrep" data-i18n="categories.scenarioPrep" aria-pressed="false">シナリオ準備</button>
+          <button class="category-button" type="button" data-category="characterUtility" data-i18n="categories.characterUtility" aria-pressed="false">キャラクター支援</button>
+          <button class="category-button" type="button" data-category="haishinTracking" data-i18n="categories.haishinTracking" aria-pressed="false">配信観測</button>
+          <button class="category-button" type="button" data-category="gmSupport" data-i18n="categories.gmSupport" aria-pressed="false">GM支援</button>
         </div>
       </div>
     </section>
@@ -115,10 +121,12 @@
     <section id="toolsGrid" class="tools-grid" aria-label="Tool list"></section>
 
     <footer>
-      <p>© TRPG Web Tools / Created for TRPG Session Support</p>
+      <p data-i18n="footer.copy">© TRPG WEBツール / Created for TRPG Session Support</p>
     </footer>
   </main>
 
+  <script src="./assets/js/i18n.js"></script>
+  <script src="./assets/js/language.js"></script>
   <script src="./assets/js/portal.js"></script>
 </body>
 </html>
