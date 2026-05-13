@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRPG Haishin Observatory</title>
+
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: rgba(15, 23, 42, 0.78);
+      --panel-soft: rgba(255, 255, 255, 0.06);
+      --panel-hover: rgba(255, 255, 255, 0.09);
+      --border: rgba(255, 255, 255, 0.1);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --muted-2: #64748b;
+      --indigo: #6366f1;
+      --indigo-soft: rgba(99, 102, 241, 0.16);
+      --cyan-soft: rgba(56, 189, 248, 0.14);
+      --amber-soft: rgba(252, 211, 77, 0.16);
+      --amber-border: rgba(252, 211, 77, 0.35);
+      --amber-text: #fde68a;
+      --red: #ef4444;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.38);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 5%, rgba(79, 70, 229, 0.28), transparent 30%),
+        radial-gradient(circle at 90% 12%, rgba(14, 165, 233, 0.16), transparent 34%),
+        radial-gradient(circle at 48% 100%, rgba(124, 58, 237, 0.15), transparent 36%),
+        var(--bg);
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0;
+      position: relative;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(165, 180, 252, 0.22);
+      border-radius: 999px;
+      color: #c7d2fe;
+      background: rgba(99, 102, 241, 0.12);
+      font-size: 12px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      max-width: 680px;
+      margin: 12px 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 9px 16px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.09);
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-light {
+      color: #020617;
+      background: #fff;
+      border-color: #fff;
+    }
+
+    .btn-light:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-indigo {
+      background: var(--indigo);
+      border-color: var(--indigo);
+    }
+
+    .btn-indigo:hover {
+      background: #818cf8;
+    }
+
+    .btn-red {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .btn-red:hover {
+      background: #f87171;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1.5fr 0.7fr 0.7fr 0.7fr;
+      gap: 14px;
+      padding: 16px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: rgba(15, 23, 42, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      outline: none;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.09);
+      padding: 0 16px;
+    }
+
+    .input {
+      padding-left: 44px;
+    }
+
+    .input::placeholder {
+      color: var(--muted);
+    }
+
+    .select option {
+      background: #0f172a;
+      color: var(--text);
+    }
+
+    .fav-panel {
+      padding: 16px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: rgba(15, 23, 42, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .fav-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .section-label {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .fav-panel p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .fav-note {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 9px 12px;
+      border: 1px solid rgba(252, 211, 77, 0.2);
+      border-radius: 18px;
+      color: var(--amber-text) !important;
+      background: rgba(252, 211, 77, 0.1);
+    }
+
+    .fav-counts,
+    .fav-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .count-pill {
+      width: fit-content;
+      padding: 5px 12px;
+      border-radius: 999px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .count-pill-main {
+      color: var(--amber-text);
+      background: rgba(252, 211, 77, 0.15);
+      border-color: rgba(252, 211, 77, 0.22);
+    }
+
+    .fav-filter {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 8px 12px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      transition: background 0.16s ease, transform 0.16s ease;
+    }
+
+    .fav-filter:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.11);
+    }
+
+    .fav-filter.active {
+      color: var(--amber-text);
+      background: rgba(252, 211, 77, 0.18);
+      border-color: rgba(252, 211, 77, 0.45);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.65fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .table-card,
+    .detail {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: rgba(15, 23, 42, 0.82);
+      box-shadow: var(--shadow);
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .session-grid {
+      min-width: 980px;
+      display: grid;
+      grid-template-columns: 0.55fr 0.8fr 1.35fr 0.6fr 0.8fr 0.9fr 0.75fr 0.45fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .table-head {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .session-row {
+      width: 100%;
+      padding: 16px;
+      border: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: inherit;
+      background: transparent;
+      text-align: left;
+      transition: background 0.15s ease;
+    }
+
+    .session-row:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .session-row.active {
+      background: rgba(99, 102, 241, 0.12);
+    }
+
+    .fav-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+
+    .fav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 26px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      transition: transform 0.16s ease, background 0.16s ease, color 0.16s ease;
+    }
+
+    .fav-btn:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .fav-btn.active {
+      color: var(--amber-text);
+      background: rgba(252, 211, 77, 0.18);
+      border-color: rgba(252, 211, 77, 0.45);
+    }
+
+    .fav-btn.compact {
+      width: 31px;
+      height: 27px;
+      padding: 0;
+    }
+
+    .date-main,
+    .scenario-main {
+      color: var(--text);
+      font-weight: 650;
+    }
+
+    .subtext {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .line-clamp {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      margin-top: 8px;
+      border: 1px solid;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+
+    .status-upcoming {
+      color: #075985;
+      background: #e0f2fe;
+      border-color: #bae6fd;
+    }
+
+    .status-live {
+      color: #991b1b;
+      background: #fee2e2;
+      border-color: #fecaca;
+    }
+
+    .status-archived {
+      color: #334155;
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+    }
+
+    .status-cancelled {
+      color: #3f3f46;
+      background: #e4e4e7;
+      border-color: #d4d4d8;
+    }
+
+    .status-unknown {
+      color: #92400e;
+      background: #fef3c7;
+      border-color: #fde68a;
+    }
+
+    .person-chip {
+      display: inline-flex;
+      margin: 5px 4px 0 0;
+      color: var(--muted-2);
+      font-size: 10px;
+    }
+
+    .person-chip.faved {
+      color: var(--amber-text);
+    }
+
+    .hashtag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #e0f2fe;
+      background: rgba(14, 165, 233, 0.16);
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      font-size: 12px;
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    .hashtag:hover {
+      transform: translateY(-1px);
+      background: rgba(14, 165, 233, 0.24);
+    }
+
+    .link-icons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+    }
+
+    .detail {
+      padding: 20px;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+    }
+
+    .detail-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .detail h2 {
+      margin: 8px 0 0;
+      font-size: 26px;
+      line-height: 1.16;
+      letter-spacing: -0.025em;
+    }
+
+    .detail-title-sub {
+      margin: 10px 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .detail-favs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .thumbnail {
+      height: 176px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: linear-gradient(135deg, #1e1b4b, #0f172a 48%, #164e63);
+    }
+
+    .thumbnail-play {
+      color: #fca5a5;
+      font-size: 52px;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .thumbnail-text {
+      margin-top: 8px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .field-label {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .field-value {
+      margin-top: 5px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-section {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .detail-section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: #e0e7ff;
+      background: rgba(99, 102, 241, 0.16);
+      border: 1px solid rgba(165, 180, 252, 0.18);
+      font-size: 11px;
+    }
+
+    .memo {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .detail-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .empty-state {
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1080px) {
+      .hero {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-actions {
+        justify-content: flex-start;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .detail {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 20px, 1280px);
+        padding: 18px 0;
+      }
+
+      .hero,
+      .controls,
+      .fav-panel,
+      .detail {
+        border-radius: 24px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .fav-head {
+        flex-direction: column;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="hero">
+      <div>
+        <div class="hero-kicker">
+          <span>✦</span>
+          <span>TRPG Web Tools / Observatory Mock</span>
+        </div>
+        <h1>TRPG Haishin Observatory</h1>
+        <p>
+          Upcoming YouTube TRPG sessions organized by scenario, system, GM/KP,
+          players, channel, hashtags, and favorites.
+        </p>
+      </div>
+
+      <div class="hero-actions">
+        <button class="btn btn-light" type="button" id="reloadBtn">↻ Reload Sheet</button>
+        <button class="btn btn-indigo" type="button" id="addBtn">＋ Add Session</button>
+      </div>
+    </header>
+
+    <section class="controls">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input
+          id="searchInput"
+          class="input"
+          type="search"
+          placeholder="Search title, scenario, KP, PL, channel, tags, hashtag..."
+        />
+      </div>
+
+      <select id="systemFilter" class="select">
+        <option value="all">All systems</option>
+        <option value="CoC">CoC</option>
+        <option value="Emoklore">Emoklore</option>
+      </select>
+
+      <select id="statusFilter" class="select">
+        <option value="all">All status</option>
+        <option value="upcoming">Upcoming</option>
+        <option value="live">Live</option>
+        <option value="archived">Archived</option>
+      </select>
+
+      <button class="btn" type="button">▾ More filters</button>
+    </section>
+
+    <section class="fav-panel">
+      <div class="fav-head">
+        <div>
+          <div class="section-label">Favorite filters</div>
+          <p>Favorite videos, scenarios, channels, and GM/KP/PL names can be used as quick filters.</p>
+          <p class="fav-note">
+            v1 note: Favorites are saved only in this browser with localStorage.
+            They will not automatically transfer to another device or browser.
+          </p>
+        </div>
+
+        <div class="fav-counts">
+          <div class="count-pill count-pill-main" id="favTotalCount">★ 0 fav items</div>
+          <div class="count-pill" id="favVideoCount">Fav videos: 0</div>
+          <div class="count-pill" id="favPeopleCount">Fav people: 0</div>
+        </div>
+      </div>
+
+      <div class="fav-filters">
+        <button class="fav-filter active" type="button" data-fav-filter="all">All sessions</button>
+        <button class="fav-filter" type="button" data-fav-filter="videos">★ Fav videos</button>
+        <button class="fav-filter" type="button" data-fav-filter="scenarios">★ Fav scenarios</button>
+        <button class="fav-filter" type="button" data-fav-filter="channels">★ Fav channels</button>
+        <button class="fav-filter" type="button" data-fav-filter="people">★ Fav GM/KP/PL</button>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="table-card">
+        <div class="table-scroll">
+          <div class="session-grid table-head">
+            <div>Fav</div>
+            <div>Date</div>
+            <div>Scenario / Live Title</div>
+            <div>System</div>
+            <div>GM/KP</div>
+            <div>Players</div>
+            <div>Hashtag</div>
+            <div>Links</div>
+          </div>
+
+          <div id="sessionRows"></div>
+        </div>
+      </section>
+
+      <aside class="detail" id="detailPanel"></aside>
+    </div>
+  </main>
+
+  <script>
+    const sampleSessions = [
+      {
+        id: "trpg_20260512_001",
+        status: "upcoming",
+        scheduled_at: "2026-05-15T21:00:00+09:00",
+        date_label: "5/15 Fri 21:00",
+        live_title: "【クトゥルフ神話TRPG】星環のダ・カーポ Day3 #さけひよダカーポ",
+        session_hashtag: "#さけひよダカーポ",
+        scenario_title: "星環のダ・カーポ",
+        system: "CoC",
+        edition: "6e",
+        gm_kp: "さけ",
+        players: "ひよこ / Kuma",
+        channel_name: "SakeHiyo TRPG",
+        youtube_url: "https://youtube.com/watch?v=sample01",
+        scenario_url: "https://booth.pm/sample01",
+        thumbnail_url: "",
+        tags: "秘匿HO, 2PL, 宇宙, キャンペーン",
+        language: "JP",
+        session_type: "campaign",
+        episode: "Day3",
+        source: "youtube_url",
+        memo: "歪曲のフーガまでネタバレ注意。",
+        last_updated: "2026-05-12 13:00"
+      },
+      {
+        id: "trpg_20260512_002",
+        status: "upcoming",
+        scheduled_at: "2026-05-18T20:00:00+09:00",
+        date_label: "5/18 Mon 20:00",
+        live_title: "【エモクロアTRPG】界獣 / DL: 蜂醸卓 #界獣観測卓",
+        session_hashtag: "#界獣観測卓",
+        scenario_title: "界獣",
+        system: "Emoklore",
+        edition: "-",
+        gm_kp: "蜂醸卓",
+        players: "凛々蝶 / 若",
+        channel_name: "怪異観測所",
+        youtube_url: "https://youtube.com/watch?v=sample02",
+        scenario_url: "",
+        thumbnail_url: "",
+        tags: "高校生, 怪異, バディ",
+        language: "JP",
+        session_type: "oneshot",
+        episode: "前編",
+        source: "manual",
+        memo: "シナリオURL未登録。",
+        last_updated: "2026-05-12 13:12"
+      },
+      {
+        id: "trpg_20260512_003",
+        status: "archived",
+        scheduled_at: "2026-05-09T22:00:00+09:00",
+        date_label: "5/9 Sat 22:00",
+        live_title: "【新クトゥルフ神話TRPG】Good-bye, John Doe #夜想ジョンドゥ",
+        session_hashtag: "#夜想ジョンドゥ",
+        scenario_title: "Good-bye, John Doe",
+        system: "CoC",
+        edition: "7e",
+        gm_kp: "Madoka",
+        players: "Pino / Hoshimi",
+        channel_name: "Nocturne Table",
+        youtube_url: "https://youtube.com/watch?v=sample03",
+        scenario_url: "https://talto.cc/sample03",
+        thumbnail_url: "",
+        tags: "2PL, 刑事, 法医学, 短編",
+        language: "JP",
+        session_type: "oneshot",
+        episode: "完結",
+        source: "manual",
+        memo: "アーカイブ確認済み。",
+        last_updated: "2026-05-10 09:30"
+      }
+    ];
+
+    const STORAGE_KEY = "trpgHaishinObservatoryFavoritesV1";
+
+    const defaultFavorites = {
+      videos: ["trpg_20260512_001"],
+      scenarios: ["星環のダ・カーポ"],
+      channels: ["SakeHiyo TRPG"],
+      people: ["さけ", "Pino"]
+    };
+
+    let sessions = [...sampleSessions];
+    let selectedId = sessions[0]?.id || null;
+    let favFilter = "all";
+    let favorites = loadFavorites();
+
+    const rowsEl = document.getElementById("sessionRows");
+    const detailEl = document.getElementById("detailPanel");
+    const searchInput = document.getElementById("searchInput");
+    const systemFilter = document.getElementById("systemFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    function loadFavorites() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return structuredClone(defaultFavorites);
+        const parsed = JSON.parse(saved);
+        return {
+          videos: Array.isArray(parsed.videos) ? parsed.videos : [],
+          scenarios: Array.isArray(parsed.scenarios) ? parsed.scenarios : [],
+          channels: Array.isArray(parsed.channels) ? parsed.channels : [],
+          people: Array.isArray(parsed.people) ? parsed.people : []
+        };
+      } catch {
+        return structuredClone(defaultFavorites);
+      }
+    }
+
+    function saveFavorites() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+    }
+
+    function splitPeople(value) {
+      return String(value || "")
+        .split(/\/|,|、|・/)
+        .map((v) => v.trim())
+        .filter(Boolean);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getXSearchUrl(hashtag) {
+      if (!hashtag) return "#";
+      const cleanTag = String(hashtag).replace(/^#/, "");
+      return `https://twitter.com/search?q=%23${encodeURIComponent(cleanTag)}&src=typed_query&f=live`;
+    }
+
+    function getStatusClass(status) {
+      const key = status || "unknown";
+      return `status-pill status-${key}`;
+    }
+
+    function isFavVideo(session) {
+      return favorites.videos.includes(session.id);
+    }
+
+    function isFavScenario(session) {
+      return favorites.scenarios.includes(session.scenario_title);
+    }
+
+    function isFavChannel(session) {
+      return favorites.channels.includes(session.channel_name);
+    }
+
+    function isFavPerson(name) {
+      return favorites.people.includes(name);
+    }
+
+    function sessionHasFavPerson(session) {
+      const people = [...splitPeople(session.gm_kp), ...splitPeople(session.players)];
+      return people.some((name) => favorites.people.includes(name));
+    }
+
+    function toggleFavorite(type, value) {
+      if (!type || !value) return;
+      const current = favorites[type] || [];
+      if (current.includes(value)) {
+        favorites[type] = current.filter((item) => item !== value);
+      } else {
+        favorites[type] = [...current, value];
+      }
+      saveFavorites();
+      render();
+    }
+
+    function getFilteredSessions() {
+      const q = searchInput.value.trim().toLowerCase();
+      const selectedSystem = systemFilter.value;
+      const selectedStatus = statusFilter.value;
+
+      return sessions.filter((session) => {
+        const blob = [
+          session.live_title,
+          session.scenario_title,
+          session.system,
+          session.edition,
+          session.gm_kp,
+          session.players,
+          session.channel_name,
+          session.session_hashtag,
+          session.tags,
+          session.memo
+        ].join(" ").toLowerCase();
+
+        const matchesQuery = !q || blob.includes(q);
+        const matchesSystem = selectedSystem === "all" || session.system === selectedSystem;
+        const matchesStatus = selectedStatus === "all" || session.status === selectedStatus;
+
+        const matchesFav =
+          favFilter === "all" ||
+          (favFilter === "videos" && isFavVideo(session)) ||
+          (favFilter === "scenarios" && isFavScenario(session)) ||
+          (favFilter === "channels" && isFavChannel(session)) ||
+          (favFilter === "people" && sessionHasFavPerson(session));
+
+        return matchesQuery && matchesSystem && matchesStatus && matchesFav;
+      });
+    }
+
+    function renderFavButton({ active, label, type, value, compact = false }) {
+      return `
+        <button
+          class="fav-btn ${active ? "active" : ""} ${compact ? "compact" : ""}"
+          type="button"
+          title="${escapeHtml(label)}"
+          data-fav-type="${escapeHtml(type)}"
+          data-fav-value="${escapeHtml(value)}"
+        >
+          ${active ? "★" : "☆"}${compact ? "" : ` <span>${escapeHtml(label)}</span>`}
+        </button>
+      `;
+    }
+
+    function renderHashtag(hashtag) {
+      if (!hashtag) return `<span class="subtext">—</span>`;
+      return `
+        <a class="hashtag" href="${escapeHtml(getXSearchUrl(hashtag))}" target="_blank" rel="noreferrer">
+          ${escapeHtml(hashtag)} ↗
+        </a>
+      `;
+    }
+
+    function renderPersonMiniChips(value) {
+      return splitPeople(value)
+        .map((name) => {
+          const faved = isFavPerson(name);
+          return `
+            <span class="person-chip ${faved ? "faved" : ""}">
+              ${faved ? "★" : "☆"} ${escapeHtml(name)}
+            </span>
+          `;
+        })
+        .join("");
+    }
+
+    function renderRows(filtered) {
+      if (filtered.length === 0) {
+        rowsEl.innerHTML = `<div class="empty-state">No sessions matched the current filters.</div>`;
+        return;
+      }
+
+      rowsEl.innerHTML = filtered.map((session) => {
+        const active = session.id === selectedId;
+
+        return `
+          <button class="session-row session-grid ${active ? "active" : ""}" type="button" data-session-id="${escapeHtml(session.id)}">
+            <div class="fav-stack">
+              ${renderFavButton({
+                active: isFavVideo(session),
+                label: "Fav video",
+                type: "videos",
+                value: session.id,
+                compact: true
+              })}
+              ${renderFavButton({
+                active: isFavScenario(session),
+                label: "Fav scenario",
+                type: "scenarios",
+                value: session.scenario_title,
+                compact: true
+              })}
+              ${renderFavButton({
+                active: isFavChannel(session),
+                label: "Fav channel",
+                type: "channels",
+                value: session.channel_name,
+                compact: true
+              })}
+            </div>
+
+            <div>
+              <div class="date-main">${escapeHtml(session.date_label)}</div>
+              <div class="${getStatusClass(session.status)}">${escapeHtml(session.status)}</div>
+            </div>
+
+            <div>
+              <div class="scenario-main">${escapeHtml(session.scenario_title)}</div>
+              <div class="subtext line-clamp">${escapeHtml(session.live_title)}</div>
+            </div>
+
+            <div>
+              <div>${escapeHtml(session.system)}</div>
+              <div class="subtext">${escapeHtml(session.edition)}</div>
+            </div>
+
+            <div>
+              <div>${escapeHtml(session.gm_kp)}</div>
+              ${renderPersonMiniChips(session.gm_kp)}
+            </div>
+
+            <div>
+              <div>${escapeHtml(session.players)}</div>
+              ${renderPersonMiniChips(session.players)}
+            </div>
+
+            <div>
+              ${renderHashtag(session.session_hashtag)}
+            </div>
+
+            <div class="link-icons">
+              <span title="YouTube">▶</span>
+              <span title="External link">↗</span>
+            </div>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function renderField(label, value) {
+      return `
+        <div class="field">
+          <div class="field-label">${escapeHtml(label)}</div>
+          <div class="field-value">${escapeHtml(value || "—")}</div>
+        </div>
+      `;
+    }
+
+    function renderTags(tags) {
+      return String(tags || "")
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .map((tag) => `<span class="tag">#${escapeHtml(tag)}</span>`)
+        .join("");
+    }
+
+    function renderSelectedDetail(selected) {
+      const people = [...splitPeople(selected.gm_kp), ...splitPeople(selected.players)];
+
+      detailEl.innerHTML = `
+        <div class="detail-head">
+          <div>
+            <div class="section-label">Selected session</div>
+            <h2>${escapeHtml(selected.scenario_title)}</h2>
+            <p class="detail-title-sub">${escapeHtml(selected.live_title)}</p>
+          </div>
+          <span class="${getStatusClass(selected.status)}">${escapeHtml(selected.status)}</span>
+        </div>
+
+        <div class="detail-favs">
+          ${renderFavButton({
+            active: isFavVideo(selected),
+            label: "Fav video",
+            type: "videos",
+            value: selected.id
+          })}
+          ${renderFavButton({
+            active: isFavScenario(selected),
+            label: "Fav scenario",
+            type: "scenarios",
+            value: selected.scenario_title
+          })}
+          ${renderFavButton({
+            active: isFavChannel(selected),
+            label: "Fav channel",
+            type: "channels",
+            value: selected.channel_name
+          })}
+        </div>
+
+        <div class="thumbnail">
+          <div>
+            <div class="thumbnail-play">▶</div>
+            <div class="thumbnail-text">Thumbnail preview field</div>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          ${renderField("scheduled_at", selected.scheduled_at)}
+          ${renderField("date_label", selected.date_label)}
+          ${renderField("system", selected.system)}
+          ${renderField("edition", selected.edition)}
+          ${renderField("gm_kp", selected.gm_kp)}
+          ${renderField("players", selected.players)}
+          ${renderField("channel_name", selected.channel_name)}
+          ${renderField("episode", selected.episode)}
+          ${renderField("session_hashtag", selected.session_hashtag)}
+          ${renderField("language", selected.language)}
+          ${renderField("session_type", selected.session_type)}
+          ${renderField("source", selected.source)}
+          ${renderField("last_updated", selected.last_updated)}
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">favorite GM/KP/PL</div>
+          <div class="tag-list">
+            ${people.map((name) => renderFavButton({
+              active: isFavPerson(name),
+              label: name,
+              type: "people",
+              value: name
+            })).join("")}
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title"># session hashtag</div>
+          ${renderHashtag(selected.session_hashtag)}
+          <p class="subtext">Click to open X / Twitter search for this session hashtag.</p>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title"># tags</div>
+          <div class="tag-list">
+            ${renderTags(selected.tags)}
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">🕒 memo</div>
+          <p class="memo">${escapeHtml(selected.memo || "—")}</p>
+        </div>
+
+        <div class="detail-actions">
+          <a class="btn btn-red" href="${escapeHtml(selected.youtube_url || "#")}" target="_blank" rel="noreferrer">▶ YouTube</a>
+          <a class="btn btn-light" href="${escapeHtml(selected.scenario_url || "#")}" target="_blank" rel="noreferrer">↗ Scenario URL</a>
+        </div>
+      `;
+    }
+
+    function updateFavCounts() {
+      const total = favorites.videos.length + favorites.scenarios.length + favorites.channels.length + favorites.people.length;
+      document.getElementById("favTotalCount").textContent = `★ ${total} fav items`;
+      document.getElementById("favVideoCount").textContent = `Fav videos: ${favorites.videos.length}`;
+      document.getElementById("favPeopleCount").textContent = `Fav people: ${favorites.people.length}`;
+    }
+
+    function render() {
+      updateFavCounts();
+
+      const filtered = getFilteredSessions();
+      if (!sessions.some((session) => session.id === selectedId)) {
+        selectedId = sessions[0]?.id || null;
+      }
+
+      if (filtered.length > 0 && !filtered.some((session) => session.id === selectedId)) {
+        selectedId = filtered[0].id;
+      }
+
+      const selected = sessions.find((session) => session.id === selectedId) || filtered[0] || sessions[0];
+
+      renderRows(filtered);
+
+      if (selected) {
+        renderSelectedDetail(selected);
+      } else {
+        detailEl.innerHTML = `<div class="empty-state">No selected session.</div>`;
+      }
+    }
+
+    document.addEventListener("click", (event) => {
+      const favButton = event.target.closest("[data-fav-type][data-fav-value]");
+      if (favButton) {
+        event.stopPropagation();
+        toggleFavorite(favButton.dataset.favType, favButton.dataset.favValue);
+        return;
+      }
+
+      const row = event.target.closest("[data-session-id]");
+      if (row) {
+        selectedId = row.dataset.sessionId;
+        render();
+        return;
+      }
+
+      const favFilterButton = event.target.closest("[data-fav-filter]");
+      if (favFilterButton) {
+        favFilter = favFilterButton.dataset.favFilter;
+        document.querySelectorAll("[data-fav-filter]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.favFilter === favFilter);
+        });
+        render();
+      }
+    });
+
+    searchInput.addEventListener("input", render);
+    systemFilter.addEventListener("change", render);
+    statusFilter.addEventListener("change", render);
+
+    document.getElementById("reloadBtn").addEventListener("click", () => {
+      render();
+    });
+
+    document.getElementById("addBtn").addEventListener("click", () => {
+      alert("v1 mock: Add Session form will be implemented later.");
+    });
+
+    render();
+  </script>
+</body>
+</html>
