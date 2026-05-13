@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <title>TRPGシナリオ情報カード作成ツール Beta</title>
+  <link rel="stylesheet" href="snippet_builder_style.css">
+</head>
+
+<body>
+  <div class="app" id="appRoot">
+    <header class="app-header">
+      <div class="header-title-group">
+        <div class="app-title">TRPGシナリオ情報カード作成ツール</div>
+        <div class="app-subtitle">シナリオ本文を貼り付け、編集用本文から必要情報をカード化し、ココフォリア用スニペットとしてコピーできます。</div>
+      </div>
+      <button id="themeToggle" class="theme-switch" type="button" aria-label="ライトモードとナイトモードを切り替え">
+        <span class="theme-switch-track">
+          <span class="theme-icon">☀</span>
+          <span class="theme-icon">☾</span>
+        </span>
+        <span class="theme-knob"></span>
+      </button>
+    </header>
+
+    <button id="showSourceBtn" class="source-toggle">入力パネルを表示</button>
+
+    <section class="panel upper-panel">
+      <div class="toolbar">
+        <h1>TRPGシナリオ情報カード作成ツール Beta</h1>
+      </div>
+
+      <div class="beta-note">
+        <strong>Beta版:</strong> テキスト貼り付け、本文編集、情報カード作成、コピーに対応しています。<br>
+        PDF/ファイル読み込みはまだ未対応です。<br>
+        作業内容はこのブラウザ内に自動保存されます。
+      </div>
+
+      <textarea id="pasteText" placeholder="シナリオ本文をここに貼り付け"></textarea>
+
+      <div class="toolbar">
+        <button class="primary" id="parseBtn">本文を反映</button>
+        <button id="clearBtn">クリア</button>
+        <span class="hint">貼り付け → 本文を反映 → 編集欄に表示</span>
+      </div>
+
+      <section class="format-rules">
+        <h3>整形ルール</h3>
+        <div class="rule-grid">
+          <label class="rule-check"><input type="checkbox" id="keepLineBreaks" checked>元の改行を保持</label>
+          <label class="rule-check"><input type="checkbox" id="removeBlankLines" checked>余分な空行を削除</label>
+          <label class="rule-check"><input type="checkbox" id="trimLineSpaces" checked>行頭・行末の空白を削除</label>
+          <label class="rule-check"><input type="checkbox" id="normalizeFullWidthSpaces">全角スペースを整える</label>
+          <label class="rule-check"><input type="checkbox" id="mergePdfLines">PDF改行を結合</label>
+          <label class="rule-check"><input type="checkbox" id="splitByBlankLines">空行ごとに分割</label>
+          <label class="rule-check"><input type="checkbox" id="preserveHeadings" checked>見出し行を保持</label>
+        </div>
+      </section>
+    </section>
+
+    <main class="main-layout">
+      <section class="panel left-panel">
+        <h2>編集用本文</h2>
+
+        <div class="search-row">
+          <input id="searchBox" type="text" placeholder="本文検索..." />
+          <button id="searchBtn">検索</button>
+          <button id="prevSearchBtn" class="search-nav-btn" title="前の検索結果へ">↑</button>
+          <button id="nextSearchBtn" class="search-nav-btn" title="次の検索結果へ">↓</button>
+          <span id="searchCount" class="search-count">0 / 0</span>
+        </div>
+
+        <textarea id="parsedText" placeholder="読み込んだ本文・編集可能テキスト"></textarea>
+
+        <div class="selection-controls">
+          <select id="selectionCardType"></select>
+          <button class="primary" id="createFromSelectionBtn">選択範囲からカード作成</button>
+          <span class="hint">本文上で範囲選択してカード化</span>
+        </div>
+      </section>
+
+      <section class="panel right-panel">
+        <div class="cards-header">
+          <h2>情報カード</h2>
+          <div class="new-card-controls">
+            <select id="newCardType"></select>
+            <button class="primary" id="addCardBtn">+ 新規カード</button>
+          </div>
+        </div>
+
+        <div id="typeFilterRow" class="type-filter-row"></div>
+        <div id="status" class="status"></div>
+        <div id="cardsList" class="cards-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="snippet_builder.js"></script>
+</body>
+</html>
