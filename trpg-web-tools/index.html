@@ -6,208 +6,167 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-NJD5JZML31');
+    gtag("js", new Date());
+    gtag("config", "G-NJD5JZML31");
   </script>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- アイコン設定 -->
-  <link rel="icon" href="./shared/assets/kuma_icon.ico" type="image/x-icon">
-
   <title>TRPG Web Tools</title>
+  <meta
+    name="description"
+    content="TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのWebツール集です。"
+  />
 
-  <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --accent-soft: #e0ecff;
-      --border: #e5e7eb;
-      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, #e0ecff 0, transparent 32%),
-        linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-      color: var(--text);
-    }
-
-    .page {
-      width: min(1080px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 56px 0;
-    }
-
-    header {
-      margin-bottom: 32px;
-      text-align: center;
-    }
-
-    .eyebrow {
-      display: inline-block;
-      margin-bottom: 12px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      line-height: 1.1;
-      letter-spacing: -0.04em;
-    }
-
-    .lead {
-      max-width: 680px;
-      margin: 18px auto 0;
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.8;
-    }
-
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 20px;
-      margin-top: 36px;
-    }
-
-    .tool-card {
-      display: flex;
-      flex-direction: column;
-      min-height: 220px;
-      padding: 24px;
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: var(--shadow);
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-      backdrop-filter: blur(10px);
-    }
-
-    .tool-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(37, 99, 235, 0.32);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-    }
-
-    .tool-icon {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 18px;
-      border-radius: 16px;
-      background: var(--accent-soft);
-      font-size: 1.5rem;
-    }
-
-    .tool-card h2 {
-      margin: 0 0 10px;
-      font-size: 1.2rem;
-      letter-spacing: -0.02em;
-    }
-
-    .tool-card p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 0.95rem;
-    }
-
-    .open-text {
-      margin-top: auto;
-      padding-top: 20px;
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 0.92rem;
-    }
-
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 860px) {
-      .tools-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .page {
-        padding: 36px 0;
-      }
-
-      .tool-card {
-        min-height: auto;
-      }
-    }
-  </style>
+  <link rel="icon" href="./assets/img/kuma_icon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="./assets/css/portal.css" />
 </head>
 
 <body>
+  <div class="background-space" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="nebula nebula-a"></div>
+    <div class="nebula nebula-b"></div>
+    <div class="nebula nebula-c"></div>
+    <div class="orbit-line"></div>
+  </div>
+
   <main class="page">
-    <header>
-      <div class="eyebrow">TRPG SESSION SUPPORT TOOLS</div>
-      <h1>TRPG Web Tools</h1>
-      <p class="lead">
-        TRPGセッション準備・ログ解析・卓報告作成を補助するためのWebツール集です。
-        使用したいツールを選択してください。
-      </p>
+    <header class="topbar">
+      <div class="brand-row">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 2.75L13.8 8.2L19.25 10L13.8 11.8L12 17.25L10.2 11.8L4.75 10L10.2 8.2L12 2.75Z"
+              stroke="currentColor"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M19 15.5L19.75 17.75L22 18.5L19.75 19.25L19 21.5L18.25 19.25L16 18.5L18.25 17.75L19 15.5Z"
+              stroke="currentColor"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <p class="eyebrow">TRPG SESSION SUPPORT TOOLS</p>
+          <p class="topbar-subtitle">Starlit Portal / Tool Observatory</p>
+        </div>
+      </div>
+
+      <button id="modeToggle" class="mode-button" type="button" aria-label="Switch to dawn mode">
+        <span id="modeIcon" aria-hidden="true">☀</span>
+        <span id="modeText">Dawn</span>
+      </button>
     </header>
 
-    <section class="tools-grid" aria-label="ツール一覧">
-      <a class="tool-card" href="./dice-stat-analyst/">
-        <div class="tool-icon">🎲</div>
-        <h2>Dice Stat Analyst</h2>
-        <p>
-          セッションログからダイスロールを解析し、探索者ごとの成功率・クリティカル・ファンブル・出目分布を確認するツールです。
-        </p>
-        <div class="open-text">Open Tool →</div>
-      </a>
+    <section class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-label">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 3L13.45 8.55L19 10L13.45 11.45L12 17L10.55 11.45L5 10L10.55 8.55L12 3Z"
+              stroke="currentColor"
+              stroke-linejoin="round"
+            />
+          </svg>
+          自作TRPG Webツール集
+        </div>
 
-      <a class="tool-card" href="./session-report-generator/">
-        <div class="tool-icon">📝</div>
-        <h2>Session Report Generator</h2>
-        <p>
-          KP・PL・PC情報を入力して、X/Twitter向けの卓報告文を生成するツールです。
-        </p>
-        <div class="open-text">Open Tool →</div>
-      </a>
+        <h1>
+          TRPG <span class="title-accent">Web</span> Tools
+        </h1>
 
-      <a class="tool-card" href="./iachara-charamemo-creator/">
-        <div class="tool-icon">📋</div>
-        <h2>Iachara Charamemo Creator</h2>
-        <p>
-          いあきゃらのキャラクター情報から、キャラメモやコマ情報を整形するためのツールです。
+        <p class="lead">
+          TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのポータルページです。
+          星図のように並んだツール群から、使用したいツールを選択してください。
         </p>
-        <div class="open-text">Open Tool →</div>
-      </a>
+      </div>
+
+      <aside class="status-summary" aria-label="Tool status summary">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <p id="availableCount" class="summary-number">0</p>
+            <p class="summary-label">Available</p>
+          </div>
+
+          <div class="summary-item">
+            <p id="productionCount" class="summary-number">0</p>
+            <p class="summary-label">Production</p>
+          </div>
+
+          <div class="summary-item">
+            <p id="ideaCount" class="summary-number">0</p>
+            <p class="summary-label">Idea</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="filter-panel" aria-label="Tool filters">
+      <div class="filter-row">
+        <div class="search-box">
+          <span class="search-mark" aria-hidden="true">⌕</span>
+          <input
+            id="searchInput"
+            class="search-input"
+            type="search"
+            placeholder="Search tools..."
+            aria-label="Search tools"
+            autocomplete="off"
+          />
+        </div>
+
+        <div id="categoryButtons" class="category-buttons" aria-label="Tool categories">
+          <button class="category-button is-active" type="button" data-category="All" aria-pressed="true">
+            All
+          </button>
+          <button class="category-button" type="button" data-category="Log Analysis" aria-pressed="false">
+            Log Analysis
+          </button>
+          <button class="category-button" type="button" data-category="Report Writing" aria-pressed="false">
+            Report Writing
+          </button>
+          <button class="category-button" type="button" data-category="Scenario Prep" aria-pressed="false">
+            Scenario Prep
+          </button>
+          <button class="category-button" type="button" data-category="Character Utility" aria-pressed="false">
+            Character Utility
+          </button>
+          <button class="category-button" type="button" data-category="Haishin Tracking" aria-pressed="false">
+            Haishin Tracking
+          </button>
+          <button class="category-button" type="button" data-category="GM Support" aria-pressed="false">
+            GM Support
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="toolsGrid" class="tools-grid" aria-label="Tool list">
+      <noscript>
+        <article class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon" aria-hidden="true">📊</div>
+            <span class="status-badge status-available">✓ Available</span>
+          </div>
+          <p class="tool-category">Log Analysis</p>
+          <h2>Dice Stat Analyst</h2>
+          <p class="tool-description">
+            セッションログHTML / テキストから、探索者ごとの成功率・クリティカル・ファンブル・出目分布を解析します。
+          </p>
+          <div class="open-text">Open Tool</div>
+        </article>
+      </noscript>
     </section>
 
     <footer>
-      <p>© TRPG Web Tools</p>
+      <p>© TRPG Web Tools / Created for TRPG Session Support</p>
     </footer>
   </main>
+
+  <script src="./assets/js/portal.js"></script>
 </body>
 </html>
