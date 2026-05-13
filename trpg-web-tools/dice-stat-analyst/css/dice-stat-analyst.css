@@ -1,9 +1,10 @@
 /* =========================================================
    Dice Stat Analyst
-   Inspired by Tsukaeru Hashtag TL Searcher UI
+   Visual theme adapted from Tsukaeru Hashtag TL Searcher
+   Layout positions preserved
    ========================================================= */
 
-/* ---------- Base ---------- */
+/* ---------- Base Theme ---------- */
 
 :root{
   --bg-main:#020617;
@@ -36,8 +37,10 @@
 
   --success:#86efac;
   --success-bg:rgba(34,197,94,.14);
+
   --danger:#fda4af;
   --danger-bg:rgba(251,113,133,.16);
+
   --fail:#fde68a;
   --fail-bg:rgba(252,211,77,.12);
 
@@ -48,7 +51,7 @@
   --shadow-panel:0 24px 60px rgba(0,0,0,.35);
   --shadow-cyan:0 16px 36px rgba(34,211,238,.18);
 
-  /* Existing variable aliases */
+  /* Existing aliases used by current HTML/JS */
   --bg:var(--bg-main);
   --panel:var(--bg-panel);
   --ink:var(--text-main);
@@ -141,17 +144,15 @@ a{
 
 /* =========================================================
    Header
+   Layout preserved
    ========================================================= */
 
 header{
   flex:0 0 auto;
-  margin:24px auto 0;
-  width:min(100% - 48px,1480px);
-  padding:20px 24px;
-  border:1px solid var(--border-soft);
-  border-radius:var(--radius-3xl);
+  padding:20px 24px 18px;
+  border-bottom:1px solid var(--border-soft);
   background:rgba(255,255,255,.10);
-  box-shadow:0 26px 70px rgba(0,0,0,.36);
+  box-shadow:0 26px 70px rgba(0,0,0,.22);
   backdrop-filter:blur(18px);
   display:flex;
   align-items:flex-start;
@@ -166,13 +167,12 @@ header{
 
 .header-tag-row{
   display:flex;
-  align-items:center;
   flex-wrap:wrap;
+  align-items:center;
   gap:8px;
   margin:0 0 18px;
 }
 
-/* Portal link */
 .header-home-pill{
   position:relative;
   display:inline-flex;
@@ -258,7 +258,7 @@ header p{
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  gap:12px;
+  gap:14px;
   flex:0 0 auto;
   padding-top:2px;
 }
@@ -268,20 +268,21 @@ header p{
   flex-direction:column;
   justify-content:center;
   align-items:stretch;
-  gap:8px;
+  gap:6px;
+  height:54px;
 }
 
 .language-toggle-button,
 .shortcut-help-button{
-  width:124px;
-  min-width:124px;
-  height:34px;
-  min-height:34px;
+  width:112px;
+  min-width:112px;
+  height:24px;
+  min-height:24px;
   margin:0;
-  padding:0 14px;
+  padding:0 12px;
   border-radius:999px;
   font-size:12px;
-  font-weight:800;
+  font-weight:850;
   line-height:1;
   display:inline-flex;
   align-items:center;
@@ -330,29 +331,31 @@ header p{
 
 /* =========================================================
    Layout
+   Position preserved
    ========================================================= */
 
 main{
   flex:1 1 auto;
   min-height:0;
-  width:min(100% - 48px,1480px);
-  margin:20px auto 24px;
-  padding:0;
+  width:100%;
+  max-width:1480px;
+  margin:0 auto;
+  padding:18px;
   display:grid;
-  grid-template-columns:360px minmax(0,1fr);
-  gap:20px;
+  grid-template-columns:370px minmax(0,1fr);
+  gap:18px;
   align-items:stretch;
   overflow:hidden;
   transition:grid-template-columns .22s ease,max-width .22s ease;
 }
 
 main.input-collapsed{
-  width:min(100% - 48px,1580px);
+  max-width:1580px;
   grid-template-columns:72px minmax(0,1fr);
 }
 
 section{
-  padding:20px;
+  padding:18px;
   border:1px solid var(--border-soft);
   border-radius:var(--radius-3xl);
   background:var(--bg-panel);
@@ -1151,6 +1154,7 @@ textarea::-webkit-scrollbar-thumb{
 
 /* =========================================================
    Responsive
+   Position preserved from current Dice layout
    ========================================================= */
 
 @media(max-width:980px){
@@ -1163,7 +1167,6 @@ textarea::-webkit-scrollbar-thumb{
   header{
     flex-direction:column;
     align-items:stretch;
-    width:min(100% - 32px,1480px);
   }
 
   .header-actions{
@@ -1173,7 +1176,6 @@ textarea::-webkit-scrollbar-thumb{
   main,
   main.input-collapsed{
     height:auto;
-    width:min(100% - 32px,1480px);
     max-width:1480px;
     overflow:visible;
     grid-template-columns:1fr;
@@ -1211,10 +1213,7 @@ textarea::-webkit-scrollbar-thumb{
 
 @media(max-width:720px){
   header{
-    width:min(100% - 24px,1480px);
-    margin-top:12px;
     padding:18px;
-    border-radius:22px;
   }
 
   header h1{
@@ -1236,33 +1235,22 @@ textarea::-webkit-scrollbar-thumb{
   }
 
   .header-mini-actions{
-    gap:6px;
+    height:50px;
+    gap:5px;
   }
 
   .language-toggle-button,
   .shortcut-help-button{
-    width:116px;
-    min-width:116px;
-    height:32px;
-    min-height:32px;
-    padding:0 10px;
+    width:106px;
+    min-width:106px;
+    height:22.5px;
+    min-height:22.5px;
+    padding:0 8px;
     font-size:11px;
   }
 
   .shortcut-tip{
     font-size:11px;
-  }
-
-  main,
-  main.input-collapsed{
-    width:min(100% - 24px,1480px);
-    margin-top:12px;
-    margin-bottom:12px;
-  }
-
-  section{
-    padding:16px;
-    border-radius:22px;
   }
 
   .grid-results{
