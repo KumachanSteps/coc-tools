@@ -25,29 +25,75 @@
 <body>
   <header class="site-header">
     <div class="header-inner">
+
+      <!-- Header Top Row: Portal Link + Tags + Controls -->
       <div class="header-top-row">
-        <a
-          class="portal-link"
-          href="https://kumachansteps.github.io/coc-tools/trpg-web-tools/index.html"
-          data-i18n="nav.backToTools"
-        >
-          ← TRPG Web Tools
-          <span class="portal-tooltip">Return to TRPG Web Tools Portal</span>
-        </a>
+        <div class="header-top-tags">
+          <a
+            class="portal-link"
+            href="https://kumachansteps.github.io/coc-tools/trpg-web-tools/index.html"
+            data-i18n="nav.backToTools"
+          >
+            ← TRPG Web Tools
+            <span class="portal-tooltip">Return to TRPG Web Tools Portal</span>
+          </a>
 
-        <span class="header-pill header-pill-cyan" data-i18n="tag.diceLogInput">
-          ダイスログインプット
-        </span>
+          <span class="header-pill header-pill-cyan" data-i18n="tag.diceLogInput">
+            ダイスログインプット
+          </span>
 
-        <span class="header-pill header-pill-violet" data-i18n="tag.coc67">
-          CoC 6版 / 7版
-        </span>
+          <span class="header-pill header-pill-violet" data-i18n="tag.coc67">
+            CoC 6版 / 7版
+          </span>
 
-        <span class="header-pill header-pill-amber" data-i18n="tag.growthCheckerLink">
-          成長チェッカーと連携
-        </span>
+          <span class="header-pill header-pill-amber" data-i18n="tag.growthCheckerLink">
+            成長チェッカーと連携
+          </span>
+        </div>
+
+        <div class="header-actions">
+          <div class="header-mini-actions">
+            <button
+              id="languageToggleBtn"
+              class="language-toggle-button"
+              type="button"
+              aria-label="英語表示に切替"
+            >
+              EN
+            </button>
+
+            <button
+              id="shortcutHelpBtn"
+              class="shortcut-help-button"
+              type="button"
+              aria-label="ショートカット一覧を開く"
+              data-i18n="button.shortcuts"
+            >
+              ⌨ Shortcuts
+            </button>
+          </div>
+
+          <button
+            id="themeToggleBtn"
+            class="theme-switch"
+            type="button"
+            aria-label="ナイトモードに切替"
+            aria-pressed="false"
+            title="ナイトモードに切替"
+          >
+            <span class="theme-switch-track">
+              <span class="theme-switch-side theme-switch-side-sun">☀</span>
+              <span class="theme-switch-side theme-switch-side-moon">☾</span>
+              <span class="theme-switch-thumb">
+                <span class="theme-switch-thumb-icon theme-switch-thumb-sun">☀</span>
+                <span class="theme-switch-thumb-icon theme-switch-thumb-moon"></span>
+              </span>
+            </span>
+          </button>
+        </div>
       </div>
 
+      <!-- Header Main Row: Title Area -->
       <div class="header-main-row">
         <div class="header-title-area">
           <div class="title-row">
@@ -83,39 +129,11 @@
             <kbd>?</kbd> でショートカット一覧
           </p>
         </div>
-
-        <div class="header-actions">
-          <div class="header-mini-actions">
-            <button id="languageToggleBtn" class="language-toggle-button" type="button" aria-label="英語表示に切替">
-              EN
-            </button>
-
-            <button
-              id="shortcutHelpBtn"
-              class="shortcut-help-button"
-              type="button"
-              aria-label="ショートカット一覧を開く"
-              data-i18n="button.shortcuts"
-            >
-              ⌨ Shortcuts
-            </button>
-          </div>
-
-          <button id="themeToggleBtn" class="theme-switch" type="button" aria-label="ナイトモードに切替" aria-pressed="false" title="ナイトモードに切替">
-            <span class="theme-switch-track">
-              <span class="theme-switch-side theme-switch-side-sun">☀</span>
-              <span class="theme-switch-side theme-switch-side-moon">☾</span>
-              <span class="theme-switch-thumb">
-                <span class="theme-switch-thumb-icon theme-switch-thumb-sun">☀</span>
-                <span class="theme-switch-thumb-icon theme-switch-thumb-moon"></span>
-              </span>
-            </span>
-          </button>
-        </div>
       </div>
     </div>
   </header>
 
+  <!-- Shortcut Modal -->
   <div id="shortcutModal" class="shortcut-modal" aria-hidden="true">
     <div class="shortcut-modal-backdrop" id="shortcutModalBackdrop"></div>
 
@@ -126,7 +144,12 @@
           <h2 id="shortcutModalTitle" data-i18n="shortcut.title">ショートカット一覧</h2>
         </div>
 
-        <button id="shortcutModalCloseBtn" class="shortcut-modal-close" type="button" aria-label="ショートカット一覧を閉じる">
+        <button
+          id="shortcutModalCloseBtn"
+          class="shortcut-modal-close"
+          type="button"
+          aria-label="ショートカット一覧を閉じる"
+        >
           ×
         </button>
       </div>
@@ -232,8 +255,14 @@
     </div>
   </div>
 
+  <!-- Screenshot Mode Floating Action -->
   <div id="screenshotActionBar" class="screenshot-action-bar">
-    <button id="screenshotExitBtn" class="screenshot-exit-button" type="button" data-i18n="button.exitScreenshot">
+    <button
+      id="screenshotExitBtn"
+      class="screenshot-exit-button"
+      type="button"
+      data-i18n="button.exitScreenshot"
+    >
       通常表示に戻す
     </button>
   </div>
@@ -306,13 +335,26 @@
     <section>
       <div class="tabs">
         <div class="tabs-left">
-          <button class="tab-button active" data-tab="summary" data-i18n="tab.summary">キャラクター別サマリー</button>
-          <button class="tab-button" data-tab="chart" data-i18n="tab.chart">分布チャート</button>
-          <button class="tab-button" data-tab="rolls" data-i18n="tab.rolls">抽出ロール</button>
+          <button class="tab-button active" data-tab="summary" data-i18n="tab.summary">
+            キャラクター別サマリー
+          </button>
+
+          <button class="tab-button" data-tab="chart" data-i18n="tab.chart">
+            分布チャート
+          </button>
+
+          <button class="tab-button" data-tab="rolls" data-i18n="tab.rolls">
+            抽出ロール
+          </button>
         </div>
 
         <div class="tabs-right">
-          <button id="summaryShotBtn" class="summary-shot-button" type="button" data-i18n="button.screenshot">
+          <button
+            id="summaryShotBtn"
+            class="summary-shot-button"
+            type="button"
+            data-i18n="button.screenshot"
+          >
             📷 スクショ表示
           </button>
 
@@ -330,7 +372,12 @@
         <h2 data-i18n="summary.characterTitle">キャラクター別サマリー</h2>
 
         <div class="character-control-bar">
-          <button id="characterControlToggleBtn" class="character-control-toggle" type="button" data-i18n="button.showCharacterControls">
+          <button
+            id="characterControlToggleBtn"
+            class="character-control-toggle"
+            type="button"
+            data-i18n="button.showCharacterControls"
+          >
             表示キャラ設定を開く
           </button>
         </div>
@@ -368,7 +415,9 @@
 
         <div class="card">
           <h3 data-i18n="summary.memoTitle">メモ</h3>
-          <p id="summaryMemo" class="note" data-i18n="summary.selectLog">ログデータを選択ください。</p>
+          <p id="summaryMemo" class="note" data-i18n="summary.selectLog">
+            ログデータを選択ください。
+          </p>
         </div>
       </div>
 
@@ -384,24 +433,28 @@
           <thead>
             <tr>
               <th data-i18n="rolls.index">#</th>
+
               <th>
                 <span class="sortable-header">
                   <span data-i18n="rolls.character">キャラクター</span>
                   <button class="sort-button" data-sort-key="character">↕</button>
                 </span>
               </th>
+
               <th>
                 <span class="sortable-header">
                   <span data-i18n="rolls.value">出目</span>
                   <button class="sort-button" data-sort-key="value">↕</button>
                 </span>
               </th>
+
               <th>
                 <span class="sortable-header">
                   <span data-i18n="rolls.classification">分類</span>
                   <button class="sort-button" data-sort-key="classification">↕</button>
                 </span>
               </th>
+
               <th data-i18n="rolls.sourceLine">元ログ行</th>
             </tr>
           </thead>
