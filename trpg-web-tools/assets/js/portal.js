@@ -96,16 +96,30 @@ function getFilteredTools() {
 function createToolCard(tool, index) {
   const meta = statusMeta[tool.status] || statusMeta.idea;
   const isDisabled = tool.status === "idea" || !tool.href;
+  const isDevelopment = tool.status === "production";
   const tagName = isDisabled ? "article" : "a";
 
   const toolName = getLocalizedValue(tool.name);
   const toolDescription = getLocalizedValue(tool.description);
   const toolCategory = t(`categories.${tool.category}`);
   const statusLabel = t(`status.${tool.status}`);
+  const developmentPreviewText = t("toolAction.developmentPreview");
 
   const card = document.createElement(tagName);
-  card.className = `tool-card${isDisabled ? " is-disabled" : ""}`;
+  card.className = [
+    "tool-card",
+    `tool-card-status-${tool.status}`,
+    isDisabled ? "is-disabled" : "",
+    isDevelopment ? "is-development" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   card.style.animationDelay = `${index * 0.045}s`;
+
+  if (isDevelopment) {
+    card.setAttribute("data-hover-message", developmentPreviewText);
+  }
 
   if (!isDisabled) {
     card.href = tool.href;
@@ -130,6 +144,12 @@ function createToolCard(tool, index) {
     <div class="open-text">
       ${isDisabled ? escapeHtml(t("toolAction.comingSoon")) : escapeHtml(t("toolAction.open"))}
     </div>
+
+    ${
+      isDevelopment
+        ? `<div class="tool-hover-message">${escapeHtml(developmentPreviewText)}</div>`
+        : ""
+    }
   `;
 
   return card;

@@ -23,7 +23,7 @@ window.TRPG_PORTAL_I18N = {
       },
       status: {
         available: "使用可能",
-        production: "制作中",
+        production: "開発中",
         idea: "アイデア",
       },
       categories: {
@@ -44,6 +44,7 @@ window.TRPG_PORTAL_I18N = {
       toolAction: {
         open: "ツールを開く →",
         comingSoon: "Coming Soon",
+        developmentPreview: "デザインだけ先に見る",
       },
       empty: {
         title: "該当するツールがありません",
@@ -75,7 +76,7 @@ window.TRPG_PORTAL_I18N = {
       },
       status: {
         available: "Available",
-        production: "Production",
+        production: "In Development",
         idea: "Idea",
       },
       categories: {
@@ -96,6 +97,7 @@ window.TRPG_PORTAL_I18N = {
       toolAction: {
         open: "Open Tool →",
         comingSoon: "Coming Soon",
+        developmentPreview: "Preview the design first",
       },
       empty: {
         title: "No tools found",
@@ -114,7 +116,7 @@ window.TRPG_PORTAL_I18N = {
     },
     production: {
       className: "status-production",
-      icon: "⚗",
+      icon: "⚙",
     },
     idea: {
       className: "status-idea",
