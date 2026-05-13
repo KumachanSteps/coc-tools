@@ -1315,3 +1315,168 @@ textarea::-webkit-scrollbar-thumb{
     width:100%;
   }
 }
+
+/* =========================================================
+   Dice Stat Analyst - Header Icon
+   White dice + stat bars + star
+   ========================================================= */
+
+.title-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:16px;
+}
+
+/* Icon container */
+.tool-icon{
+  position:relative;
+  display:flex;
+  width:48px;
+  height:48px;
+  flex-shrink:0;
+  align-items:center;
+  justify-content:center;
+
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:18px;
+
+  background:rgba(15,23,42,.80);
+  box-shadow:0 12px 28px rgba(34,211,238,.10);
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.tool-icon:hover{
+  transform:translateY(-2px);
+  border-color:rgba(165,243,252,.45);
+  background:rgba(15,23,42,.92);
+  box-shadow:0 16px 34px rgba(34,211,238,.20);
+}
+
+/* White dice SVG */
+.tool-icon-dice{
+  width:30px;
+  height:30px;
+  color:#ffffff;
+  filter:drop-shadow(0 2px 6px rgba(255,255,255,.12));
+}
+
+/* ✦ star */
+.tool-icon-star{
+  position:absolute;
+  top:-6px;
+  right:-4px;
+
+  color:#a5f3fc;
+  font-size:14px;
+  line-height:1;
+
+  text-shadow:
+    0 0 8px rgba(103,232,249,.70),
+    0 0 16px rgba(103,232,249,.35);
+}
+
+/* Stat bars badge */
+.tool-icon-stats{
+  position:absolute;
+  right:-5px;
+  bottom:-5px;
+
+  display:flex;
+  width:22px;
+  height:20px;
+  align-items:flex-end;
+  justify-content:center;
+  gap:2px;
+
+  padding:3px 4px;
+
+  border:1px solid rgba(165,243,252,.50);
+  border-radius:999px;
+
+  background:rgba(103,232,249,.15);
+  box-shadow:0 8px 18px rgba(34,211,238,.18);
+  backdrop-filter:blur(10px);
+}
+
+.tool-icon-stat-bar{
+  display:block;
+  width:3px;
+  border-radius:999px;
+  background:#cffafe;
+  box-shadow:0 0 6px rgba(103,232,249,.35);
+}
+
+.tool-icon-stat-bar-1{
+  height:6px;
+  opacity:.72;
+}
+
+.tool-icon-stat-bar-2{
+  height:10px;
+  opacity:.88;
+}
+
+.tool-icon-stat-bar-3{
+  height:14px;
+  opacity:1;
+}
+
+/* Optional hover animation */
+.tool-icon:hover .tool-icon-stat-bar-1{
+  height:8px;
+}
+
+.tool-icon:hover .tool-icon-stat-bar-2{
+  height:13px;
+}
+
+.tool-icon:hover .tool-icon-stat-bar-3{
+  height:16px;
+}
+
+.tool-icon-stat-bar{
+  transition:height 160ms ease, opacity 160ms ease;
+}
+
+/* Mobile */
+@media(max-width:720px){
+  .title-row{
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .tool-icon{
+    width:44px;
+    height:44px;
+    border-radius:16px;
+  }
+
+  .tool-icon-dice{
+    width:27px;
+    height:27px;
+  }
+
+  .tool-icon-stats{
+    width:21px;
+    height:19px;
+  }
+
+  .tool-icon-stat-bar-1{
+    height:5px;
+  }
+
+  .tool-icon-stat-bar-2{
+    height:9px;
+  }
+
+  .tool-icon-stat-bar-3{
+    height:13px;
+  }
+}
+
