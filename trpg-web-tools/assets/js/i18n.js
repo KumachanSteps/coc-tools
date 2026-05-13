@@ -132,7 +132,7 @@ window.TRPG_PORTAL_I18N = {
       category: "logAnalysis",
       href: "./dice-stat-analyst/",
       name: {
-        ja: "Dice Stat Analyst",
+        ja: "ダイス解析アナライザー",
         en: "Dice Stat Analyst",
       },
       description: {
@@ -148,7 +148,7 @@ window.TRPG_PORTAL_I18N = {
       category: "logAnalysis",
       href: "./coc-growth-checker/",
       name: {
-        ja: "CoC 6e/7e Growth Checker",
+        ja: "CoC 6版/7版成長ツール",
         en: "CoC 6e/7e Growth Checker",
       },
       description: {
@@ -163,7 +163,7 @@ window.TRPG_PORTAL_I18N = {
       category: "reportWriting",
       href: "./session-report-generator/",
       name: {
-        ja: "Session Report Generator",
+        ja: "卓報告ジェネレーター",
         en: "Session Report Generator",
       },
       description: {
@@ -178,7 +178,7 @@ window.TRPG_PORTAL_I18N = {
       category: "scenarioPrep",
       href: "./scenario-snippet-builder/",
       name: {
-        ja: "Scenario Info Snippet Builder",
+        ja: "シナリオ情報カード作成ツール",
         en: "Scenario Info Snippet Builder",
       },
       description: {
