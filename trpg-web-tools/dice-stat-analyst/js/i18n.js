@@ -12,7 +12,7 @@ const I18N = {
 
     "common.unknown": "不明",
 
-    "app.title": "Dice Stat Analyst",
+    "app.title": "ダイス統計アナライザー",
     "app.description": "セッションログHTML / テキストからd100ロールを抽出し、キャラクター別にクリティカル・ファンブル率、10刻み分布を生成します。",
     "app.tip": "Tip: <kbd>Ctrl/Cmd</kbd> + <kbd>Enter</kbd> で分析 ｜ <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> でスクショ表示 ｜ <kbd>?</kbd> でショートカット一覧",
 
