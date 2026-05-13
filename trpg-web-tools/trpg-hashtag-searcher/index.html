@@ -1,405 +1,1201 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>使えるハッシュタグ検索 | TRPG Web Tools</title>
-  <link rel="stylesheet" href="./css/hash_tag_style.css">
+
+  <meta
+    name="description"
+    content="TRPGでよく使うX検索をワンクリックで作成できる、ハッシュタグ検索ランチャーです。"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: #020617;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #020617;
+      color: #f1f5f9;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans JP",
+        "Hiragino Sans",
+        "Yu Gothic",
+        sans-serif;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      border: 0;
+      color: inherit;
+    }
+
+    .page-shell {
+      position: relative;
+      min-height: 100vh;
+      background: #020617;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+
+    .bg-effects {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bg-blob {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(64px);
+    }
+
+    .bg-blob-1 {
+      left: 3rem;
+      top: 4rem;
+      width: 16rem;
+      height: 16rem;
+      background: rgba(99, 102, 241, 0.2);
+    }
+
+    .bg-blob-2 {
+      right: 5rem;
+      top: 10rem;
+      width: 18rem;
+      height: 18rem;
+      background: rgba(34, 211, 238, 0.1);
+    }
+
+    .bg-blob-3 {
+      left: 33%;
+      bottom: 2.5rem;
+      width: 18rem;
+      height: 18rem;
+      background: rgba(217, 70, 239, 0.1);
+    }
+
+    .bg-stars {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+        radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 90px 90px;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 48px, 1280px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .site-header,
+    .panel {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06)),
+        rgba(15, 23, 42, 0.72);
+      box-shadow:
+        0 26px 70px rgba(0, 0, 0, 0.36),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .site-header {
+      padding: 20px 24px;
+    }
+
+    .header-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .portal-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.7);
+      padding: 4px 12px;
+      color: #a5f3fc;
+      font-size: 12px;
+      line-height: 1.4;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+      transition:
+        transform 160ms ease,
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease;
+    }
+
+    .portal-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(165, 243, 252, 0.5);
+      background: rgba(103, 232, 249, 0.15);
+      color: #ecfeff;
+      box-shadow: 0 14px 32px rgba(34, 211, 238, 0.2);
+    }
+
+    .portal-tooltip {
+      pointer-events: none;
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      z-index: 20;
+      width: max-content;
+      margin-top: 8px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      background: rgba(2, 6, 23, 0.95);
+      padding: 8px 12px;
+      color: #ecfeff;
+      font-size: 12px;
+      opacity: 0;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      white-space: nowrap;
+    }
+
+    .portal-link:hover .portal-tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(2px);
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .tag-cyan {
+      border: 1px solid rgba(103, 232, 249, 0.3);
+      background: rgba(103, 232, 249, 0.1);
+      color: #cffafe;
+    }
+
+    .tag-violet {
+      border: 1px solid rgba(196, 181, 253, 0.3);
+      background: rgba(196, 181, 253, 0.1);
+      color: #ede9fe;
+    }
+
+    .tag-amber {
+      border: 1px solid rgba(252, 211, 77, 0.3);
+      background: rgba(252, 211, 77, 0.1);
+      color: #fef3c7;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .tool-icon {
+      position: relative;
+      display: flex;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 72% 25%, rgba(103, 232, 249, 0.12), transparent 32%),
+        rgba(15, 23, 42, 0.82);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 12px 28px rgba(34, 211, 238, 0.1);
+      transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease;
+    }
+
+    .tool-icon:hover {
+      transform: translateY(-2px);
+      border-color: rgba(165, 243, 252, 0.45);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 16px 34px rgba(34, 211, 238, 0.2);
+    }
+
+    .tool-icon-bird {
+      width: 28px;
+      height: 28px;
+      color: #fff;
+      filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.12));
+    }
+
+    .tool-icon-star {
+      position: absolute;
+      right: -4px;
+      top: -4px;
+      color: #a5f3fc;
+      font-size: 14px;
+      line-height: 1;
+      text-shadow:
+        0 0 8px rgba(103, 232, 249, 0.8),
+        0 0 16px rgba(103, 232, 249, 0.35);
+    }
+
+    .tool-icon-search {
+      position: absolute;
+      right: -4px;
+      bottom: -4px;
+      display: flex;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(165, 243, 252, 0.5);
+      border-radius: 999px;
+      background: rgba(103, 232, 249, 0.15);
+      box-shadow:
+        0 8px 18px rgba(34, 211, 238, 0.18),
+        0 0 14px rgba(103, 232, 249, 0.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .tool-icon-search svg {
+      width: 14px;
+      height: 14px;
+      color: #cffafe;
+    }
+
+    .site-title {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: #f8fafc;
+    }
+
+    .site-description {
+      max-width: 680px;
+      margin: 8px 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 20px;
+      flex: 1;
+    }
+
+    .side-column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .content-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+      gap: 20px;
+    }
+
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel {
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.82);
+    }
+
+    .panel-small {
+      padding: 16px;
+    }
+
+    .panel-title {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .panel-title-sm {
+      margin: 0;
+      color: #e2e8f0;
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .panel-subtitle {
+      margin: 4px 0 0;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .mode-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mode-button {
+      width: 100%;
+      border-radius: 16px;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .mode-button:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .mode-button.active {
+      background: #22d3ee;
+      color: #020617;
+      font-weight: 700;
+      box-shadow: 0 14px 32px rgba(6, 182, 212, 0.2);
+    }
+
+    .panel-heading-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .count-badge {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 8px;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .help-text {
+      margin: 8px 0 0;
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .favorite-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .favorite-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+    }
+
+    .favorite-query {
+      margin: 0;
+      color: #e2e8f0;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .favorite-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: #67e8f9;
+      color: #020617;
+      box-shadow: 0 14px 32px rgba(6, 182, 212, 0.2);
+    }
+
+    .btn-soft {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .btn-cyan-soft {
+      background: rgba(103, 232, 249, 0.15);
+      color: #cffafe;
+    }
+
+    .btn-violet-soft {
+      background: rgba(196, 181, 253, 0.2);
+      color: #ede9fe;
+    }
+
+    .btn-compact {
+      padding: 4px 12px;
+      font-size: 12px;
+    }
+
+    .composer-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .spoiler-toggle {
+      border: 1px solid rgba(252, 211, 77, 0.3);
+      border-radius: 999px;
+      background: rgba(252, 211, 77, 0.1);
+      padding: 8px 16px;
+      color: #fef3c7;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .input-group,
+    .chip-section {
+      margin-top: 20px;
+    }
+
+    .section-label {
+      display: block;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mock-input {
+      margin-top: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.8);
+      padding: 12px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .caret {
+      margin-left: 4px;
+      color: #67e8f9;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 12px;
+      color: #cbd5e1;
+      font-size: 14px;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .chip-violet {
+      border-color: rgba(196, 181, 253, 0.4);
+      background: rgba(196, 181, 253, 0.2);
+      color: #ede9fe;
+    }
+
+    .chip-cyan {
+      border-color: rgba(103, 232, 249, 0.4);
+      background: rgba(103, 232, 249, 0.2);
+      color: #ecfeff;
+    }
+
+    .chip-rose {
+      border-color: rgba(253, 164, 175, 0.4);
+      background: rgba(253, 164, 175, 0.2);
+      color: #fff1f2;
+    }
+
+    .generated-box {
+      margin-top: 20px;
+      border: 1px solid rgba(103, 232, 249, 0.2);
+      border-radius: 24px;
+      background: rgba(103, 232, 249, 0.1);
+      padding: 16px;
+    }
+
+    .generated-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .generated-query {
+      margin: 12px 0 0;
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.8);
+      padding: 16px;
+      color: #ecfeff;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .generated-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .scenario-input {
+      margin-top: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.8);
+      padding: 12px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .search-line-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .search-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px 12px;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .search-line span {
+      word-break: break-all;
+    }
+
+    .daily-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .daily-button {
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      color: #e2e8f0;
+      font-size: 14px;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .daily-button:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .preset-section {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .preset-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 16px;
+      transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .preset-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+    }
+
+    .preset-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .preset-title {
+      margin: 0;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .preset-description {
+      margin: 4px 0 0;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .preset-tag {
+      flex-shrink: 0;
+      border-radius: 999px;
+      background: rgba(103, 232, 249, 0.15);
+      padding: 4px 8px;
+      color: #cffafe;
+      font-size: 12px;
+    }
+
+    .preset-query {
+      margin: 16px 0 0;
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.8);
+      padding: 12px;
+      color: #e2e8f0;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .preset-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 1180px) {
+      .content-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .preset-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        width: min(100% - 32px, 1280px);
+      }
+
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side-column {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 24px, 1280px);
+        padding: 12px 0;
+      }
+
+      .site-header,
+      .panel {
+        border-radius: 22px;
+      }
+
+      .site-header,
+      .panel {
+        padding: 18px;
+      }
+
+      .title-row {
+        align-items: flex-start;
+      }
+
+      .tool-icon {
+        width: 44px;
+        height: 44px;
+      }
+
+      .tool-icon-bird {
+        width: 26px;
+        height: 26px;
+      }
+
+      .site-title {
+        font-size: 26px;
+      }
+
+      .composer-heading,
+      .section-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .side-column {
+        display: flex;
+      }
+
+      .daily-grid,
+      .preset-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .generated-actions,
+      .preset-actions {
+        flex-direction: column;
+      }
+
+      .generated-actions .btn,
+      .preset-actions .btn {
+        width: 100%;
+      }
+
+      .portal-tooltip {
+        left: 0;
+        transform: translateX(0);
+      }
+
+      .portal-link:hover .portal-tooltip {
+        transform: translateX(0) translateY(2px);
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <div class="min-h-screen bg-slate-950 text-slate-100">
-    <div class="pointer-events-none fixed inset-0 overflow-hidden">
-      <div class="absolute left-12 top-16 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"></div>
-      <div class="absolute right-20 top-40 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl"></div>
-      <div class="absolute bottom-10 left-1/3 h-72 w-72 rounded-full bg-fuchsia-500/10 blur-3xl"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.14)_1px,transparent_1px),radial-gradient(circle_at_80%_30%,rgba(255,255,255,0.1)_1px,transparent_1px),radial-gradient(circle_at_40%_70%,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[length:90px_90px]"></div>
+  <div class="page-shell">
+    <div class="bg-effects">
+      <div class="bg-blob bg-blob-1"></div>
+      <div class="bg-blob bg-blob-2"></div>
+      <div class="bg-blob bg-blob-3"></div>
+      <div class="bg-stars"></div>
     </div>
 
-    <main class="relative mx-auto flex min-h-screen max-w-7xl flex-col gap-5 px-6 py-6">
-      <header class="rounded-3xl border border-white/10 bg-white/10 px-6 py-5 shadow-2xl backdrop-blur">
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <a
-              class="group relative inline-flex rounded-full border border-white/10 bg-slate-900/70 px-3 py-1 text-xs text-cyan-200 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200/50 hover:bg-cyan-300/15 hover:text-cyan-50 hover:shadow-lg hover:shadow-cyan-400/20"
-              href="https://kumachansteps.github.io/coc-tools/trpg-web-tools/index.html"
-            >
+    <main class="page">
+      <header class="site-header">
+        <div class="header-inner">
+          <div class="header-top">
+            <a class="portal-link" href="https://kumachansteps.github.io/coc-tools/trpg-web-tools/index.html">
               ← TRPG Web Tools
-              <span class="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-max -translate-x-1/2 rounded-xl border border-white/10 bg-slate-950/95 px-3 py-2 text-xs text-cyan-50 opacity-0 shadow-xl shadow-cyan-500/10 backdrop-blur transition group-hover:opacity-100">
-                TRPG WEB Tools ポータルサイトに戻る
-              </span>
+              <span class="portal-tooltip">TRPG WEB Tools ポータルサイトに戻る</span>
             </a>
 
-            <span class="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100">X/Twitter Search</span>
-            <span class="rounded-full border border-violet-300/30 bg-violet-300/10 px-3 py-1 text-xs text-violet-100">TRPG Daily Use</span>
-            <span class="rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-xs text-amber-100">Local Preset</span>
+            <span class="tag-pill tag-cyan">X/Twitter Search</span>
+            <span class="tag-pill tag-violet">TRPG Daily Use</span>
+            <span class="tag-pill tag-amber">Local Preset</span>
           </div>
 
           <div>
-            <div class="mt-4 flex items-center gap-3">
-              <div class="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-slate-900/80 shadow-lg shadow-cyan-500/10">
-                <svg
-                  viewBox="0 0 64 64"
-                  class="h-7 w-7 text-white"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
+            <div class="title-row">
+              <div class="tool-icon">
+                <svg viewBox="0 0 64 64" class="tool-icon-bird" fill="currentColor" aria-hidden="true">
                   <path d="M55.8 18.7c-1.7.8-3.5 1.3-5.4 1.6 1.9-1.2 3.4-3 4.1-5.1-1.8 1.1-3.8 1.9-5.9 2.4a9.2 9.2 0 0 0-15.9 6.3c0 .7.1 1.4.2 2C25.3 25.5 18.5 22 13.9 16.6c-.8 1.3-1.2 2.9-1.2 4.5 0 3.2 1.6 6 4.1 7.6-1.5 0-2.9-.5-4.2-1.2v.1c0 4.4 3.1 8.1 7.3 9-1.3.4-2.7.5-4.1.2 1.1 3.5 4.4 6.1 8.2 6.2A18.5 18.5 0 0 1 12 46.9c-.8 0-1.5 0-2.3-.1A26.1 26.1 0 0 0 23.8 51c16.9 0 26.2-14 26.2-26.2v-1.2c1.8-1.2 3.4-2.9 4.7-4.9Z"></path>
                 </svg>
 
-                <span class="absolute -right-1 -top-1 text-sm text-cyan-200">✦</span>
+                <span class="tool-icon-star">✦</span>
 
-                <div class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border border-cyan-200/50 bg-cyan-300/15 backdrop-blur">
-                  <svg
-                    viewBox="0 0 24 24"
-                    class="h-3.5 w-3.5 text-cyan-100"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
+                <div class="tool-icon-search">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="11" cy="11" r="6"></circle>
                     <path d="M20 20l-3.5-3.5"></path>
                   </svg>
                 </div>
               </div>
 
-              <h1 class="text-3xl font-bold tracking-tight md:text-4xl">
-                使えるハッシュタグ検索
-              </h1>
+              <h1 class="site-title">使えるハッシュタグ検索</h1>
             </div>
 
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+            <p class="site-description">
               TRPGでよく使うX検索をワンクリックで作成できます。ハッシュタグ、検索ワード、フィルター、ネタバレ回避用の除外ワードを組み合わせて、目的に合った検索をすばやく開けます。
             </p>
           </div>
         </div>
       </header>
 
-      <section class="pointer-events-none grid flex-1 select-none gap-5 lg:grid-cols-[280px_minmax(0,1fr)]" aria-hidden="true">
-        <aside class="flex flex-col gap-5">
-          <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-4 shadow-xl backdrop-blur">
-            <h2 class="text-sm font-semibold text-slate-200">Search Modes</h2>
-
-            <div class="mt-3 grid gap-2">
-              <button class="rounded-2xl bg-cyan-400 px-4 py-3 text-left text-sm text-slate-950 shadow-lg shadow-cyan-500/20">
-                Daily Patrol
-              </button>
-              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
-                卓募集
-              </button>
-              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
-                素材探し
-              </button>
-              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
-                シナリオ探し
-              </button>
-              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
-                感想 / 卓報告
-              </button>
-              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
-                配信
-              </button>
+      <section class="main-layout" aria-hidden="true">
+        <aside class="side-column">
+          <div class="panel panel-small">
+            <h2 class="panel-title-sm">Search Modes</h2>
+            <div class="mode-list">
+              <button class="mode-button active">Daily Patrol</button>
+              <button class="mode-button">卓募集</button>
+              <button class="mode-button">素材探し</button>
+              <button class="mode-button">シナリオ探し</button>
+              <button class="mode-button">感想 / 卓報告</button>
+              <button class="mode-button">配信</button>
             </div>
           </div>
 
-          <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-4 shadow-xl backdrop-blur">
-            <div class="flex items-center justify-between">
-              <h2 class="text-sm font-semibold text-slate-200">My Favorites</h2>
-              <span class="rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300">3</span>
+          <div class="panel panel-small">
+            <div class="panel-heading-row">
+              <h2 class="panel-title-sm">My Favorites</h2>
+              <span class="count-badge">3</span>
             </div>
 
-            <p class="mt-2 text-xs leading-5 text-slate-400">
+            <p class="help-text">
               Favorites are saved only in this browser and will not transfer to another device.
             </p>
 
-            <div class="mt-3 grid gap-2">
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-3">
-                <p class="break-words text-xs leading-5 text-slate-200">#さけひよダカーポ filter:images lang:ja</p>
-                <div class="mt-2 flex gap-2">
-                  <button class="rounded-full bg-cyan-300/15 px-3 py-1 text-xs text-cyan-100">Open</button>
-                  <button class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Copy</button>
+            <div class="favorite-list">
+              <div class="favorite-card">
+                <p class="favorite-query">#さけひよダカーポ filter:images lang:ja</p>
+                <div class="favorite-actions">
+                  <button class="btn btn-cyan-soft btn-compact">Open</button>
+                  <button class="btn btn-soft btn-compact">Copy</button>
                 </div>
               </div>
 
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-3">
-                <p class="break-words text-xs leading-5 text-slate-200">#GoodCocofoliaOheya2025 filter:images</p>
-                <div class="mt-2 flex gap-2">
-                  <button class="rounded-full bg-cyan-300/15 px-3 py-1 text-xs text-cyan-100">Open</button>
-                  <button class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Copy</button>
+              <div class="favorite-card">
+                <p class="favorite-query">#GoodCocofoliaOheya2025 filter:images</p>
+                <div class="favorite-actions">
+                  <button class="btn btn-cyan-soft btn-compact">Open</button>
+                  <button class="btn btn-soft btn-compact">Copy</button>
                 </div>
               </div>
 
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-3">
-                <p class="break-words text-xs leading-5 text-slate-200">#CoCシナリオ BOOTH -ネタバレ</p>
-                <div class="mt-2 flex gap-2">
-                  <button class="rounded-full bg-cyan-300/15 px-3 py-1 text-xs text-cyan-100">Open</button>
-                  <button class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Copy</button>
+              <div class="favorite-card">
+                <p class="favorite-query">#CoCシナリオ BOOTH -ネタバレ</p>
+                <div class="favorite-actions">
+                  <button class="btn btn-cyan-soft btn-compact">Open</button>
+                  <button class="btn btn-soft btn-compact">Copy</button>
                 </div>
               </div>
             </div>
           </div>
         </aside>
 
-        <div class="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]">
-          <section class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl backdrop-blur">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div class="content-layout">
+          <section class="panel">
+            <div class="composer-heading">
               <div>
-                <h2 class="text-xl font-bold">Search Composer</h2>
-                <p class="mt-1 text-sm text-slate-400">Press chips to construct your X search query.</p>
+                <h2 class="panel-title">Search Composer</h2>
+                <p class="panel-subtitle">Press chips to construct your X search query.</p>
               </div>
 
-              <button class="rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-100">
-                Spoiler Safe ON
-              </button>
+              <button class="spoiler-toggle">Spoiler Safe ON</button>
             </div>
 
-            <div class="mt-5">
-              <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Base Hashtag / Keyword</label>
-              <div class="mt-2 rounded-2xl border border-white/10 bg-slate-950/80 p-3">
-                <span class="text-slate-500">#CoC</span>
-                <span class="ml-1 animate-pulse text-cyan-300">|</span>
+            <div class="input-group">
+              <label class="section-label">Base Hashtag / Keyword</label>
+              <div class="mock-input">
+                #CoC<span class="caret">|</span>
               </div>
             </div>
 
-            <div class="mt-5">
-              <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Add Search Words</h3>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <button class="rounded-full border border-violet-300/40 bg-violet-300/20 px-3 py-1.5 text-sm text-violet-100 transition">PL募集</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">KP募集</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">卓募集</button>
-                <button class="rounded-full border border-violet-300/40 bg-violet-300/20 px-3 py-1.5 text-sm text-violet-100 transition">初心者歓迎</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">ボイセ</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">テキセ</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">BOOTH</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">ココフォリア</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">部屋素材</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">配信</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">感想</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">卓報告</button>
+            <div class="chip-section">
+              <h3 class="section-label">Add Search Words</h3>
+              <div class="chip-list">
+                <button class="chip chip-violet">PL募集</button>
+                <button class="chip">KP募集</button>
+                <button class="chip">卓募集</button>
+                <button class="chip chip-violet">初心者歓迎</button>
+                <button class="chip">ボイセ</button>
+                <button class="chip">テキセ</button>
+                <button class="chip">BOOTH</button>
+                <button class="chip">ココフォリア</button>
+                <button class="chip">部屋素材</button>
+                <button class="chip">配信</button>
+                <button class="chip">感想</button>
+                <button class="chip">卓報告</button>
               </div>
             </div>
 
-            <div class="mt-5">
-              <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Filters</h3>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <button class="rounded-full border border-cyan-300/40 bg-cyan-300/20 px-3 py-1.5 text-sm text-cyan-50 transition">filter:images</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">filter:videos</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">filter:links</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">filter:media</button>
-                <button class="rounded-full border border-cyan-300/40 bg-cyan-300/20 px-3 py-1.5 text-sm text-cyan-50 transition">lang:ja</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-filter:retweets</button>
+            <div class="chip-section">
+              <h3 class="section-label">Filters</h3>
+              <div class="chip-list">
+                <button class="chip chip-cyan">filter:images</button>
+                <button class="chip">filter:videos</button>
+                <button class="chip">filter:links</button>
+                <button class="chip">filter:media</button>
+                <button class="chip chip-cyan">lang:ja</button>
+                <button class="chip">-filter:retweets</button>
               </div>
             </div>
 
-            <div class="mt-5">
-              <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Exclude Words</h3>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-ネタバレ</button>
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-秘匿</button>
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-現行未通過</button>
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-ふせったー</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-ポイピク</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-R18</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-募集終了</button>
+            <div class="chip-section">
+              <h3 class="section-label">Exclude Words</h3>
+              <div class="chip-list">
+                <button class="chip chip-rose">-ネタバレ</button>
+                <button class="chip chip-rose">-秘匿</button>
+                <button class="chip chip-rose">-現行未通過</button>
+                <button class="chip chip-rose">-ふせったー</button>
+                <button class="chip">-ポイピク</button>
+                <button class="chip">-R18</button>
+                <button class="chip">-募集終了</button>
               </div>
             </div>
 
-            <div class="mt-5 rounded-3xl border border-cyan-300/20 bg-cyan-300/10 p-4">
-              <div class="flex items-center justify-between gap-3">
-                <label class="text-xs font-semibold uppercase tracking-wide text-cyan-100">Generated Query</label>
-                <button class="rounded-full bg-white/10 px-3 py-1 text-xs text-cyan-50">Reset</button>
+            <div class="generated-box">
+              <div class="generated-header">
+                <label class="section-label" style="color:#cffafe;">Generated Query</label>
+                <button class="btn btn-soft btn-compact">Reset</button>
               </div>
 
-              <p class="mt-3 break-words rounded-2xl bg-slate-950/80 p-4 text-sm leading-6 text-cyan-50">
+              <p class="generated-query">
                 #CoC PL募集 初心者歓迎 filter:images lang:ja -ネタバレ -秘匿 -現行未通過 -ふせったー
               </p>
 
-              <div class="mt-4 flex flex-wrap gap-2">
-                <button class="rounded-full bg-cyan-300 px-5 py-2 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20">Open X Search →</button>
-                <button class="rounded-full bg-white/10 px-5 py-2 text-sm font-semibold text-white">Copy Query</button>
-                <button class="rounded-full bg-violet-300/20 px-5 py-2 text-sm font-semibold text-violet-100">Save to Favorites</button>
+              <div class="generated-actions">
+                <button class="btn btn-primary">Open X Search →</button>
+                <button class="btn btn-soft">Copy Query</button>
+                <button class="btn btn-violet-soft">Save to Favorites</button>
               </div>
             </div>
           </section>
 
-          <section class="flex flex-col gap-5">
-            <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl backdrop-blur">
-              <h2 class="text-xl font-bold">Scenario Name Search</h2>
-              <p class="mt-1 text-sm text-slate-400">Generate related searches from a scenario title.</p>
+          <section class="right-column">
+            <div class="panel">
+              <h2 class="panel-title">Scenario Name Search</h2>
+              <p class="panel-subtitle">Generate related searches from a scenario title.</p>
 
-              <div class="mt-4 rounded-2xl border border-white/10 bg-slate-950/80 p-3 text-sm text-slate-300">
-                星環のダ・カーポ
-              </div>
+              <div class="scenario-input">星環のダ・カーポ</div>
 
-              <div class="mt-3 grid gap-2 text-xs text-slate-300">
-                <div class="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-                  <span class="break-all">"星環のダ・カーポ"</span>
-                  <button class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Open</button>
+              <div class="search-line-list">
+                <div class="search-line">
+                  <span>"星環のダ・カーポ"</span>
+                  <button class="btn btn-soft btn-compact">Open</button>
                 </div>
-                <div class="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-                  <span class="break-all">"星環のダ・カーポ" filter:images</span>
-                  <button class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Open</button>
+                <div class="search-line">
+                  <span>"星環のダ・カーポ" filter:images</span>
+                  <button class="btn btn-soft btn-compact">Open</button>
                 </div>
-                <div class="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-                  <span class="break-all">"星環のダ・カーポ" 卓報告</span>
-                  <button class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Open</button>
+                <div class="search-line">
+                  <span>"星環のダ・カーポ" 卓報告</span>
+                  <button class="btn btn-soft btn-compact">Open</button>
                 </div>
-                <div class="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-                  <span class="break-all">"星環のダ・カーポ" -ネタバレ -秘匿</span>
-                  <button class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Open</button>
+                <div class="search-line">
+                  <span>"星環のダ・カーポ" -ネタバレ -秘匿</span>
+                  <button class="btn btn-soft btn-compact">Open</button>
                 </div>
               </div>
             </div>
 
-            <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl backdrop-blur">
-              <h2 class="text-xl font-bold">Daily Patrol</h2>
-              <p class="mt-1 text-sm text-slate-400">One-click routes for daily TRPG browsing.</p>
+            <div class="panel">
+              <h2 class="panel-title">Daily Patrol</h2>
+              <p class="panel-subtitle">One-click routes for daily TRPG browsing.</p>
 
-              <div class="mt-4 grid grid-cols-2 gap-2">
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">卓募集を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">部屋参考を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">素材を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">配信を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">卓報告を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">シナリオを見る</button>
+              <div class="daily-grid">
+                <button class="daily-button">卓募集を見る</button>
+                <button class="daily-button">部屋参考を見る</button>
+                <button class="daily-button">素材を見る</button>
+                <button class="daily-button">配信を見る</button>
+                <button class="daily-button">卓報告を見る</button>
+                <button class="daily-button">シナリオを見る</button>
               </div>
             </div>
           </section>
         </div>
       </section>
 
-      <section class="pointer-events-none select-none rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl backdrop-blur" aria-hidden="true">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <section class="panel preset-section" aria-hidden="true">
+        <div class="section-header">
           <div>
-            <h2 class="text-xl font-bold">Preset Hashtag Cards</h2>
-            <p class="mt-1 text-sm text-slate-400">Ready-to-use searches for TRPG daily usage.</p>
+            <h2 class="panel-title">Preset Hashtag Cards</h2>
+            <p class="panel-subtitle">Ready-to-use searches for TRPG daily usage.</p>
           </div>
 
-          <button class="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-200">
-            Copy Selected as Markdown
-          </button>
+          <button class="btn btn-soft">Copy Selected as Markdown</button>
         </div>
 
-        <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
-            <div class="flex items-start justify-between gap-3">
+        <div class="preset-grid">
+          <article class="preset-card">
+            <div class="preset-card-header">
               <div>
-                <h3 class="font-bold text-white">CoC PL募集</h3>
-                <p class="mt-1 text-sm text-slate-400">CoCのPL募集を探す基本セット</p>
+                <h3 class="preset-title">CoC PL募集</h3>
+                <p class="preset-description">CoCのPL募集を探す基本セット</p>
               </div>
-              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Recruit</span>
+              <span class="preset-tag">Recruit</span>
             </div>
-
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
-              #CoC PL募集 lang:ja -募集終了
-            </p>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
-              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
-              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            <p class="preset-query">#CoC PL募集 lang:ja -募集終了</p>
+            <div class="preset-actions">
+              <button class="btn btn-primary btn-compact">Search →</button>
+              <button class="btn btn-soft btn-compact">Copy</button>
+              <button class="btn btn-violet-soft btn-compact">Fav</button>
             </div>
           </article>
 
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
-            <div class="flex items-start justify-between gap-3">
+          <article class="preset-card">
+            <div class="preset-card-header">
               <div>
-                <h3 class="font-bold text-white">Good Cocofolia Rooms</h3>
-                <p class="mt-1 text-sm text-slate-400">ココフォリア部屋の参考画像を探す</p>
+                <h3 class="preset-title">Good Cocofolia Rooms</h3>
+                <p class="preset-description">ココフォリア部屋の参考画像を探す</p>
               </div>
-              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Images</span>
+              <span class="preset-tag">Images</span>
             </div>
-
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
-              #GoodCocofoliaOheya2025 filter:images lang:ja
-            </p>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
-              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
-              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            <p class="preset-query">#GoodCocofoliaOheya2025 filter:images lang:ja</p>
+            <div class="preset-actions">
+              <button class="btn btn-primary btn-compact">Search →</button>
+              <button class="btn btn-soft btn-compact">Copy</button>
+              <button class="btn btn-violet-soft btn-compact">Fav</button>
             </div>
           </article>
 
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
-            <div class="flex items-start justify-between gap-3">
+          <article class="preset-card">
+            <div class="preset-card-header">
               <div>
-                <h3 class="font-bold text-white">CoC Scenario Search</h3>
-                <p class="mt-1 text-sm text-slate-400">BOOTH系のCoCシナリオを探す</p>
+                <h3 class="preset-title">CoC Scenario Search</h3>
+                <p class="preset-description">BOOTH系のCoCシナリオを探す</p>
               </div>
-              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Scenario</span>
+              <span class="preset-tag">Scenario</span>
             </div>
-
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
-              #CoCシナリオ BOOTH -ネタバレ -秘匿 lang:ja
-            </p>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
-              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
-              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            <p class="preset-query">#CoCシナリオ BOOTH -ネタバレ -秘匿 lang:ja</p>
+            <div class="preset-actions">
+              <button class="btn btn-primary btn-compact">Search →</button>
+              <button class="btn btn-soft btn-compact">Copy</button>
+              <button class="btn btn-violet-soft btn-compact">Fav</button>
             </div>
           </article>
 
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
-            <div class="flex items-start justify-between gap-3">
+          <article class="preset-card">
+            <div class="preset-card-header">
               <div>
-                <h3 class="font-bold text-white">TRPG Materials</h3>
-                <p class="mt-1 text-sm text-slate-400">背景・素材・部屋作り用の画像検索</p>
+                <h3 class="preset-title">TRPG Materials</h3>
+                <p class="preset-description">背景・素材・部屋作り用の画像検索</p>
               </div>
-              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Material</span>
+              <span class="preset-tag">Material</span>
             </div>
-
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
-              #TRPG素材 filter:images lang:ja
-            </p>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
-              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
-              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            <p class="preset-query">#TRPG素材 filter:images lang:ja</p>
+            <div class="preset-actions">
+              <button class="btn btn-primary btn-compact">Search →</button>
+              <button class="btn btn-soft btn-compact">Copy</button>
+              <button class="btn btn-violet-soft btn-compact">Fav</button>
             </div>
           </article>
 
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
-            <div class="flex items-start justify-between gap-3">
+          <article class="preset-card">
+            <div class="preset-card-header">
               <div>
-                <h3 class="font-bold text-white">Session Reports</h3>
-                <p class="mt-1 text-sm text-slate-400">卓報告やセッション後の画像投稿を見る</p>
+                <h3 class="preset-title">Session Reports</h3>
+                <p class="preset-description">卓報告やセッション後の画像投稿を見る</p>
               </div>
-              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Report</span>
+              <span class="preset-tag">Report</span>
             </div>
-
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
-              #卓報告 CoC filter:images lang:ja
-            </p>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
-              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
-              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            <p class="preset-query">#卓報告 CoC filter:images lang:ja</p>
+            <div class="preset-actions">
+              <button class="btn btn-primary btn-compact">Search →</button>
+              <button class="btn btn-soft btn-compact">Copy</button>
+              <button class="btn btn-violet-soft btn-compact">Fav</button>
             </div>
           </article>
 
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
-            <div class="flex items-start justify-between gap-3">
+          <article class="preset-card">
+            <div class="preset-card-header">
               <div>
-                <h3 class="font-bold text-white">TRPG Streaming</h3>
-                <p class="mt-1 text-sm text-slate-400">TRPG配信やアーカイブを探す</p>
+                <h3 class="preset-title">TRPG Streaming</h3>
+                <p class="preset-description">TRPG配信やアーカイブを探す</p>
               </div>
-              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Stream</span>
+              <span class="preset-tag">Stream</span>
             </div>
-
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
-              #TRPG配信 CoC filter:videos lang:ja
-            </p>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
-              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
-              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            <p class="preset-query">#TRPG配信 CoC filter:videos lang:ja</p>
+            <div class="preset-actions">
+              <button class="btn btn-primary btn-compact">Search →</button>
+              <button class="btn btn-soft btn-compact">Copy</button>
+              <button class="btn btn-violet-soft btn-compact">Fav</button>
             </div>
           </article>
         </div>
