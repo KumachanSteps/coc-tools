@@ -1,5 +1,9 @@
 const I18N = {
   ja: {
+    "nav.toolCrumb": "TRPG Web Tools | ダイス解析ツール",
+    "tag.diceLogInput": "ダイスログインプット",
+    "tag.coc67": "CoC 6版 / 7版",
+    "tag.growthCheckerLink": "成長チェッカーと連携",
     "language.switchToEnglish": "英語表示に切替",
     "language.switchToJapanese": "日本語表示に切替",
 
@@ -97,6 +101,11 @@ const I18N = {
   },
 
   en: {
+    "nav.toolCrumb": "TRPG Web Tools | Dice Stat Analyst",
+    "tag.diceLogInput": "Dice Log Input",
+    "tag.coc67": "CoC 6e / 7e",
+    "tag.growthCheckerLink": "Growth Checker Linked",
+        
     "language.switchToEnglish": "Switch to English",
     "language.switchToJapanese": "Switch to Japanese",
 
