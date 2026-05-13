@@ -1,12 +1,9 @@
 /*
   main.js
   初期化・イベント登録・メイン操作
-
-  Translation-ready:
-  - languageToggleBtn が存在すれば言語切替に対応
-  - applyTranslations() が存在すれば初期化時・再描画時に適用
-  - getCurrentLanguage() / setLanguage() が存在すれば localStorage連動の言語切替が可能
 */
+
+const THEME_STORAGE_KEY = 'diceStatAnalystTheme';
 
 const state = {
   rolls: [],
@@ -15,7 +12,7 @@ const state = {
   sort: { key: 'index', direction: 'asc' },
   showCharacterControls: false,
   inputPanelMode: 'auto',
-  dark: false
+  dark: localStorage.getItem(THEME_STORAGE_KEY) === 'dark'
 };
 
 bindEvents();
@@ -109,6 +106,7 @@ function bindEvents() {
 
   document.addEventListener('languagechange', () => {
     initializeLanguageUI();
+    syncThemeSwitch();
     render();
   });
 }
@@ -141,6 +139,7 @@ function clearAll() {
 
 function toggleTheme() {
   state.dark = !state.dark;
+  localStorage.setItem(THEME_STORAGE_KEY, state.dark ? 'dark' : 'light');
   syncThemeSwitch();
 }
 
@@ -162,7 +161,10 @@ function syncThemeSwitch() {
 function analyze() {
   state.inputPanelMode = 'auto';
 
-  const lines = normalizeNewlines(prepareText($('rawInput').value || ''))
+  const rawInput = $('rawInput');
+  if (!rawInput) return;
+
+  const lines = normalizeNewlines(prepareText(rawInput.value || ''))
     .split(LF)
     .map(cleanLine)
     .filter(Boolean);
@@ -202,10 +204,7 @@ function toggleLanguage() {
   }
 
   render();
-
-  document.dispatchEvent(new CustomEvent('languagechange', {
-    detail: { language: next }
-  }));
+  syncThemeSwitch();
 }
 
 function updateLanguageToggleLabel() {
