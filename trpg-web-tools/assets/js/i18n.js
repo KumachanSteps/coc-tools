@@ -231,20 +231,20 @@ window.TRPG_PORTAL_I18N = {
       },
     },
     {
-      id: "usable-hashtag-finder",
-      icon: "#️⃣",
-      status: "production",
-      category: "haishinTracking",
-      href: "./usable-hashtag-finder/",
-      name: {
-        ja: "使えるハッシュタグ検索",
-        en: "Usable Hashtag Finder",
-      },
-      description: {
-        ja: "TRPG配信や卓報告に使えるハッシュタグを、シナリオ名・配信名・関連語句から探しやすくする検索支援ツールです。",
-        en: "A hashtag search support tool for finding usable hashtags for TRPG livestreams, session reports, scenarios, and related keywords.",
-      },
-    },
+        id: "trpg-hashtag-searcher",
+        icon: "#️⃣",
+        status: "production",
+        category: "haishinTracking",
+        href: "./trpg-hashtag-searcher/",
+        name: {
+            ja: "使えるハッシュタグ検索",
+            en: "Usable Hashtag Finder",
+        },
+        description: {
+            ja: "TRPG配信や卓報告に使えるハッシュタグを、シナリオ名・配信名・関連語句から探しやすくする検索支援ツールです。",
+            en: "A hashtag search support tool for finding usable hashtags for TRPG livestreams, session reports, scenarios, and related keywords.",
+        },
+        },
     {
       id: "trpg-scenario-organizer",
       icon: "🗂️",
