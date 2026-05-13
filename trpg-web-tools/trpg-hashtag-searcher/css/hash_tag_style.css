@@ -1,7 +1,7 @@
 /* =========================================================
    使えるハッシュタグ検索
-   style.css
-   GitHub Pages / Static HTML Preview Version
+   hash_tag_style.css
+   Static GitHub Pages Version
    ========================================================= */
 
 /* ---------- Base ---------- */
@@ -40,7 +40,6 @@ a {
 
 button {
   border: 0;
-  cursor: default;
   font: inherit;
 }
 
@@ -48,16 +47,19 @@ svg {
   display: block;
 }
 
-[aria-hidden="true"] button,
-.pointer-events-none button {
-  cursor: default;
+/* ---------- Page Shell ---------- */
+
+.min-h-screen {
+  min-height: 100vh;
 }
 
-/* =========================================================
-   Tailwind-like Utility Classes Used in Current HTML
-   ========================================================= */
+.bg-slate-950 {
+  background-color: #020617;
+}
 
-/* ---------- Position / Display ---------- */
+.text-slate-100 {
+  color: #f1f5f9;
+}
 
 .relative {
   position: relative;
@@ -74,6 +76,28 @@ svg {
 .inset-0 {
   inset: 0;
 }
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.select-none {
+  user-select: none;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+main.relative.mx-auto {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 48px, 1280px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------- Background Effects ---------- */
 
 .left-12 {
   left: 3rem;
@@ -99,56 +123,6 @@ svg {
   left: 33.333333%;
 }
 
-.left-1\/2 {
-  left: 50%;
-}
-
-.top-full {
-  top: 100%;
-}
-
-.-right-1 {
-  right: -0.25rem;
-}
-
-.-top-1 {
-  top: -0.25rem;
-}
-
-.-bottom-1 {
-  bottom: -0.25rem;
-}
-
-.z-20 {
-  z-index: 20;
-}
-
-.flex {
-  display: flex;
-}
-
-.inline-flex {
-  display: inline-flex;
-}
-
-.grid {
-  display: grid;
-}
-
-.block {
-  display: block;
-}
-
-.hidden {
-  display: none;
-}
-
-/* ---------- Size ---------- */
-
-.min-h-screen {
-  min-height: 100vh;
-}
-
 .h-64 {
   height: 16rem;
 }
@@ -165,55 +139,104 @@ svg {
   width: 18rem;
 }
 
-.h-12 {
-  height: 3rem;
+.rounded-full {
+  border-radius: 9999px;
 }
 
-.w-12 {
-  width: 3rem;
+.bg-indigo-500\/20 {
+  background-color: rgba(99, 102, 241, 0.2);
 }
 
-.h-7 {
-  height: 1.75rem;
+.bg-cyan-400\/10 {
+  background-color: rgba(34, 211, 238, 0.1);
 }
 
-.w-7 {
-  width: 1.75rem;
+.bg-fuchsia-500\/10 {
+  background-color: rgba(217, 70, 239, 0.1);
 }
 
-.h-5 {
-  height: 1.25rem;
+.blur-3xl {
+  filter: blur(64px);
 }
 
-.w-5 {
-  width: 1.25rem;
+.bg-\[radial-gradient\(circle_at_20\%_20\%\,rgba\(255\,255\,255\,0\.14\)_1px\,transparent_1px\)\,radial-gradient\(circle_at_80\%_30\%\,rgba\(255\,255\,255\,0\.1\)_1px\,transparent_1px\)\,radial-gradient\(circle_at_40\%_70\%\,rgba\(255\,255\,255\,0\.08\)_1px\,transparent_1px\)\] {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.10) 1px, transparent 1px),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
 }
 
-.h-3\.5 {
-  height: 0.875rem;
+.bg-\[length\:90px_90px\] {
+  background-size: 90px 90px;
 }
 
-.w-3\.5 {
-  width: 0.875rem;
+/* ---------- Display / Flex / Grid ---------- */
+
+.flex {
+  display: flex;
 }
 
-.max-w-7xl {
-  max-width: 80rem;
+.inline-flex {
+  display: inline-flex;
 }
 
-.max-w-2xl {
-  max-width: 42rem;
+.grid {
+  display: grid;
 }
 
-.w-max {
-  width: max-content;
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
 }
 
 .shrink-0 {
   flex-shrink: 0;
 }
 
-/* ---------- Layout ---------- */
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-5 {
+  gap: 1.25rem;
+}
+
+/* ---------- Spacing ---------- */
 
 .mx-auto {
   margin-left: auto;
@@ -243,68 +266,6 @@ svg {
 .ml-1 {
   margin-left: 0.25rem;
 }
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-3 {
-  gap: 0.75rem;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-.gap-5 {
-  gap: 1.25rem;
-}
-
-.flex-1 {
-  flex: 1 1 0%;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.flex-wrap {
-  flex-wrap: wrap;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.items-start {
-  align-items: flex-start;
-}
-
-.items-end {
-  align-items: flex-end;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.break-words {
-  overflow-wrap: break-word;
-}
-
-.break-all {
-  word-break: break-all;
-}
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
-/* ---------- Padding ---------- */
 
 .p-3 {
   padding: 0.75rem;
@@ -378,25 +339,53 @@ svg {
   padding-bottom: 1.5rem;
 }
 
-/* ---------- Border Radius ---------- */
+/* ---------- Size ---------- */
 
-.rounded-full {
-  border-radius: 9999px;
+.h-12 {
+  height: 3rem;
 }
 
-.rounded-xl {
-  border-radius: 0.75rem;
+.w-12 {
+  width: 3rem;
 }
 
-.rounded-2xl {
-  border-radius: 1rem;
+.h-7 {
+  height: 1.75rem;
 }
 
-.rounded-3xl {
-  border-radius: 1.5rem;
+.w-7 {
+  width: 1.75rem;
 }
 
-/* ---------- Border ---------- */
+.h-5 {
+  height: 1.25rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.h-3\.5 {
+  height: 0.875rem;
+}
+
+.w-3\.5 {
+  width: 0.875rem;
+}
+
+.max-w-7xl {
+  max-width: 80rem;
+}
+
+.max-w-2xl {
+  max-width: 42rem;
+}
+
+.w-max {
+  width: max-content;
+}
+
+/* ---------- Border / Radius ---------- */
 
 .border {
   border-width: 1px;
@@ -443,18 +432,26 @@ svg {
   border-color: rgba(253, 164, 175, 0.4);
 }
 
-/* ---------- Background ---------- */
-
-.bg-slate-950 {
-  background-color: #020617;
+.rounded-xl {
+  border-radius: 0.75rem;
 }
 
-.bg-slate-950\/80 {
-  background-color: rgba(2, 6, 23, 0.8);
+.rounded-2xl {
+  border-radius: 1rem;
 }
 
-.bg-slate-950\/95 {
-  background-color: rgba(2, 6, 23, 0.95);
+.rounded-3xl {
+  border-radius: 1.5rem;
+}
+
+/* ---------- Background Colors ---------- */
+
+.bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .bg-slate-900\/70 {
@@ -465,12 +462,12 @@ svg {
   background-color: rgba(15, 23, 42, 0.8);
 }
 
-.bg-white\/5 {
-  background-color: rgba(255, 255, 255, 0.05);
+.bg-slate-950\/80 {
+  background-color: rgba(2, 6, 23, 0.8);
 }
 
-.bg-white\/10 {
-  background-color: rgba(255, 255, 255, 0.1);
+.bg-slate-950\/95 {
+  background-color: rgba(2, 6, 23, 0.95);
 }
 
 .bg-cyan-300 {
@@ -493,10 +490,6 @@ svg {
   background-color: #22d3ee;
 }
 
-.bg-cyan-400\/10 {
-  background-color: rgba(34, 211, 238, 0.1);
-}
-
 .bg-violet-300\/10 {
   background-color: rgba(196, 181, 253, 0.1);
 }
@@ -511,26 +504,6 @@ svg {
 
 .bg-rose-300\/20 {
   background-color: rgba(253, 164, 175, 0.2);
-}
-
-.bg-indigo-500\/20 {
-  background-color: rgba(99, 102, 241, 0.2);
-}
-
-.bg-fuchsia-500\/10 {
-  background-color: rgba(217, 70, 239, 0.1);
-}
-
-/* Star field background */
-.bg-\[radial-gradient\(circle_at_20\%_20\%\,rgba\(255\,255\,255\,0\.14\)_1px\,transparent_1px\)\,radial-gradient\(circle_at_80\%_30\%\,rgba\(255\,255\,255\,0\.1\)_1px\,transparent_1px\)\,radial-gradient\(circle_at_40\%_70\%\,rgba\(255\,255\,255\,0\.08\)_1px\,transparent_1px\)\] {
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
-    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-}
-
-.bg-\[length\:90px_90px\] {
-  background-size: 90px 90px;
 }
 
 /* ---------- Text ---------- */
@@ -559,28 +532,24 @@ svg {
   line-height: 2.25rem;
 }
 
-.text-slate-100 {
-  color: #f1f5f9;
-}
-
-.text-slate-200 {
-  color: #e2e8f0;
-}
-
-.text-slate-300 {
-  color: #cbd5e1;
-}
-
-.text-slate-400 {
-  color: #94a3b8;
+.text-slate-950 {
+  color: #020617;
 }
 
 .text-slate-500 {
   color: #64748b;
 }
 
-.text-slate-950 {
-  color: #020617;
+.text-slate-400 {
+  color: #94a3b8;
+}
+
+.text-slate-300 {
+  color: #cbd5e1;
+}
+
+.text-slate-200 {
+  color: #e2e8f0;
 }
 
 .text-white {
@@ -643,7 +612,15 @@ svg {
   line-height: 1.5rem;
 }
 
-/* ---------- Effects ---------- */
+.break-words {
+  overflow-wrap: anywhere;
+}
+
+.break-all {
+  word-break: break-all;
+}
+
+/* ---------- Shadows / Effects ---------- */
 
 .shadow-sm {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -669,38 +646,44 @@ svg {
   box-shadow: 0 14px 32px rgba(6, 182, 212, 0.2);
 }
 
-.shadow-cyan-400\/20 {
-  box-shadow: 0 14px 32px rgba(34, 211, 238, 0.2);
-}
-
 .backdrop-blur {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-}
-
-.blur-3xl {
-  filter: blur(64px);
-}
-
-.blur-\[2px\] {
-  filter: blur(2px);
 }
 
 .opacity-0 {
   opacity: 0;
 }
 
-.opacity-70 {
-  opacity: 0.7;
+.z-20 {
+  z-index: 20;
 }
 
-.pointer-events-none {
-  pointer-events: none;
+.left-1\/2 {
+  left: 50%;
 }
 
-.select-none {
-  user-select: none;
+.top-full {
+  top: 100%;
 }
+
+.-translate-x-1\/2 {
+  transform: translateX(-50%);
+}
+
+.-right-1 {
+  right: -0.25rem;
+}
+
+.-top-1 {
+  top: -0.25rem;
+}
+
+.-bottom-1 {
+  bottom: -0.25rem;
+}
+
+/* ---------- Transition / Hover ---------- */
 
 .transition {
   transition:
@@ -710,10 +693,6 @@ svg {
     color 160ms ease,
     box-shadow 160ms ease,
     opacity 160ms ease;
-}
-
-.-translate-x-1\/2 {
-  transform: translateX(-50%);
 }
 
 .hover\:-translate-y-0\.5:hover {
@@ -778,37 +757,64 @@ svg {
 }
 
 /* =========================================================
-   Custom Improvements for This Page
+   Page Design Enhancements
    ========================================================= */
 
-/* Whole page */
-.min-h-screen.bg-slate-950.text-slate-100 {
+body > .min-h-screen {
   position: relative;
   overflow-x: hidden;
 }
 
-/* Header glass panel */
+/* Header glass design */
+
 header.rounded-3xl {
   border-radius: 28px;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06)),
     rgba(15, 23, 42, 0.65);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-/* Portal tooltip slight movement */
+/* Portal button */
+
+a.group.relative.inline-flex {
+  position: relative;
+}
+
+a.group.relative.inline-flex:hover {
+  transform: translateY(-2px);
+  border-color: rgba(165, 243, 252, 0.55);
+  background-color: rgba(103, 232, 249, 0.15);
+  color: #ecfeff;
+  box-shadow: 0 14px 28px rgba(34, 211, 238, 0.2);
+}
+
+a.group.relative.inline-flex span.absolute {
+  white-space: nowrap;
+}
+
 .group:hover .group-hover\:opacity-100 {
+  opacity: 1;
   transform: translateX(-50%) translateY(2px);
 }
 
-/* Header icon enhancement */
+/* Header icon */
+
 .relative.flex.h-12.w-12.shrink-0.items-center.justify-center.rounded-2xl {
   border-radius: 18px;
   background:
-    radial-gradient(circle at 70% 25%, rgba(103, 232, 249, 0.12), transparent 30%),
+    radial-gradient(circle at 72% 25%, rgba(103, 232, 249, 0.12), transparent 32%),
     rgba(15, 23, 42, 0.82);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 12px 28px rgba(34, 211, 238, 0.1);
+    0 12px 28px rgba(34, 211, 238, 0.10);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
 }
 
 .relative.flex.h-12.w-12.shrink-0.items-center.justify-center.rounded-2xl:hover {
@@ -816,63 +822,80 @@ header.rounded-3xl {
   border-color: rgba(165, 243, 252, 0.45);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 16px 34px rgba(34, 211, 238, 0.2);
+    0 16px 34px rgba(34, 211, 238, 0.20);
 }
 
-/* Icon star glow */
 .absolute.-right-1.-top-1.text-sm.text-cyan-200 {
   text-shadow:
     0 0 8px rgba(103, 232, 249, 0.8),
     0 0 16px rgba(103, 232, 249, 0.35);
 }
 
-/* Magnifier glow */
 .absolute.-bottom-1.-right-1.flex.h-5.w-5.items-center.justify-center.rounded-full {
   box-shadow:
     0 8px 18px rgba(34, 211, 238, 0.18),
     0 0 14px rgba(103, 232, 249, 0.16);
 }
 
-/* Blurred preview area */
-section[aria-hidden="true"] {
-  filter: blur(2px);
-  opacity: 0.7;
+/* Panels */
+
+section.rounded-3xl,
+aside > div.rounded-3xl,
+article.rounded-3xl {
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
 }
 
-/* Keep header readable */
-header {
-  filter: none;
-  opacity: 1;
+button {
+  color: inherit;
 }
 
-/* Prevent disabled preview from feeling clickable */
-section[aria-hidden="true"] a,
-section[aria-hidden="true"] button {
+button.rounded-full,
+button.rounded-2xl,
+article.rounded-3xl {
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+article.rounded-3xl:hover {
+  transform: translateY(-4px);
+}
+
+/* Disabled preview sections */
+section[aria-hidden="true"] button,
+section[aria-hidden="true"] a {
   pointer-events: none;
 }
 
 /* =========================================================
-   Responsive Classes
+   Grid Layout Fixes
    ========================================================= */
 
-@media (min-width: 640px) {
-  .sm\:flex-row {
-    flex-direction: row;
-  }
-
-  .sm\:items-start {
-    align-items: flex-start;
-  }
-
-  .sm\:items-end {
-    align-items: flex-end;
-  }
-
-  .sm\:justify-between {
-    justify-content: space-between;
-  }
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* Default mobile/tablet layout */
+.lg\:grid-cols-\[280px_minmax\(0\,1fr\)\] {
+  grid-template-columns: 1fr;
+}
+
+.xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
+  grid-template-columns: 1fr;
+}
+
+.md\:grid-cols-2 {
+  grid-template-columns: 1fr;
+}
+
+.xl\:grid-cols-3 {
+  grid-template-columns: 1fr;
+}
+
+/* tablet: preset cards 2 columns */
 @media (min-width: 768px) {
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -884,12 +907,14 @@ section[aria-hidden="true"] button {
   }
 }
 
+/* desktop: sidebar + main */
 @media (min-width: 1024px) {
   .lg\:grid-cols-\[280px_minmax\(0\,1fr\)\] {
     grid-template-columns: 280px minmax(0, 1fr);
   }
 }
 
+/* large desktop: composer + right column, preset cards 3 columns */
 @media (min-width: 1280px) {
   .xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
     grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
@@ -900,34 +925,7 @@ section[aria-hidden="true"] button {
   }
 }
 
-/* =========================================================
-   Layout Defaults
-   ========================================================= */
-
-main.relative.mx-auto {
-  width: min(100% - 48px, 1280px);
-}
-
-section.grid.flex-1 {
-  grid-template-columns: 1fr;
-}
-
-aside.flex.flex-col {
-  min-width: 0;
-}
-
-.grid.gap-5.xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
-  grid-template-columns: 1fr;
-}
-
-.mt-5.grid.gap-4.md\:grid-cols-2.xl\:grid-cols-3 {
-  grid-template-columns: 1fr;
-}
-
-/* =========================================================
-   Mobile
-   ========================================================= */
-
+/* small screens */
 @media (max-width: 720px) {
   main.relative.mx-auto {
     width: min(100% - 24px, 1280px);
@@ -975,75 +973,13 @@ aside.flex.flex-col {
   .grid-cols-2 {
     grid-template-columns: 1fr;
   }
-}
-/* =========================================================
-   Layout Fixes for Hashtag Searcher
-   Add this at the END of css/hash_tag_style.css
-   ========================================================= */
 
-/* ブラー効果を完全に解除 */
-.blur-\[2px\] {
-  filter: none !important;
-}
-
-.opacity-70 {
-  opacity: 1 !important;
-}
-
-section[aria-hidden="true"] {
-  filter: none !important;
-  opacity: 1 !important;
-}
-
-/* 2列グリッド */
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-/* 通常時のプリセットカードは1列 */
-.md\:grid-cols-2,
-.xl\:grid-cols-3 {
-  grid-template-columns: 1fr;
-}
-
-/* メインエリアは通常1列 */
-.lg\:grid-cols-\[280px_minmax\(0\,1fr\)\] {
-  grid-template-columns: 1fr;
-}
-
-/* Composer + Right panel も通常1列 */
-.xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
-  grid-template-columns: 1fr;
-}
-
-/* tablet以上：Preset Cardsを2列 */
-@media (min-width: 768px) {
-  .md\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* desktop以上：左サイドバー + メイン本文 */
-@media (min-width: 1024px) {
-  .lg\:grid-cols-\[280px_minmax\(0\,1fr\)\] {
-    grid-template-columns: 280px minmax(0, 1fr);
-  }
-}
-
-/* large desktop以上：Composer + Scenario/Daily panel */
-@media (min-width: 1280px) {
-  .xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(360px\,0\.95fr\)\] {
-    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  a.group.relative.inline-flex span.absolute {
+    left: 0;
+    transform: translateX(0);
   }
 
-  .xl\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-/* mobileではDaily Patrolを1列に戻す */
-@media (max-width: 720px) {
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
+  .group:hover .group-hover\:opacity-100 {
+    transform: translateX(0) translateY(2px);
   }
 }
