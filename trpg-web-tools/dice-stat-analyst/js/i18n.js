@@ -1,6 +1,6 @@
 const I18N = {
   ja: {
-    "nav.toolCrumb": "TRPG Web Tools | ダイス解析ツール",
+    "nav.backToTools": "TRPG Web Tools",
     "tag.diceLogInput": "ダイスログインプット",
     "tag.coc67": "CoC 6版 / 7版",
     "tag.growthCheckerLink": "成長チェッカーと連携",
@@ -101,7 +101,7 @@ const I18N = {
   },
 
   en: {
-    "nav.toolCrumb": "TRPG Web Tools | Dice Stat Analyst",
+    "nav.backToTools": "TRPG Web Tools",
     "tag.diceLogInput": "Dice Log Input",
     "tag.coc67": "CoC 6e / 7e",
     "tag.growthCheckerLink": "Growth Checker Linked",
