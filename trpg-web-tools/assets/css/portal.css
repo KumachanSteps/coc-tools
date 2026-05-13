@@ -1252,3 +1252,136 @@ h1 {
     min-height: 104px;
   }
 }
+.page {
+  width: min(1480px, calc(100% - 64px));
+}
+
+.hero-grid {
+  grid-template-columns: minmax(0, 1.22fr) minmax(560px, 0.78fr);
+  align-items: start;
+  gap: 28px;
+}
+
+.hero-copy {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  min-width: 0;
+}
+
+.hero-label {
+  justify-self: start;
+  margin-bottom: 26px;
+}
+
+h1 {
+  white-space: nowrap;
+  font-size: clamp(2.35rem, 4.45vw, 3.75rem);
+  line-height: 1;
+  letter-spacing: -0.065em;
+}
+
+.lead {
+  max-width: 1000px;
+  margin: 22px 0 0;
+  font-size: 0.98rem;
+  line-height: 1.72;
+}
+
+.status-summary {
+  justify-self: stretch;
+  align-self: start;
+  margin-top: 95px;
+  min-height: 214px;
+  height: 214px;
+  display: flex;
+  align-items: center;
+  padding: 18px 20px;
+}
+
+.summary-grid {
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summary-item {
+  min-height: 124px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.summary-number {
+  font-size: 1.78rem;
+}
+
+.summary-label {
+  margin-top: 6px;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 1320px) {
+  .page {
+    width: min(1280px, calc(100% - 48px));
+  }
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.16fr) minmax(500px, 0.84fr);
+    gap: 24px;
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 4.25vw, 3.35rem);
+  }
+
+  .lead {
+    max-width: 850px;
+    font-size: 0.95rem;
+  }
+
+  .status-summary {
+    margin-top: 88px;
+    height: 202px;
+    min-height: 202px;
+  }
+
+  .summary-item {
+    min-height: 116px;
+  }
+}
+
+@media (max-width: 980px) {
+  .page {
+    width: min(100% - 32px, 1120px);
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-summary {
+    margin-top: 24px;
+    height: auto;
+    min-height: auto;
+  }
+
+  .lead {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  h1 {
+    white-space: normal;
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-item {
+    min-height: 104px;
+  }
+}
