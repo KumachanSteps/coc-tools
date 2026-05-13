@@ -245,7 +245,13 @@ function setMode(isDawn) {
 
 function initMode() {
   const savedMode = localStorage.getItem("trpgPortalMode");
-  setMode(savedMode === "dawn");
+
+  if (savedMode === "deep-space") {
+    setMode(false);
+    return;
+  }
+
+  setMode(true);
 }
 
 searchInput.addEventListener("input", (event) => {
