@@ -229,30 +229,37 @@ function updateCategoryButtons() {
   });
 }
 
-function setMode(isDawn) {
-  document.body.classList.toggle("dawn", isDawn);
+function setMode(mode) {
+  const isLightMode = mode === "light";
 
-  modeIcon.textContent = isDawn ? "☾" : "☀";
-  modeText.textContent = isDawn ? "Deep Space" : "Light Mode";
+  document.body.classList.toggle("theme-light", isLightMode);
+
+  modeIcon.textContent = isLightMode ? "☾" : "☀";
+  modeText.textContent = isLightMode ? "Deep Space" : "Light Mode";
 
   modeToggle.setAttribute(
     "aria-label",
-    isDawn ? "Switch to deep space mode" : "Switch to light mode"
+    isLightMode ? "Switch to deep space mode" : "Switch to light mode"
   );
 
-  localStorage.setItem("trpgPortalMode", isDawn ? "dawn" : "deep-space");
+  localStorage.setItem("trpgPortalMode", isLightMode ? "light" : "deep-space");
 }
 
 function initMode() {
   const savedMode = localStorage.getItem("trpgPortalMode");
 
   if (savedMode === "deep-space") {
-    setMode(false);
+    setMode("deep-space");
     return;
   }
 
-  setMode(true);
+  setMode("light");
 }
+
+modeToggle.addEventListener("click", () => {
+  const isLightMode = document.body.classList.contains("theme-light");
+  setMode(isLightMode ? "deep-space" : "light");
+});
 
 searchInput.addEventListener("input", (event) => {
   currentQuery = event.target.value;
@@ -269,10 +276,6 @@ categoryButtons.addEventListener("click", (event) => {
   currentCategory = button.dataset.category || "All";
   updateCategoryButtons();
   renderTools();
-});
-
-modeToggle.addEventListener("click", () => {
-  setMode(!document.body.classList.contains("dawn"));
 });
 
 updateStatusCounts();
