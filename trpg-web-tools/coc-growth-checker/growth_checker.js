@@ -466,7 +466,14 @@ function renderCharacterCard(char, minRolls) {
         <details>
           <summary>整理済みダイスログを表示</summary>
           <table class="log-table">
-            <thead><tr><th>技能</th><th>結果</th><th>出目</th><th>元ログ</th></tr></thead>
+            <thead>
+              <tr>
+                <th>技能</th>
+                <th>結果</th>
+                <th>出目</th>
+                <th>元ログ</th>
+              </tr>
+            </thead>
             <tbody>${logRows}</tbody>
           </table>
         </details>
@@ -568,7 +575,7 @@ function sendToDiceStatAnalyst() {
   localStorage.setItem("cocDiceLogSharedInput", log);
   localStorage.setItem("cocGrowthCheckerLastInput", log);
 
-  window.open(DICE_STAT_ANALYST_URL, "_blank", "noopener,noreferrer");
+  window.location.href = DICE_STAT_ANALYST_URL;
 }
 
 el.fileInput.addEventListener("change", async event => {

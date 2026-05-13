@@ -3,39 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CoC Growth Checker</title>
+  <title>CoC6版/7版成長ツール</title>
   <link rel="stylesheet" href="growth_checker_style.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <div class="header-main-row">
-        <div class="header-title-area">
-          <div class="header-top-row">
-            <a class="portal-link" href="../index.html">
-              TRPG Web Tools | Growth Checker
-              <span class="portal-tooltip">Return to TRPG Web Tools Portal</span>
-            </a>
-            <span class="header-pill header-pill-cyan">Dice Log input</span>
-            <span class="header-pill header-pill-violet">CoC 6e / 7e</span>
-            <span class="header-pill header-pill-amber">Dice Stat Analyst と連携</span>
-          </div>
-
-          <div class="title-row">
-            <div class="tool-icon" aria-hidden="true">
-              <span class="tool-icon-main">✦</span>
-              <span class="tool-icon-star">✧</span>
-            </div>
-            <div>
-              <h1 class="site-title">CoC 6e/7e Growth Checker</h1>
-              <p class="site-description">
-                セッションログから、探索者ごとの「成長チェック候補技能」を抽出します。CoC6版・7版のハウスルール運用に合わせて、成功・クリティカル・ファンブルの表示条件を切り替えできます。
-              </p>
-              <p class="shortcut-tip">
-                Shortcut: Ctrl / Cmd + O でファイル選択、Ctrl / Cmd + Enter で解析、Ctrl / Cmd + Shift + M でナイトモード切替。
-              </p>
-            </div>
-          </div>
+      <div class="header-top-row">
+        <div class="header-top-tags">
+          <a class="portal-link" href="../index.html">
+            TRPG Web Tools | Growth Checker
+            <span class="portal-tooltip">Return to TRPG Web Tools Portal</span>
+          </a>
+          <span class="header-pill header-pill-cyan">Dice Log input</span>
+          <span class="header-pill header-pill-violet">CoC 6e / 7e</span>
+          <span class="header-pill header-pill-amber">ダイス統計アナライザーと連携</span>
         </div>
 
         <div class="header-actions">
@@ -54,6 +36,27 @@
               </span>
             </span>
           </button>
+        </div>
+      </div>
+
+      <div class="header-main-row">
+        <div class="header-title-area">
+          <div class="title-row">
+            <div class="tool-icon" aria-hidden="true">
+              <span class="tool-icon-main">✦</span>
+              <span class="tool-icon-star">✧</span>
+            </div>
+
+            <div>
+              <h1 class="site-title">CoC6版/7版成長ツール</h1>
+              <p class="site-description">
+                セッションログから、探索者ごとの「成長チェック候補技能」を抽出します。CoC6版・7版のハウスルール運用に合わせて、成功・クリティカル・ファンブルの表示条件を切り替えできます。
+              </p>
+              <p class="shortcut-tip">
+                Shortcut: Ctrl / Cmd + O でファイル選択、Ctrl / Cmd + Enter で解析、Ctrl / Cmd + Shift + M でナイトモード切替。
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -79,6 +82,7 @@
 
         <div class="rule-panel" style="margin-top:14px;">
           <p class="control-title">成長チェック候補の表示ルール</p>
+
           <div class="radio-list">
             <label class="option">
               <input type="radio" name="growthRule" value="rulebook" checked>
@@ -104,6 +108,7 @@
 
         <div class="rule-panel">
           <p class="control-title">除外ルール</p>
+
           <div class="check-list">
             <label class="option">
               <input id="excludeSan" type="checkbox" checked>
@@ -122,10 +127,12 @@
 
         <div class="rule-panel">
           <p class="control-title">キャラクター表示</p>
+
           <div class="inline-control">
             <label for="minRolls">NPC除外しきい値：</label>
             <input id="minRolls" type="number" min="0" value="15" />
           </div>
+
           <p class="note">この回数未満のキャラクターは初期状態で非表示になります。</p>
         </div>
       </div>
@@ -140,8 +147,8 @@
         </div>
 
         <div class="result-tools-right">
-          <button id="jumpDiceStatBtn" class="dice-stat-link" type="button" data-tooltip="Do you want to move to Dice Stat Analyst?">
-            Dice Stat Analyst →
+          <button id="jumpDiceStatBtn" class="dice-stat-link" type="button" data-tooltip="ダイス統計アナライザーへ移動しますか？">
+            ダイス統計アナライザー →
           </button>
         </div>
       </div>
