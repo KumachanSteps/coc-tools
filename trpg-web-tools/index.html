@@ -20,7 +20,7 @@
   />
 
   <link rel="icon" href="./shared/assets/kuma_icon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="./css/portal.css" />
+  <link rel="stylesheet" href="./assets/css/portal.css" />
 </head>
 
 <body class="theme-dawn">
@@ -101,24 +101,64 @@
         </div>
 
         <div id="categoryButtons" class="category-buttons" aria-label="Tool categories">
-          <button class="category-button is-active" type="button" data-category="All" aria-pressed="true">All</button>
-          <button class="category-button" type="button" data-category="Log Analysis" aria-pressed="false">Log Analysis</button>
-          <button class="category-button" type="button" data-category="Report Writing" aria-pressed="false">Report Writing</button>
-          <button class="category-button" type="button" data-category="Scenario Prep" aria-pressed="false">Scenario Prep</button>
-          <button class="category-button" type="button" data-category="Character Utility" aria-pressed="false">Character Utility</button>
-          <button class="category-button" type="button" data-category="Haishin Tracking" aria-pressed="false">Haishin Tracking</button>
-          <button class="category-button" type="button" data-category="GM Support" aria-pressed="false">GM Support</button>
+          <button class="category-button is-active" type="button" data-category="All" aria-pressed="true">
+            All
+          </button>
+
+          <button class="category-button" type="button" data-category="Log Analysis" aria-pressed="false">
+            Log Analysis
+          </button>
+
+          <button class="category-button" type="button" data-category="Report Writing" aria-pressed="false">
+            Report Writing
+          </button>
+
+          <button class="category-button" type="button" data-category="Scenario Prep" aria-pressed="false">
+            Scenario Prep
+          </button>
+
+          <button class="category-button" type="button" data-category="Character Utility" aria-pressed="false">
+            Character Utility
+          </button>
+
+          <button class="category-button" type="button" data-category="Haishin Tracking" aria-pressed="false">
+            Haishin Tracking
+          </button>
+
+          <button class="category-button" type="button" data-category="GM Support" aria-pressed="false">
+            GM Support
+          </button>
         </div>
       </div>
     </section>
 
-    <section id="toolsGrid" class="tools-grid" aria-label="Tool list"></section>
+    <section id="toolsGrid" class="tools-grid" aria-label="Tool list">
+      <noscript>
+        <article class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon" aria-hidden="true">📊</div>
+            <span class="status-badge status-available">
+              <span aria-hidden="true">✓</span>
+              Available
+            </span>
+          </div>
+
+          <p class="tool-category">Log Analysis</p>
+          <h2>Dice Stat Analyst</h2>
+          <p class="tool-description">
+            セッションログHTML / テキストから、探索者ごとの成功率・クリティカル・ファンブル・出目分布を解析します。
+          </p>
+
+          <div class="open-text">Open Tool →</div>
+        </article>
+      </noscript>
+    </section>
 
     <footer>
       <p>© TRPG Web Tools / Created for TRPG Session Support</p>
     </footer>
   </main>
 
-  <script src="./js/portal.js"></script>
+  <script src="./assets/js/portal.js"></script>
 </body>
 </html>
