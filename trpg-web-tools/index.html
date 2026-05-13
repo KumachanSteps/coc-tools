@@ -19,7 +19,7 @@
     content="TRPGセッション準備・ログ解析・卓報告作成・シナリオ情報整理を補助するためのWebツール集です。"
   />
 
-  <link rel="icon" href="./assets/img/kuma_icon.ico" type="image/x-icon" />
+  <link rel="icon" href="./shared/assets/kuma_icon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="./assets/css/portal.css" />
 </head>
 
@@ -35,20 +35,7 @@
   <main class="page">
     <header class="topbar">
       <div class="brand-row">
-        <div class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 2.75L13.8 8.2L19.25 10L13.8 11.8L12 17.25L10.2 11.8L4.75 10L10.2 8.2L12 2.75Z"
-              stroke="currentColor"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M19 15.5L19.75 17.75L22 18.5L19.75 19.25L19 21.5L18.25 19.25L16 18.5L18.25 17.75L19 15.5Z"
-              stroke="currentColor"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
+        <div class="brand-mark" aria-hidden="true">✦</div>
 
         <div>
           <p class="eyebrow">TRPG SESSION SUPPORT TOOLS</p>
@@ -65,13 +52,7 @@
     <section class="hero-grid">
       <div class="hero-copy">
         <div class="hero-label">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M12 3L13.45 8.55L19 10L13.45 11.45L12 17L10.55 11.45L5 10L10.55 8.55L12 3Z"
-              stroke="currentColor"
-              stroke-linejoin="round"
-            />
-          </svg>
+          <span aria-hidden="true">✧</span>
           自作TRPG Webツール集
         </div>
 
@@ -120,47 +101,18 @@
         </div>
 
         <div id="categoryButtons" class="category-buttons" aria-label="Tool categories">
-          <button class="category-button is-active" type="button" data-category="All" aria-pressed="true">
-            All
-          </button>
-          <button class="category-button" type="button" data-category="Log Analysis" aria-pressed="false">
-            Log Analysis
-          </button>
-          <button class="category-button" type="button" data-category="Report Writing" aria-pressed="false">
-            Report Writing
-          </button>
-          <button class="category-button" type="button" data-category="Scenario Prep" aria-pressed="false">
-            Scenario Prep
-          </button>
-          <button class="category-button" type="button" data-category="Character Utility" aria-pressed="false">
-            Character Utility
-          </button>
-          <button class="category-button" type="button" data-category="Haishin Tracking" aria-pressed="false">
-            Haishin Tracking
-          </button>
-          <button class="category-button" type="button" data-category="GM Support" aria-pressed="false">
-            GM Support
-          </button>
+          <button class="category-button is-active" type="button" data-category="All" aria-pressed="true">All</button>
+          <button class="category-button" type="button" data-category="Log Analysis" aria-pressed="false">Log Analysis</button>
+          <button class="category-button" type="button" data-category="Report Writing" aria-pressed="false">Report Writing</button>
+          <button class="category-button" type="button" data-category="Scenario Prep" aria-pressed="false">Scenario Prep</button>
+          <button class="category-button" type="button" data-category="Character Utility" aria-pressed="false">Character Utility</button>
+          <button class="category-button" type="button" data-category="Haishin Tracking" aria-pressed="false">Haishin Tracking</button>
+          <button class="category-button" type="button" data-category="GM Support" aria-pressed="false">GM Support</button>
         </div>
       </div>
     </section>
 
-    <section id="toolsGrid" class="tools-grid" aria-label="Tool list">
-      <noscript>
-        <article class="tool-card">
-          <div class="tool-card-top">
-            <div class="tool-icon" aria-hidden="true">📊</div>
-            <span class="status-badge status-available">✓ Available</span>
-          </div>
-          <p class="tool-category">Log Analysis</p>
-          <h2>Dice Stat Analyst</h2>
-          <p class="tool-description">
-            セッションログHTML / テキストから、探索者ごとの成功率・クリティカル・ファンブル・出目分布を解析します。
-          </p>
-          <div class="open-text">Open Tool</div>
-        </article>
-      </noscript>
-    </section>
+    <section id="toolsGrid" class="tools-grid" aria-label="Tool list"></section>
 
     <footer>
       <p>© TRPG Web Tools / Created for TRPG Session Support</p>
