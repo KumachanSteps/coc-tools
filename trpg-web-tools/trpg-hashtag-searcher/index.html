@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>使えるハッシュタグ検索</title>
+  <title>使えるハッシュタグ検索 | TRPG Web Tools</title>
+
+  <meta
+    name="description"
+    content="TRPGでよく使うX検索をワンクリックで作成できる、ハッシュタグ検索ランチャーです。"
+  >
 
   <link rel="stylesheet" href="./css/hash_tag_style.css">
 </head>
@@ -80,17 +85,30 @@
         </div>
       </header>
 
-      <section class="pointer-events-none grid flex-1 select-none gap-5 opacity-70 blur-[2px] lg:grid-cols-[280px_minmax(0,1fr)]" aria-hidden="true">
+      <section class="pointer-events-none grid flex-1 select-none gap-5 lg:grid-cols-[280px_minmax(0,1fr)]" aria-hidden="true">
         <aside class="flex flex-col gap-5">
           <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-4 shadow-xl backdrop-blur">
             <h2 class="text-sm font-semibold text-slate-200">Search Modes</h2>
+
             <div class="mt-3 grid gap-2">
-              <button class="rounded-2xl px-4 py-3 text-left text-sm transition bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20">Daily Patrol</button>
-              <button class="rounded-2xl px-4 py-3 text-left text-sm transition bg-white/5 text-slate-300">卓募集</button>
-              <button class="rounded-2xl px-4 py-3 text-left text-sm transition bg-white/5 text-slate-300">素材探し</button>
-              <button class="rounded-2xl px-4 py-3 text-left text-sm transition bg-white/5 text-slate-300">シナリオ探し</button>
-              <button class="rounded-2xl px-4 py-3 text-left text-sm transition bg-white/5 text-slate-300">感想 / 卓報告</button>
-              <button class="rounded-2xl px-4 py-3 text-left text-sm transition bg-white/5 text-slate-300">配信</button>
+              <button class="rounded-2xl bg-cyan-400 px-4 py-3 text-left text-sm text-slate-950 shadow-lg shadow-cyan-500/20">
+                Daily Patrol
+              </button>
+              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
+                卓募集
+              </button>
+              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
+                素材探し
+              </button>
+              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
+                シナリオ探し
+              </button>
+              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
+                感想 / 卓報告
+              </button>
+              <button class="rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
+                配信
+              </button>
             </div>
           </div>
 
@@ -99,6 +117,7 @@
               <h2 class="text-sm font-semibold text-slate-200">My Favorites</h2>
               <span class="rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300">3</span>
             </div>
+
             <p class="mt-2 text-xs leading-5 text-slate-400">
               Favorites are saved only in this browser and will not transfer to another device.
             </p>
@@ -138,6 +157,7 @@
                 <h2 class="text-xl font-bold">Search Composer</h2>
                 <p class="mt-1 text-sm text-slate-400">Press chips to construct your X search query.</p>
               </div>
+
               <button class="rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-100">
                 Spoiler Safe ON
               </button>
@@ -154,34 +174,43 @@
             <div class="mt-5">
               <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Add Search Words</h3>
               <div class="mt-2 flex flex-wrap gap-2">
-                <button class="rounded-full border border-violet-300/40 bg-violet-300/20 px-3 py-1.5 text-sm text-violet-100">PL募集</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">KP募集</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">卓募集</button>
-                <button class="rounded-full border border-violet-300/40 bg-violet-300/20 px-3 py-1.5 text-sm text-violet-100">初心者歓迎</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">ボイセ</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">テキセ</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">BOOTH</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">ココフォリア</button>
+                <button class="rounded-full border border-violet-300/40 bg-violet-300/20 px-3 py-1.5 text-sm text-violet-100 transition">PL募集</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">KP募集</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">卓募集</button>
+                <button class="rounded-full border border-violet-300/40 bg-violet-300/20 px-3 py-1.5 text-sm text-violet-100 transition">初心者歓迎</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">ボイセ</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">テキセ</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">BOOTH</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">ココフォリア</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">部屋素材</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">配信</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">感想</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">卓報告</button>
               </div>
             </div>
 
             <div class="mt-5">
               <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Filters</h3>
               <div class="mt-2 flex flex-wrap gap-2">
-                <button class="rounded-full border border-cyan-300/40 bg-cyan-300/20 px-3 py-1.5 text-sm text-cyan-50">filter:images</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">filter:videos</button>
-                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">filter:links</button>
-                <button class="rounded-full border border-cyan-300/40 bg-cyan-300/20 px-3 py-1.5 text-sm text-cyan-50">lang:ja</button>
+                <button class="rounded-full border border-cyan-300/40 bg-cyan-300/20 px-3 py-1.5 text-sm text-cyan-50 transition">filter:images</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">filter:videos</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">filter:links</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">filter:media</button>
+                <button class="rounded-full border border-cyan-300/40 bg-cyan-300/20 px-3 py-1.5 text-sm text-cyan-50 transition">lang:ja</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-filter:retweets</button>
               </div>
             </div>
 
             <div class="mt-5">
               <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Exclude Words</h3>
               <div class="mt-2 flex flex-wrap gap-2">
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50">-ネタバレ</button>
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50">-秘匿</button>
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50">-現行未通過</button>
-                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50">-ふせったー</button>
+                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-ネタバレ</button>
+                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-秘匿</button>
+                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-現行未通過</button>
+                <button class="rounded-full border border-rose-300/40 bg-rose-300/20 px-3 py-1.5 text-sm text-rose-50 transition">-ふせったー</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-ポイピク</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-R18</button>
+                <button class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300 transition">-募集終了</button>
               </div>
             </div>
 
@@ -190,9 +219,11 @@
                 <label class="text-xs font-semibold uppercase tracking-wide text-cyan-100">Generated Query</label>
                 <button class="rounded-full bg-white/10 px-3 py-1 text-xs text-cyan-50">Reset</button>
               </div>
+
               <p class="mt-3 break-words rounded-2xl bg-slate-950/80 p-4 text-sm leading-6 text-cyan-50">
                 #CoC PL募集 初心者歓迎 filter:images lang:ja -ネタバレ -秘匿 -現行未通過 -ふせったー
               </p>
+
               <div class="mt-4 flex flex-wrap gap-2">
                 <button class="rounded-full bg-cyan-300 px-5 py-2 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20">Open X Search →</button>
                 <button class="rounded-full bg-white/10 px-5 py-2 text-sm font-semibold text-white">Copy Query</button>
@@ -205,7 +236,10 @@
             <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl backdrop-blur">
               <h2 class="text-xl font-bold">Scenario Name Search</h2>
               <p class="mt-1 text-sm text-slate-400">Generate related searches from a scenario title.</p>
-              <div class="mt-4 rounded-2xl border border-white/10 bg-slate-950/80 p-3 text-sm text-slate-300">星環のダ・カーポ</div>
+
+              <div class="mt-4 rounded-2xl border border-white/10 bg-slate-950/80 p-3 text-sm text-slate-300">
+                星環のダ・カーポ
+              </div>
 
               <div class="mt-3 grid gap-2 text-xs text-slate-300">
                 <div class="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
@@ -220,36 +254,44 @@
                   <span class="break-all">"星環のダ・カーポ" 卓報告</span>
                   <button class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Open</button>
                 </div>
+                <div class="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
+                  <span class="break-all">"星環のダ・カーポ" -ネタバレ -秘匿</span>
+                  <button class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Open</button>
+                </div>
               </div>
             </div>
 
             <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl backdrop-blur">
               <h2 class="text-xl font-bold">Daily Patrol</h2>
               <p class="mt-1 text-sm text-slate-400">One-click routes for daily TRPG browsing.</p>
+
               <div class="mt-4 grid grid-cols-2 gap-2">
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200">卓募集を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200">部屋参考を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200">素材を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200">配信を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200">卓報告を見る</button>
-                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200">シナリオを見る</button>
+                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">卓募集を見る</button>
+                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">部屋参考を見る</button>
+                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">素材を見る</button>
+                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">配信を見る</button>
+                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">卓報告を見る</button>
+                <button class="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-200 transition hover:bg-white/10">シナリオを見る</button>
               </div>
             </div>
           </section>
         </div>
       </section>
 
-      <section class="pointer-events-none select-none rounded-3xl border border-white/10 bg-slate-900/80 p-5 opacity-70 blur-[2px] shadow-xl backdrop-blur" aria-hidden="true">
+      <section class="pointer-events-none select-none rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl backdrop-blur" aria-hidden="true">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="text-xl font-bold">Preset Hashtag Cards</h2>
             <p class="mt-1 text-sm text-slate-400">Ready-to-use searches for TRPG daily usage.</p>
           </div>
-          <button class="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-200">Copy Selected as Markdown</button>
+
+          <button class="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-200">
+            Copy Selected as Markdown
+          </button>
         </div>
 
         <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition">
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h3 class="font-bold text-white">CoC PL募集</h3>
@@ -257,10 +299,19 @@
               </div>
               <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Recruit</span>
             </div>
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">#CoC PL募集 lang:ja -募集終了</p>
+
+            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
+              #CoC PL募集 lang:ja -募集終了
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
+              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
+              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            </div>
           </article>
 
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition">
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h3 class="font-bold text-white">Good Cocofolia Rooms</h3>
@@ -268,10 +319,19 @@
               </div>
               <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Images</span>
             </div>
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">#GoodCocofoliaOheya2025 filter:images lang:ja</p>
+
+            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
+              #GoodCocofoliaOheya2025 filter:images lang:ja
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
+              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
+              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            </div>
           </article>
 
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition">
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h3 class="font-bold text-white">CoC Scenario Search</h3>
@@ -279,7 +339,76 @@
               </div>
               <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Scenario</span>
             </div>
-            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">#CoCシナリオ BOOTH -ネタバレ -秘匿 lang:ja</p>
+
+            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
+              #CoCシナリオ BOOTH -ネタバレ -秘匿 lang:ja
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
+              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
+              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            </div>
+          </article>
+
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="font-bold text-white">TRPG Materials</h3>
+                <p class="mt-1 text-sm text-slate-400">背景・素材・部屋作り用の画像検索</p>
+              </div>
+              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Material</span>
+            </div>
+
+            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
+              #TRPG素材 filter:images lang:ja
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
+              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
+              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            </div>
+          </article>
+
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="font-bold text-white">Session Reports</h3>
+                <p class="mt-1 text-sm text-slate-400">卓報告やセッション後の画像投稿を見る</p>
+              </div>
+              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Report</span>
+            </div>
+
+            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
+              #卓報告 CoC filter:images lang:ja
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
+              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
+              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            </div>
+          </article>
+
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-xl">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="font-bold text-white">TRPG Streaming</h3>
+                <p class="mt-1 text-sm text-slate-400">TRPG配信やアーカイブを探す</p>
+              </div>
+              <span class="rounded-full bg-cyan-300/15 px-2 py-1 text-xs text-cyan-100">Stream</span>
+            </div>
+
+            <p class="mt-4 break-words rounded-2xl bg-slate-950/80 p-3 text-xs leading-5 text-slate-200">
+              #TRPG配信 CoC filter:videos lang:ja
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button class="rounded-full bg-cyan-300 px-4 py-2 text-xs font-bold text-slate-950">Search →</button>
+              <button class="rounded-full bg-white/10 px-4 py-2 text-xs text-white">Copy</button>
+              <button class="rounded-full bg-violet-300/20 px-4 py-2 text-xs text-violet-100">Fav</button>
+            </div>
           </article>
         </div>
       </section>
