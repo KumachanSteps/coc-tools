@@ -231,11 +231,13 @@ function updateCategoryButtons() {
 
 function setMode(isDawn) {
   document.body.classList.toggle("dawn", isDawn);
+
   modeIcon.textContent = isDawn ? "☾" : "☀";
-  modeText.textContent = isDawn ? "Deep Space" : "Dawn";
+  modeText.textContent = isDawn ? "Deep Space" : "Light Mode";
+
   modeToggle.setAttribute(
     "aria-label",
-    isDawn ? "Switch to deep space mode" : "Switch to dawn mode"
+    isDawn ? "Switch to deep space mode" : "Switch to light mode"
   );
 
   localStorage.setItem("trpgPortalMode", isDawn ? "dawn" : "deep-space");
